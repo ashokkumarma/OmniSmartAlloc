@@ -1,0 +1,10 @@
+[project]
+name = "open-agent-hackathon-track1"
+version = "0.1.0"
+description = "Track 1 (Solving Fragmented Intelligence): Nemotron ReAct agent over Zetaris federated sources"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"

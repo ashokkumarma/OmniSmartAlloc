@@ -1,0 +1,24 @@
+# Open Agent Hackathon 2026 - Project Rules
+
+## Stack
+- Python 3.11+, virtualenv in `.venv`, tests with `pytest`.
+- Inference: NVIDIA Nemotron via the OpenAI-compatible API (NVIDIA NIM `https://integrate.api.nvidia.com/v1` or Meterless Runtime `http://127.0.0.1:8088/v1`). Use the `openai` SDK with `base_url` + `api_key` from env.
+- Data: Zetaris Lightning (JDBC `com.zetaris.lightning.jdbc.LightningDriver` via JayDeBeApi, or REST at `/api/v1.0`).
+
+## Secrets
+- Read all credentials from `.env` / `.env.local` via `python-dotenv`. Never hardcode, log, or echo keys.
+- Never invent model ids, endpoints, or credentials. If one is missing, stop and ask.
+
+## Nemotron tool-calling patterns
+- Define tools as JSON schema (`tools=[{"type":"function","function":{...}}]`); validate arguments with pydantic before executing.
+- ReAct loop: send messages -> if `tool_calls`, execute each, append `{"role":"tool","tool_call_id":...,"content":...}` -> repeat. Cap iterations.
+- Keep `temperature` low for tool selection; handle the model returning plain text instead of a tool call.
+- Meterless: send headers `meterless-app` on every request and `meterless-scope: user` on chat; use 180 s timeouts.
+
+## Zetaris safety
+- Read-only by default (`SELECT`, `SHOW`, `DESCRIBE`). One SQL statement per call.
+- Any `CREATE`/`DROP`/`GRANT`/write requires explicit user approval.
+
+## Code style
+- Type hints everywhere, small pure functions, pydantic models for tool I/O.
+- Run `python scripts/validate_stack.py` and `pytest` before declaring work done.
