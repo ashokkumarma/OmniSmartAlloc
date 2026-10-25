@@ -1,0 +1,28 @@
+# Channel order database (DTC, Etsy, Walmart tables). Joins the Zetaris network so the
+# Zetaris driver reaches it as omni-channels-db:5432; the host reaches it on 127.0.0.1:5433.
+# Start (after the Zetaris stack is up):  docker compose -f demo/docker-compose.channels.yml up -d
+name: omni-channels
+services:
+  channels-db:
+    image: postgres:16-alpine
+    container_name: omni-channels-db
+    environment:
+      POSTGRES_USER: omni
+      POSTGRES_PASSWORD: ${CHANNELS_DB_PASSWORD:-omni_demo_pw}
+      POSTGRES_DB: channels
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - omni_channels_data:/var/lib/postgresql/data
+      - ./channels_db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omni -d channels"]
+      interval: 5s
+      retries: 10
+    networks: [zetaris]
+volumes:
+  omni_channels_data:
+networks:
+  zetaris:
+    name: zetaris_default
+    external: true

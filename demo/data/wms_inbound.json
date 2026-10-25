@@ -1,0 +1,5 @@
+{"inbound": [
+  {"po": "PO-9001", "sku": "MUG-001", "qty": 500, "eta_days": 14, "status": "in_transit", "supplier": "ACME-EAST"},
+  {"po": "PO-9002", "sku": "LAMP-002", "qty": 300, "eta_days": 5, "status": "in_transit", "supplier": "BRIGHT"},
+  {"po": "PO-9003", "sku": "KBD-003", "qty": 200, "eta_days": 40, "status": "planned", "supplier": "KEYCO"}
+]}

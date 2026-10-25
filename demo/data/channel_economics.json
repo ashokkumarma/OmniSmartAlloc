@@ -1,0 +1,172 @@
+{
+  "economics": [
+    {
+      "sku": "MUG-001",
+      "channel": "DTC",
+      "unit_margin": 24.0,
+      "demand_confidence": 0.9,
+      "v7": 6,
+      "v30": 6,
+      "v90": 6,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Amazon",
+      "unit_margin": 16.0,
+      "demand_confidence": 1.0,
+      "v7": 14,
+      "v30": 14,
+      "v90": 14,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Etsy",
+      "unit_margin": 12.8,
+      "demand_confidence": 0.8,
+      "v7": 3,
+      "v30": 3,
+      "v90": 3,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Walmart",
+      "unit_margin": 9.6,
+      "demand_confidence": 0.9,
+      "v7": 7,
+      "v30": 7,
+      "v90": 7,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "DTC",
+      "unit_margin": 66.75,
+      "demand_confidence": 0.9,
+      "v7": 3,
+      "v30": 3,
+      "v90": 3,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Amazon",
+      "unit_margin": 44.5,
+      "demand_confidence": 1.0,
+      "v7": 3,
+      "v30": 3,
+      "v90": 3,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Etsy",
+      "unit_margin": 35.6,
+      "demand_confidence": 0.8,
+      "v7": 1,
+      "v30": 1,
+      "v90": 1,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Walmart",
+      "unit_margin": 26.7,
+      "demand_confidence": 0.9,
+      "v7": 1,
+      "v30": 1,
+      "v90": 1,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "KBD-003",
+      "channel": "DTC",
+      "unit_margin": 111.75,
+      "demand_confidence": 0.9,
+      "v7": 2,
+      "v30": 2,
+      "v90": 2,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "KBD-003",
+      "channel": "Amazon",
+      "unit_margin": 74.5,
+      "demand_confidence": 1.0,
+      "v7": 2,
+      "v30": 2,
+      "v90": 2,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "KBD-003",
+      "channel": "Etsy",
+      "unit_margin": 59.6,
+      "demand_confidence": 0.6,
+      "v7": 0.5,
+      "v30": 0.5,
+      "v90": 0.5,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "KBD-003",
+      "channel": "Walmart",
+      "unit_margin": 44.7,
+      "demand_confidence": 0.7,
+      "v7": 0.5,
+      "v30": 0.5,
+      "v90": 0.5,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "LOCK-004",
+      "channel": "DTC",
+      "unit_margin": 29.99,
+      "demand_confidence": 0.9,
+      "v7": 1,
+      "v30": 1,
+      "v90": 1,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    },
+    {
+      "sku": "LOCK-004",
+      "channel": "Amazon",
+      "unit_margin": 20.0,
+      "demand_confidence": 1.0,
+      "v7": 2,
+      "v30": 2,
+      "v90": 2,
+      "trend": 1.0,
+      "floor_units": 0,
+      "margin_age_hours": 3
+    }
+  ]
+}

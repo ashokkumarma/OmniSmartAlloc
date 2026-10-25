@@ -28,7 +28,7 @@ class Settings(BaseModel):
     zetaris_jdbc_jar: str = ""
     zetaris_username: str = ""
     zetaris_password: str = ""
-    agent_max_steps: int = 8
+    agent_max_steps: int = 25
     agent_max_rows: int = 50
 
     def require(self, *fields: str) -> None:

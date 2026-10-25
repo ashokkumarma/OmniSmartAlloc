@@ -1,0 +1,6 @@
+{"products": [
+  {"sku": "MUG-001", "title": "Ember Ceramic Mug", "price": 32.00},
+  {"sku": "LAMP-002", "title": "Aurora Desk Lamp", "price": 89.00},
+  {"sku": "KBD-003", "title": "Vertex Mechanical Keyboard", "price": 149.00},
+  {"sku": "LOCK-004", "title": "Drift Wireless Charger", "price": 39.99}
+]}

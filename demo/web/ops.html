@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OmniSmartAlloc — Inventory & Agent Ops</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#0B1020; --card:#141A2E; --line:#232B45; --txt:#E8ECF7; --mut:#8B93AD; }
+  * { box-sizing:border-box; margin:0 }
+  body { background:var(--bg); color:var(--txt); font-family:"Segoe UI",system-ui,sans-serif; }
+  header { padding:18px 28px; display:flex; align-items:center; gap:14px;
+    background:linear-gradient(90deg,#12172B,#1A2140); border-bottom:1px solid var(--line); }
+  .logo { font-weight:800; font-size:20px } .logo b { color:#38BDF8 }
+  .pill { font-size:11px; color:var(--mut); border:1px solid var(--line); border-radius:99px; padding:3px 10px }
+  nav a { color:#67E8F9; font-size:13px }
+  .grow { margin-left:auto }
+  button { border:none; border-radius:9px; padding:9px 18px; font-weight:700; cursor:pointer }
+  #runBtn { background:linear-gradient(90deg,#38BDF8,#A78BFA); color:#0B1020 }
+  #runBtn:disabled { opacity:.5; cursor:wait }
+  .tabs { display:flex; gap:8px; padding:14px 28px 0 }
+  .tab { padding:10px 24px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
+    background:#10152A; color:var(--mut); cursor:pointer; font-weight:700; font-size:14px }
+  .tab.active { background:#38BDF8; border-color:#38BDF8; color:#0B1020 }
+  main { padding:22px 28px; display:flex; flex-direction:column; gap:18px }
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px }
+  .kpi[data-f] { cursor:pointer; transition:.15s } .kpi[data-f]:hover { border-color:#38BDF8 }
+  .kpi.sel { border-color:#38BDF8; box-shadow:0 0 0 1px #38BDF8 inset }
+  .kpi b { font-size:26px } .kpi small { color:var(--mut); display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:18px }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; overflow:auto }
+  .card h3 { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--mut); margin-bottom:12px }
+  table { width:100%; border-collapse:collapse; font-size:12.5px }
+  th { color:var(--mut); text-align:left; font-weight:600; padding:5px 8px; border-bottom:1px solid var(--line) }
+  td { padding:6px 8px; border-bottom:1px solid #1A2140 }
+  .st { font-weight:800; font-size:11px; padding:2px 8px; border-radius:99px; color:#0B1020 }
+  .status { font-weight:800; font-size:10px; padding:2px 8px; border-radius:99px; color:#fff }
+  .bar { height:7px; border-radius:99px; background:#0B1020; overflow:hidden; display:flex }
+  .bar i { display:block; height:100% }
+  .feed div { padding:8px 10px; border-left:3px solid; margin-bottom:8px; font-size:12.5px;
+    background:#0E1330; border-radius:6px; color:#C9D1EA }
+  .alert { border-left-color:#EF4444 !important }
+  .mono { font-family:Consolas,monospace; font-size:11px; white-space:pre-wrap; color:#9FB0D8 }
+  canvas { max-height:230px }
+  .late { color:#F87171; font-weight:700 }
+  .sec { color:var(--mut); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin:10px 0 6px }
+  .mback { position:fixed; inset:0; background:rgba(5,8,20,.72); backdrop-filter:blur(3px); display:none;
+    align-items:center; justify-content:center; z-index:50 }
+  .modal { width:420px; background:var(--card); border:1px solid #7C3AED; border-radius:16px; padding:22px;
+    box-shadow:0 20px 60px rgba(124,58,237,.35) }
+  .modal h4 { font-size:16px; margin-bottom:4px } .modal label { display:block; font-size:12px; color:var(--mut); margin:14px 0 6px }
+  .modal input, .modal textarea { width:100%; padding:9px 11px; border-radius:9px; border:1px solid var(--line);
+    background:#0B1020; color:#fff; font:inherit }
+  .modal input { font-size:20px; font-weight:800 }
+  .pmstats { font-size:11.5px; color:var(--mut); margin-top:8px; line-height:1.6 }
+  .pmerr { font-size:11.5px; color:#F87171; min-height:16px; margin-top:4px }
+  .mact { display:flex; justify-content:flex-end; gap:8px; margin-top:16px }
+  .mact button:disabled { opacity:.45; cursor:not-allowed }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Omni<b>SmartAlloc</b> <span style="color:var(--mut);font-weight:400;font-size:14px">· Inventory &amp; Agent Ops</span></div>
+  <span class="pill">centralized stock via Zetaris</span>
+  <span class="pill">decisions by Nemotron agent</span>
+  <div class="grow"></div>
+  <button id="runBtn" onclick="runAgent()">▶ Run allocation cycle</button>
+  <nav style="margin-left:14px"><a href="/channels">← Channel storefronts</a></nav>
+</header>
+<div class="tabs">
+  <div class="tab" id="tabDashboard" onclick="show('dashboard')">Dashboard</div>
+  <div class="tab" id="tabOrders" onclick="show('orders')">Orders</div>
+  <div class="tab" id="tabInventory" onclick="show('inventory')">Inventory</div>
+</div>
+<main>
+  <div id="pgDashboard" style="display:flex;flex-direction:column;gap:18px">
+    <div class="kpis" id="kpiDash"></div>
+    <div class="row">
+      <div class="card"><h3>Open units by channel</h3><canvas id="chOpen"></canvas></div>
+      <div class="card"><h3>Order status mix</h3><canvas id="chStatus"></canvas></div>
+    </div>
+    <div class="card"><h3>All orders</h3><div class="feed" id="allOrders"></div></div>
+  </div>
+
+  <div id="pgOrders" style="display:flex;flex-direction:column;gap:18px">
+    <div class="kpis" id="kpiOrders"></div>
+    <div class="card" id="openCard"><h3>Open orders <small id="openHint" style="text-transform:none;color:var(--mut)"></small>
+      <span style="float:right">
+        <button style="background:#15803D;padding:4px 12px;font-size:11px;color:#fff" onclick="settleAll('fulfill')">Fulfill all open</button>
+        <button style="background:#B91C1C;padding:4px 12px;font-size:11px;color:#fff" onclick="settleAll('cancel')">Cancel all open</button>
+      </span></h3><div class="feed" id="openOrders"></div></div>
+    <div class="card" id="closedCard"><h3>Settled orders (fulfilled / cancelled) <small id="closedHint" style="text-transform:none;color:var(--mut)"></small></h3><div class="feed" id="closedOrders"></div></div>
+  </div>
+
+  <div id="pgInventory" style="display:flex;flex-direction:column;gap:18px">
+    <div class="kpis" id="kpiInv"></div>
+    <div class="card"><h3>Fulfillment inventory per SKU — on hand / reserved in open orders / allocatable</h3>
+      <table><thead><tr><th>SKU</th><th>Title</th><th>State</th><th>On hand</th><th>Reserved (open orders + committed)</th><th>Allocatable</th><th>DOC</th><th>Channel allocation (open/allocated)</th></tr></thead>
+      <tbody id="skuRows"></tbody></table></div>
+    <div class="card"><h3>Incoming inventory — inbound shipments &amp; projected arrival</h3>
+      <table><thead><tr><th>PO</th><th>SKU</th><th>Qty</th><th>Channel</th><th>Status</th><th>Promised ETA</th><th>Projected (adj. for supplier reliability)</th><th>Supplier on-time</th></tr></thead>
+      <tbody id="inboundRows"></tbody></table></div>
+    <div class="row">
+      <div class="card"><h3>Allocation vs consumed — per SKU, per channel</h3><canvas id="alloc"></canvas></div>
+      <div class="card"><h3>Days of cover</h3><canvas id="doc"></canvas></div>
+    </div>
+    <div class="card"><h3>Agent activity — allocations, alerts, decisions</h3><div class="feed" id="agentlog"></div>
+      <div class="mono" id="agenttail"></div></div>
+  </div>
+</main>
+<div class="mback" id="pmBack" onclick="if(event.target===this)closePartial()">
+  <div class="modal">
+    <h4>◐ Partial Fulfill</h4>
+    <div id="pmTitle" style="font-size:13px"></div>
+    <label for="pmQty">Quantity to fulfill now</label>
+    <input type="number" id="pmQty" min="1" step="1" oninput="pmUpdate()">
+    <div class="pmstats" id="pmStats"></div>
+    <div class="pmerr" id="pmErr"></div>
+    <label for="pmReason">Reason for partial fulfillment <small>(optional)</small></label>
+    <textarea id="pmReason" rows="2" maxlength="300" placeholder="e.g. damaged units in bin, customer asked to split shipment…"></textarea>
+    <div class="mact">
+      <button style="background:#374151;color:#fff" onclick="closePartial()">Cancel</button>
+      <button id="pmGo" style="background:#7C3AED;color:#fff" onclick="submitPartial()">Ship partial</button>
+    </div>
+  </div>
+</div>
+<script>
+const valueLabels={id:'valueLabels',afterDatasetsDraw(chart){
+  const {ctx}=chart; ctx.save(); ctx.font='bold 11px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  chart.data.datasets.forEach((ds,i)=>{
+    const meta=chart.getDatasetMeta(i); if(meta.hidden) return;
+    const total=ds.data.reduce((a,b)=>a+(+b||0),0);
+    meta.data.forEach((el,j)=>{
+      const v=+ds.data[j]; if(!v) return;
+      if(meta.type==='doughnut'||meta.type==='pie'){
+        const {x,y}=el.tooltipPosition(); ctx.fillStyle='#fff';
+        ctx.fillText(`${v} (${Math.round(v/total*100)}%)`,x,y); return; }
+      const h=Math.abs(el.base-el.y);
+      ctx.fillStyle=h<14?'#E8ECF7':'#fff';
+      ctx.fillText(v, el.x, h<14 ? el.y-8 : (el.y+el.base)/2);
+    });
+  }); ctx.restore(); }};
+Chart.register(valueLabels);
+let S=null, charts={}, page='orders', ofilter='all';
+const $=id=>document.getElementById(id);
+const COL={DTC:'#7C3AED',Amazon:'#FF9900',Etsy:'#F1641E',Walmart:'#0071CE'};
+const chanColor=c=>COL[c]||'#64748B';
+const grid={x:{ticks:{color:'#8B93AD'},grid:{display:false}},y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}};
+
+function show(p){ page=p;
+  for(const t of ['Dashboard','Orders','Inventory'])
+    $('tab'+t).className='tab'+(p===t.toLowerCase()?' active':'');
+  for(const t of ['Dashboard','Orders','Inventory'])
+    $('pg'+t).style.display=p===t.toLowerCase()?'flex':'none';
+  render();
+}
+async function state(){ S=await (await fetch('/api/state')).json(); render(); }
+function kpi(l,v){return `<div class="kpi"><b>${v}</b><small>${l}</small></div>`;}
+function kpiF(l,v,f){return `<div class="kpi${ofilter===f?' sel':''}" data-f="${f}" onclick="pickFilter('${f}')"><b>${v}</b><small>${l}</small></div>`;}
+function pickFilter(f){ ofilter = ofilter===f ? 'all' : f; render(); }
+
+const isOpen=o=>o.status==='open';
+const badge=s=>({open:'#B45309',partial:'#7C3AED',fulfilled:'#15803D',cancelled:'#B91C1C'})[s];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const shipped=o=>{ if(!o.fulfilled_qty) return '';
+  const last=(o.partial_shipments||[]).filter(p=>p.reason).slice(-1)[0];
+  return ` <small style="color:#C4B5FD">shipped ${o.fulfilled_qty}/${o.qty}</small>`+
+    (last?`<br><small style="color:var(--mut)">↳ partial reason: ${esc(last.reason)}</small>`:''); };
+const btn='padding:4px 11px;font-size:11px;color:#fff;border-radius:7px;margin-left:5px';
+const orderRow=(o,actions)=>
+  `<div style="border-color:${chanColor(o.channel)}"><b style="color:${chanColor(o.channel)}">${o.channel}</b>
+    ${o.qty}× ${o.sku} <span class="status" style="background:${badge(o.status)}">${o.status}</span>${shipped(o)}
+    · <small>${o.ts.replace('T',' ').slice(0,19)}Z</small>
+    ${actions?`<span style="float:right">
+      <button style="background:#15803D;${btn}" onclick="settle('${o.id}','fulfill')">✔ Fulfill All</button>
+      ${o.remaining>1?`<button style="background:#7C3AED;${btn}" onclick="openPartial('${o.id}')">◐ Partial Fulfill</button>`:''}
+      <button style="background:#B91C1C;${btn}" onclick="settle('${o.id}','cancel')">✖ Cancel</button></span>`:''}</div>`;
+
+function renderDashboard(){
+  const awaiting=S.orders.filter(o=>o.status==='open'||o.status==='partial').reduce((a,o)=>a+o.remaining,0);
+  const shippedU=S.orders.reduce((a,o)=>a+(o.fulfilled_qty||0),0);
+  $('kpiDash').innerHTML =
+    kpi('Total orders',S.orders.length)+kpi('Units ordered',S.orders.reduce((a,o)=>a+o.qty,0))+
+    kpi('Units awaiting shipment',awaiting)+kpi('Units shipped',shippedU)+
+    kpi('SKUs ordered',new Set(S.orders.map(o=>o.sku)).size);
+  $('allOrders').innerHTML = S.orders.map(o=>orderRow(o,o.status==='open'||o.status==='partial')).join('')
+    || '<small style="color:var(--mut)">No orders yet.</small>';
+  const chans=S.channels.map(c=>c.name);
+  if(charts.chOpen)charts.chOpen.destroy();
+  charts.chOpen=new Chart($('chOpen'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
+    datasets:chans.map(c=>({label:c,data:S.skus.map(p=>p.open_by_channel[c]||0),backgroundColor:chanColor(c),stack:'o'}))},
+    options:{scales:{x:{...grid.x,stacked:true},y:{...grid.y,stacked:true}},
+      plugins:{legend:{labels:{color:'#C9D1EA',boxWidth:10,font:{size:10}}}}}});
+  const mix={'awaiting shipment':0,shipped:0,cancelled:0};
+  S.orders.forEach(o=>{ mix.shipped+=o.fulfilled_qty||0;
+    if(o.status==='open'||o.status==='partial') mix['awaiting shipment']+=o.remaining;
+    else if(o.status==='cancelled') mix.cancelled+=o.qty-(o.fulfilled_qty||0); });
+  if(charts.chStatus)charts.chStatus.destroy();
+  charts.chStatus=new Chart($('chStatus'),{type:'doughnut',
+    data:{labels:Object.keys(mix).map(k=>k+' (units)'),datasets:[{data:Object.values(mix),
+      backgroundColor:['#B45309','#15803D','#B91C1C']}]},
+    options:{plugins:{legend:{labels:{color:'#C9D1EA'}}}}});
+}
+
+function renderOrders(){
+  const allOpen=S.orders.filter(isOpen), allClosed=S.orders.filter(o=>!isOpen(o));
+  $('kpiOrders').innerHTML =
+    kpiF('Open orders',allOpen.length,'open')+
+    kpiF('Partially fulfilled',allClosed.filter(o=>o.status==='partial').length,'partial')+
+    kpiF('Fulfilled',allClosed.filter(o=>o.status==='fulfilled').length,'fulfilled')+
+    kpiF('Cancelled',allClosed.filter(o=>o.status==='cancelled').length,'cancelled');
+  const match = ofilter==='all'||ofilter==='open' ? isOpen : o=>o.status===ofilter;
+  const open = allOpen.filter(match), closed = allClosed.filter(match);
+  $('openHint').textContent = ofilter==='partial'||ofilter==='fulfilled'||ofilter==='cancelled' ? '— filtered out (see settled below)' : '';
+  $('closedHint').textContent = ofilter==='open' ? '— filtered out (see open above)' : ofilter==='all' ? '' : `— showing ${ofilter} only`;
+  $('openCard').style.display = ofilter==='partial'||ofilter==='fulfilled'||ofilter==='cancelled' ? 'none':'';
+  $('closedCard').style.display = ofilter==='open' ? 'none':'';
+  (ofilter==='open' ? $('openCard') : $('closedCard')).scrollIntoView({behavior:'smooth',block:'nearest'});
+  $('openOrders').innerHTML = open.map(o=>orderRow(o,true)).join('')
+    || '<small style="color:var(--mut)">No orders match this filter.</small>';
+  $('closedOrders').innerHTML = closed.map(o=>orderRow(o,o.status==='partial')).join('')
+    || '<small style="color:var(--mut)">No settled orders yet.</small>';
+}
+
+function renderInventory(){
+  const tot=S.skus.reduce((a,p)=>({oh:a.oh+p.on_hand,cm:a.cm+p.committed}),{oh:0,cm:0});
+  const inb=S.inbound.reduce((a,s)=>a+s.qty,0);
+  $('kpiInv').innerHTML =
+    kpi('On-hand units',tot.oh)+kpi('Reserved (committed)',tot.cm)+
+    kpi('Allocatable (sellable)',S.skus.reduce((a,p)=>a+(p.sellable_units||0),0))+
+    kpi('Inbound units pending',inb)+kpi('Inbound shipments',S.inbound.length);
+  $('skuRows').innerHTML = S.skus.map(p=>{
+    const reserved=p.open_by_channel?Object.values(p.open_by_channel).reduce((a,b)=>a+b,0):0;
+    const cells = p.allocation ? S.channels.map(c=>{
+      const a=p.allocation[c.name]||0, o=p.open_by_channel[c.name]||0, pct=a?Math.min(100,o/a*100):0;
+      return `<div style="margin:3px 0"><small style="color:${c.color}">${c.name}</small>
+        <div class="bar"><i style="width:${pct}%;background:${c.color}"></i></div>
+        <small style="color:var(--mut)">${o}/${a}</small></div>`;}).join('') : '<small style="color:var(--mut)">no allocation yet</small>';
+    return `<tr><td><b>${p.sku}</b>${p.locked?' 🔒':''}</td><td>${p.title}</td>
+      <td>${p.state?`<span class="st" style="background:${p.state_color}">${p.state}</span>`:'—'}</td>
+      <td><b>${p.on_hand}</b></td><td>${p.committed} <small style="color:var(--mut)">(${reserved} in open orders)</small></td>
+      <td>${p.sellable_units??'—'}</td><td>${p.days_of_cover??'—'}</td><td>${cells}</td></tr>`;}).join('');
+  $('inboundRows').innerHTML = S.inbound.map(s=>{
+    const slip = s.projected_date>s.arrival_date;
+    return `<tr><td>${s.po}</td><td><b>${s.sku}</b></td><td>${s.qty}</td><td>${s.destination_channel}</td>
+      <td>${s.status}</td><td>${s.arrival_date} <small style="color:var(--mut)">(${s.eta_days}d)</small></td>
+      <td class="${slip?'late':''}">${s.projected_date}${slip?' ⚠':''}</td>
+      <td>${s.on_time_rate!=null?Math.round(s.on_time_rate*100)+'%':'—'}</td></tr>`;}).join('');
+  const chans=S.channels.map(c=>c.name);
+  const mk=fn=>S.skus.map(p=>fn(p));
+  if(charts.alloc)charts.alloc.destroy();
+  charts.alloc=new Chart($('alloc'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
+    datasets:[...chans.map(c=>({label:c+' allowance',data:mk(p=>p.allocation?p.allocation[c]||0:0),backgroundColor:chanColor(c),stack:'a'})),
+      ...chans.map(c=>({label:c+' open',data:mk(p=>p.open_by_channel[c]||0),backgroundColor:chanColor(c)+'55',borderColor:chanColor(c),borderWidth:1,borderSkipped:false,stack:'c'}))]},
+    options:{scales:grid,plugins:{legend:{labels:{color:'#C9D1EA',boxWidth:10,font:{size:10}}}}}});
+  if(charts.doc)charts.doc.destroy();
+  charts.doc=new Chart($('doc'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
+    datasets:[{label:'Days of cover',data:mk(p=>p.days_of_cover??0),backgroundColor:S.skus.map(p=>p.state_color)}]},
+    options:{plugins:{legend:{display:false}},scales:grid}});
+  $('agentlog').innerHTML =
+    S.alerts.slice(0,6).map(a=>`<div class="alert"><b>⚠ ${a.sku}</b> ${a.problem} → <b>${a.recommended_action}</b> <small>(${a.deadline})</small></div>`).join('')+
+    S.decisions.slice(0,6).map(d=>{const r=d.record||{};return `<div style="border-color:#38BDF8"><b>${d.sku}</b> ${r.state||''} · allocated ${JSON.stringify(r.allocation||{})}</div>`;}).join('')
+    || '<small style="color:var(--mut)">Agent has not run yet.</small>';
+  $('agenttail').textContent = S.agent.running?'Agent is running…':'';
+}
+
+function render(){ if(!S) return;
+  page==='dashboard'?renderDashboard():page==='orders'?renderOrders():renderInventory(); }
+async function settle(id,a,body){
+  const r=await fetch(`/api/order/${id}/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+  if(!r.ok) alert((await r.json()).error); state(); }
+let pOrder=null;
+function openPartial(id){
+  pOrder=S.orders.find(o=>o.id===id); if(!pOrder) return;
+  $('pmTitle').innerHTML=`<b style="color:${chanColor(pOrder.channel)}">${pOrder.channel}</b> · ${pOrder.qty}× ${pOrder.sku} <small style="color:var(--mut)">#${pOrder.id}</small>`;
+  const q=$('pmQty'); q.max=pOrder.remaining-1; q.value=1; $('pmReason').value=''; $('pmErr').textContent='';
+  pmUpdate(); $('pmBack').style.display='flex'; q.focus(); q.select();
+}
+function pmUpdate(){
+  const q=+$('pmQty').value||0, ok=Number.isInteger(q)&&q>=1&&q<pOrder.remaining;
+  $('pmStats').innerHTML=`Ordered <b>${pOrder.qty}</b> · Filled <b>${pOrder.fulfilled_qty}</b> · Unfulfilled <b>${pOrder.remaining}</b>`+
+    (ok?`<br>After this shipment → Filled <b style="color:#86EFAC">${pOrder.fulfilled_qty+q}</b> · Unfulfilled <b style="color:#FCD34D">${pOrder.remaining-q}</b>`:'');
+  $('pmErr').textContent=ok?'':`Enter a quantity between 1 and ${pOrder.remaining-1} (use Fulfill All to ship everything).`;
+  $('pmGo').disabled=!ok;
+}
+function closePartial(){ $('pmBack').style.display='none'; pOrder=null; }
+async function submitPartial(){
+  if(!pOrder||$('pmGo').disabled) return;
+  const id=pOrder.id, body={qty:+$('pmQty').value, reason:$('pmReason').value};
+  closePartial(); await settle(id,'partial',body);
+}
+document.addEventListener('keydown',e=>{ if(!pOrder) return;
+  if(e.key==='Escape') closePartial(); if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA') submitPartial(); });
+async function settleAll(a){ for(const o of S.orders.filter(o=>o.status==='open')) await fetch(`/api/order/${o.id}/${a}`,{method:'POST'}); state(); }
+async function runAgent(){
+  const b=$('runBtn'); b.disabled=true; b.textContent='Agent running…';
+  await fetch('/api/agent/run',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"scope":"all"}'});
+  const t=setInterval(async()=>{const j=await (await fetch('/api/agent/status')).json();
+    if(!j.running){clearInterval(t);b.disabled=false;b.textContent='▶ Run allocation cycle';state();}},2000);
+}
+show('dashboard'); state(); setInterval(state,6000);
+</script>
+</body>
+</html>

@@ -7,3 +7,6 @@ __pycache__/
 *.jar
 zetaris-platform/
 zetaris-platform.zip
+demo/outbox/
+demo/server.log
+demo/data/orders.jsonl.migrated

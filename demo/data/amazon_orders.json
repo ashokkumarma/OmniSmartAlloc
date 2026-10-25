@@ -1,0 +1,31 @@
+{
+  "orders": [
+    {
+      "id": "f06b5f6f",
+      "ts": "2026-10-25T04:15:54Z",
+      "sku": "LOCK-004",
+      "qty": 5,
+      "fulfilled_qty": 0,
+      "status": "open",
+      "partial_shipments": []
+    },
+    {
+      "id": "3867b7ee",
+      "ts": "2026-10-25T04:15:57Z",
+      "sku": "KBD-003",
+      "qty": 4,
+      "fulfilled_qty": 0,
+      "status": "open",
+      "partial_shipments": []
+    },
+    {
+      "id": "0c74ef3c",
+      "ts": "2026-10-25T04:16:04Z",
+      "sku": "LAMP-002",
+      "qty": 5,
+      "fulfilled_qty": 0,
+      "status": "open",
+      "partial_shipments": []
+    }
+  ]
+}

@@ -28,7 +28,12 @@ class AgentResult:
     stopped_reason: str = "answered"
 
 
+ALLOCATION_SOURCES = {"WMS", "SUPPLIER_PORTAL", "CHANNEL_ANALYTICS", "RULES_ENGINE"}
+
+
 def _sources_from(tool: str, args: dict[str, Any]) -> set[str]:
+    if tool == "compute_allocation":
+        return set(ALLOCATION_SOURCES)
     if tool in ("list_tables", "describe_table") and isinstance(args.get("source"), str):
         return {args["source"]}
     if tool == "run_query" and isinstance(args.get("sql"), str):

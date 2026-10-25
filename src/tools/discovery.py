@@ -45,7 +45,7 @@ class QueryArgs(BaseModel):
     reason: str = Field(default="", description="Why this query answers part of the question")
 
 
-def build_discovery_tools(db: SqlConnector, max_rows: int = 50) -> list[Tool]:
+def build_discovery_tools(db: SqlConnector, max_rows: int = 50, extra: list[Tool] | None = None) -> list[Tool]:
     def list_sources(_: NoArgs):
         return {"datasources": db.query("SHOW DATASOURCES", max_rows),
                 "lightning_databases": db.query("SHOW LIGHTNING DATABASES", max_rows)}
@@ -66,4 +66,4 @@ def build_discovery_tools(db: SqlConnector, max_rows: int = 50) -> list[Tool]:
         Tool("list_tables", "List tables inside one source.", ListTablesArgs, list_tables),
         Tool("describe_table", "Show the columns and types of <source>.<table> to find join keys across sources.", DescribeTableArgs, describe_table),
         Tool("run_query", "Run one read-only SELECT (Lightning SQL). Use it to join entities across sources.", QueryArgs, run_query),
-    ]
+    ] + (extra or [])

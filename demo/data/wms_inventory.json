@@ -1,0 +1,32 @@
+{
+  "inventory": [
+    {
+      "sku": "MUG-001",
+      "on_hand": 100,
+      "committed": 6,
+      "unputaway": 0,
+      "age_hours": 0.2
+    },
+    {
+      "sku": "LAMP-002",
+      "on_hand": 100,
+      "committed": 40,
+      "unputaway": 0,
+      "age_hours": 0.2
+    },
+    {
+      "sku": "KBD-003",
+      "on_hand": 100,
+      "committed": 27,
+      "unputaway": 0,
+      "age_hours": 0.2
+    },
+    {
+      "sku": "LOCK-004",
+      "on_hand": 100,
+      "committed": 28,
+      "unputaway": 0,
+      "age_hours": 0.2
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OmniSmartAlloc — Sales Channels</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#0B1020; --card:#141A2E; --line:#232B45; --txt:#E8ECF7; --mut:#8B93AD; }
+  * { box-sizing:border-box; margin:0 }
+  body { background:var(--bg); color:var(--txt); font-family:"Segoe UI",system-ui,sans-serif; }
+  header { padding:18px 28px; display:flex; align-items:center; gap:14px;
+    background:linear-gradient(90deg,#12172B,#1A2140); border-bottom:1px solid var(--line); }
+  .logo { font-weight:800; font-size:20px; letter-spacing:.4px }
+  .logo b { background:linear-gradient(90deg,#38BDF8,#A78BFA); -webkit-background-clip:text; background-clip:text; color:transparent }
+  .pill { font-size:11px; color:var(--mut); border:1px solid var(--line); border-radius:99px; padding:3px 10px }
+  nav a { color:#67E8F9; font-size:13px; margin-left:auto }
+  .tabs { display:flex; gap:8px; padding:16px 28px 0 }
+  .tab { padding:10px 22px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
+    background:#10152A; color:var(--mut); cursor:pointer; font-weight:700; font-size:14px }
+  .tab.active { color:#fff }
+  main { padding:24px 28px; }
+  .grid { display:grid; grid-template-columns:1.5fr 1fr; gap:20px }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px }
+  .card h3 { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--mut); margin-bottom:12px }
+  .prod { display:flex; align-items:center; gap:14px; padding:12px; border:1px solid var(--line);
+    border-radius:12px; margin-bottom:10px; background:#0E1330 }
+  .prod .t { flex:1 } .prod .t b { font-size:14px } .prod .t small { color:var(--mut); display:block }
+  .stock { font-size:12px; color:var(--mut); text-align:right }
+  .stock b { color:#fff; font-size:15px }
+  button { border:none; border-radius:9px; padding:8px 14px; font-weight:700; cursor:pointer; color:#fff }
+  input[type=number] { width:58px; padding:7px; border-radius:8px; border:1px solid var(--line);
+    background:#0B1020; color:#fff; font-weight:700 }
+  .feed div { padding:8px 10px; border-left:3px solid; margin-bottom:8px; font-size:13px;
+    background:#0E1330; border-radius:6px; color:#C9D1EA }
+  .feed small { color:var(--mut) }
+  .badge { font-size:10px; padding:2px 7px; border-radius:99px; font-weight:800 }
+  .toast { position:fixed; bottom:24px; right:24px; padding:13px 18px; border-radius:10px; font-weight:600;
+    opacity:0; transition:.3s; max-width:420px }
+  .toast.ok { background:#065F46 } .toast.err { background:#7F1D1D }
+  canvas { max-height:210px }
+  .srcrow { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap }
+  .srcbox { flex:1; min-width:150px; background:#0E1330; border:1px solid var(--line); border-radius:12px; padding:12px }
+  .srcbox h4 { font-size:12px; margin-bottom:6px } .srcbox small { color:var(--mut); font-size:11px; line-height:1.5; display:block }
+  .srcbox.sys { border-color:#38BDF8 } .srcbox.zet { border-color:#A78BFA; border-width:2px }
+  .srcbox.agent { border-color:#22C55E }
+  .arrow { align-self:center; color:#38BDF8; font-size:20px; font-weight:800 }
+  .chan-head { display:flex; align-items:baseline; gap:10px; margin-bottom:14px }
+  .chan-head small { color:var(--mut) }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Omni<b>SmartAlloc</b></div>
+  <span class="pill">4 sales channels → one shared stock pool</span>
+  <nav><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
+</header>
+<div class="tabs" id="tabs"></div>
+<main>
+  <div class="chan-head"><div><h2 id="chanName"></h2><span id="chanMargin" style="font-size:18px;font-weight:800"></span></div><small id="chanSub"></small></div>
+  <div id="chanView">
+    <div class="grid">
+      <div class="card"><h3>Place an order</h3><div id="products"></div></div>
+      <div>
+        <div class="card" style="margin-bottom:20px"><h3>Units sold on this channel (open orders)</h3><canvas id="chart"></canvas></div>
+        <div class="card"><h3>Order feed</h3><div class="feed" id="feed"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="sumView" style="display:none">
+    <div class="grid">
+      <div class="card"><h3>Open orders — remaining units, every channel</h3><canvas id="sumChart"></canvas></div>
+      <div class="card"><h3>Open order feed</h3><div class="feed" id="sumFeed"></div></div>
+    </div>
+    <div class="card" style="margin-top:20px"><h3>Where the data lives — fragmented sources, one federation</h3>
+      <div class="srcrow" id="srcDiagram"></div>
+    </div>
+    <div class="card" style="margin-top:20px"><h3>Live federated query — one Lightning SQL statement across Postgres + REST
+      <small id="fedMeta" style="text-transform:none;color:var(--mut);float:right"></small></h3>
+      <div class="grid" style="grid-template-columns:1fr 1.2fr">
+        <pre id="fedSql" style="font-family:Consolas,monospace;font-size:11px;color:#9FB0D8;background:#0B1020;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;margin:0"></pre>
+        <div><table style="width:100%;border-collapse:collapse;font-size:12.5px" id="fedTable"></table>
+          <canvas id="fedChart" style="margin-top:12px"></canvas></div>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const valueLabels={id:'valueLabels',afterDatasetsDraw(chart){
+  const {ctx}=chart; ctx.save(); ctx.font='bold 11px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  chart.data.datasets.forEach((ds,i)=>{
+    const meta=chart.getDatasetMeta(i); if(meta.hidden) return;
+    meta.data.forEach((el,j)=>{
+      const v=+ds.data[j]; if(!v) return;
+      const h=Math.abs(el.base-el.y);
+      ctx.fillStyle=h<14?'#E8ECF7':'#fff';
+      ctx.fillText(v, el.x, h<14 ? el.y-8 : (el.y+el.base)/2);
+    });
+  });
+  // stack totals: label the combined height on top of each stacked bar
+  const stacks={};
+  chart.data.datasets.forEach((ds,i)=>{ if(ds.stack) stacks[ds.stack]=1; });
+  if(Object.keys(stacks).length){
+    const n=chart.data.labels.length;
+    for(let j=0;j<n;j++){
+      let tot=0, top=null;
+      chart.data.datasets.forEach((ds,i)=>{ tot+=+ds.data[j]||0;
+        const el=chart.getDatasetMeta(i).data[j]; if(el&&(!top||el.y<top)) top=el.y; });
+      if(tot>0&&top!==null){ ctx.fillStyle='#E8ECF7'; ctx.fillText(tot, chart.getDatasetMeta(0).data[j].x, top-10); }
+    }
+  }
+  ctx.restore(); }};
+Chart.register(valueLabels);
+let S = null, cur = "Summary", chart = null, sumChart = null, fedChart = null, fedAt = 0, qtys = {};
+const $ = id => document.getElementById(id);
+const sub = {DTC:"Our own storefront", Amazon:"Marketplace — Buy Box & ranking at stake", Etsy:"Handmade / enthusiast marketplace", Walmart:"Big-box marketplace"};
+
+async function state(){ S = await (await fetch('/api/state')).json(); render(); }
+
+function tabs(){
+  $('tabs').innerHTML =
+    `<div class="tab ${cur==='Summary'?'active':''}" style="${cur==='Summary'?'background:#38BDF8;border-color:#38BDF8;color:#0B1020':''}"
+      onclick="cur='Summary';render()">Summary</div>` +
+    S.channels.map(c =>
+    `<div class="tab ${c.name===cur?'active':''}" style="${c.name===cur?`background:${c.color};border-color:${c.color}`:''}"
+      onclick="cur='${c.name}';render()">${c.name}</div>`).join('');
+}
+
+function renderSummary(){
+  $('chanName').textContent = 'Summary';
+  $('chanName').style.color = '#38BDF8';
+  $('chanMargin').textContent = '';
+  $('chanSub').textContent = 'all open orders + where the data actually lives';
+  const open = S.orders.filter(o=>o.status==='open'||o.status==='partial');
+  $('sumFeed').innerHTML = open.map(o=>
+    `<div style="border-color:${S.channels.find(c=>c.name===o.channel).color}">
+      <b>${o.remaining} of ${o.qty}× ${o.sku}</b> <span class="badge" style="background:${o.status==='open'?'#B45309':'#7C3AED'};color:#fff">${o.status}</span>
+      <br><small>${o.channel} · ${o.ts.replace('T',' ').slice(0,19)}Z · #${o.id}</small></div>`).join('')
+    || '<small style="color:var(--mut)">No open orders.</small>';
+  if (sumChart) sumChart.destroy();
+  sumChart = new Chart($('sumChart'), {type:'bar', data:{
+    labels:S.skus.map(p=>p.sku),
+    datasets:S.channels.map(c=>({label:c.name,
+      data:S.skus.map(p=>open.filter(o=>o.channel===c.name&&o.sku===p.sku).reduce((a,o)=>a+o.remaining,0)),
+      backgroundColor:c.color, stack:'o'}))},
+    options:{plugins:{legend:{labels:{color:'#C9D1EA',boxWidth:10,font:{size:10}}}},scales:{
+      x:{stacked:true,ticks:{color:'#8B93AD'},grid:{display:false}},
+      y:{stacked:true,title:{display:true,text:'units awaiting shipment',color:'#8B93AD'},ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}}}});
+  const chBox = c=>{const os=open.filter(o=>o.channel===c.name), n=os.reduce((a,o)=>a+o.remaining,0);
+    return `<div class="srcbox" style="border-color:${c.color};min-width:120px"><h4 style="color:${c.color}">${c.name}</h4>
+      <small><b>${c.source.type}</b><br>${c.source.location}<br><b>${os.length}</b> open · <b>${n}</b> units</small></div>`;};
+  const pg = S.channels.filter(c=>c.source.type.startsWith('Postgres')), rest = S.channels.filter(c=>!c.source.type.startsWith('Postgres'));
+  const inbound = S.inbound.reduce((a,s)=>a+s.qty,0);
+  $('srcDiagram').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;flex:2;min-width:260px">
+      <div class="srcbox" style="border-style:dashed"><h4>🐘 Channel order DB — Postgres (JDBC)</h4>
+        <div class="srcrow" style="margin-top:6px">${pg.map(chBox).join('')}</div></div>
+      <div class="srcbox" style="border-style:dashed"><h4>🌐 Marketplace API — REST</h4>
+        <div class="srcrow" style="margin-top:6px">${rest.map(chBox).join('')}</div></div>
+      <div class="srcbox sys"><h4>Back-office systems — REST</h4><small>WMS (stock, inbound POs) · SUPPLIER_PORTAL (reliability)<br>CHANNEL_ANALYTICS (margin, velocity) · RULES_ENGINE (locks, promos)</small></div>
+    </div>
+    <div class="arrow">➜</div>
+    <div class="srcbox zet"><h4>ZETARIS federation</h4><small>1 JDBC datasource (CHANNEL_DB, 3 tables)<br>5 Lightning REST databases<br>6 schema views (omnismart.*)<br>live SQL across every system<br>no data copied or moved</small></div>
+    <div class="arrow">➜</div>
+    <div class="srcbox agent"><h4>Nemotron agent</h4><small>compute_allocation per SKU<br>guardrailed set_channel_allocation<br>alerts + decision log<br><b>${S.alerts.length}</b> alerts · <b>${S.decisions.length}</b> decisions</small></div>
+    <div class="arrow">➜</div>
+    <div class="srcbox"><h4>Actions</h4><small>channel allocation caps<br>fulfillment / cancellation<br><b>${inbound}</b> inbound units pending</small></div>`;
+  if (Date.now()-fedAt > 15000) { fedAt = Date.now(); loadFederated(); }
+}
+
+async function loadFederated(){
+  $('fedMeta').textContent = 'querying Zetaris…';
+  const f = await (await fetch('/api/federated')).json();
+  $('fedSql').textContent = f.sql;
+  if (!f.ok) { $('fedMeta').textContent = ''; $('fedTable').innerHTML = `<tr><td style="color:#F87171">${f.error}</td></tr>`; return; }
+  $('fedMeta').textContent = `${f.rows.length} source rows · ${f.ms} ms · via Zetaris JDBC`;
+  const col = ch => (S.channels.find(c=>c.name===ch)||{}).color || '#64748B';
+  const rows = S.channels.map(c => f.rows.find(r=>r.channel===c.name) ||
+    {channel:c.name, source_system:`${c.source.type} (no rows yet)`, orders:0, units_ordered:0, units_shipped:0, units_open:0});
+  $('fedTable').innerHTML = `<tr>${['Channel','Source system','Orders','Ordered','Shipped','Open'].map(h=>`<th style="text-align:left;color:var(--mut);padding:5px 6px;border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr>` +
+    rows.map(r=>`<tr><td style="padding:6px;color:${col(r.channel)};font-weight:800">${r.channel}</td>
+      <td style="padding:6px"><small>${r.source_system}</small></td><td style="padding:6px">${r.orders}</td>
+      <td style="padding:6px">${r.units_ordered??0}</td><td style="padding:6px">${r.units_shipped??0}</td><td style="padding:6px"><b>${r.units_open??0}</b></td></tr>`).join('');
+  if (fedChart) fedChart.destroy();
+  fedChart = new Chart($('fedChart'), {type:'bar', data:{labels:rows.map(r=>r.channel),
+    datasets:[{label:'open',data:rows.map(r=>+r.units_open||0),backgroundColor:rows.map(r=>col(r.channel))},
+              {label:'shipped',data:rows.map(r=>+r.units_shipped||0),backgroundColor:rows.map(r=>col(r.channel)+'66')}]},
+    options:{plugins:{legend:{labels:{color:'#C9D1EA'}}},scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}}});
+}
+
+function render(){
+  tabs();
+  const isSum = cur==='Summary';
+  $('chanView').style.display = isSum?'none':'';
+  $('sumView').style.display = isSum?'':'none';
+  if (isSum) return renderSummary();
+  $('chanName').textContent = cur;
+  $('chanName').style.color = S.channels.find(c=>c.name===cur).color;
+  const src = S.channels.find(c=>c.name===cur).source;
+  const er = S.economics.find(e=>e.channel===cur), pr = S.skus.find(p=>p.sku===er?.sku)?.price;
+  $('chanMargin').textContent = er && pr ? `${Math.round(er.unit_margin/pr*100)}% margin` : '';
+  $('chanMargin').style.color = S.channels.find(c=>c.name===cur).color;
+  $('chanSub').textContent = `${sub[cur]} · orders stored in ${src.type}: ${src.location}`;
+  $('products').innerHTML = S.skus.map(p => {
+    const free = p.on_hand - p.committed;
+    const cap = p.allocation ? p.allocation[cur] : null;
+    const open = p.open_by_channel[cur] || 0;
+    return `<div class="prod">
+      <div class="t"><b>${p.title}</b><small>${p.sku} · $${p.price ?? '—'}</small></div>
+      <div class="stock">${cap===null?'':`Allocated <b>${cap}</b> (${open} open)`}</div>
+      <input type="number" id="q_${p.sku}" value="${qtys[cur+'_'+p.sku]||1}" min="1" max="${free}" oninput="qtys['${cur}_${p.sku}']=+this.value">
+      <button style="background:${S.channels.find(c=>c.name===cur).color}" onclick="order('${p.sku}')">Buy</button>
+    </div>`;
+  }).join('');
+  const orders = S.orders.filter(o => o.channel===cur);
+  $('feed').innerHTML = orders.length ? orders.slice(0,10).map(o =>
+    `<div style="border-color:${S.channels.find(c=>c.name===o.channel).color}">
+      <b>${o.qty}× ${o.sku}</b> <span class="badge" style="background:${({open:'#B45309',partial:'#7C3AED',fulfilled:'#15803D',cancelled:'#B91C1C'})[o.status]};color:#fff">${o.status}</span>${o.fulfilled_qty?` <small>shipped ${o.fulfilled_qty}/${o.qty}</small>`:''}
+      <br><small>${o.ts.replace('T',' ').slice(0,19)}Z · #${o.id}</small></div>`).join('')
+    : '<small style="color:var(--mut)">No orders yet on this channel.</small>';
+  const labels = S.skus.map(p=>p.sku), data = S.skus.map(p=>p.open_by_channel[cur]||0);
+  if (chart) chart.destroy();
+  chart = new Chart($('chart'), {type:'bar', data:{labels, datasets:[{data,
+    backgroundColor:S.channels.find(c=>c.name===cur).color}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}}});
+}
+
+async function order(sku){
+  const qty = +$('q_'+sku).value;
+  const r = await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({channel:cur,sku,qty})});
+  const j = await r.json();
+  toast(r.ok ? `Order placed: ${qty}× ${sku} on ${cur} → saved to ${j.stored_in.type} ${j.stored_in.location}` : j.error, r.ok);
+  state();
+}
+function toast(msg, ok){ const t=$('toast'); t.textContent=msg; t.className='toast '+(ok?'ok':'err');
+  t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4200); }
+state(); setInterval(state, 8000);
+</script>
+</body>
+</html>
