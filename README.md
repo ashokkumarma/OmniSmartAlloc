@@ -39,23 +39,31 @@ demo/
   mock_apis.py        REST source APIs (port 8901)
   order_stores.py     per-channel order persistence
   server.py           demo UI server (port 8902)
-  web/                channels.html (storefronts) + ops.html (cockpit)
+  app/                React + TypeScript + GSAP UI (built to app/dist, served by server.py)
+  web/                the original channels.html + ops.html (kept at /classic/*; used if the app is not built)
   register_sources.sql / register_channel_sources.sql   Zetaris registration (explicit approval)
   outbox/             agent action log (allocations, alerts, decisions)
 scripts/              setup.py, validate_stack.py, register_demo_sources.py
-tests/                38 offline tests (fake connectors; no external deps)
+tests/                46 offline tests (fake connectors; no external deps)
 ```
 
-## Prerequisites
+## Run it locally
 
-- Python 3.11+ (Windows: `py -3.12`)
-- Docker Desktop (Zetaris stack + channel DB)
-- Java JDK 11+ with `JAVA_HOME` set (for the Zetaris JDBC driver)
-- The Zetaris platform bundle extracted at `./zetaris-platform/` (see hackathon materials; includes
-  `jdbc/ndp-jdbc-driver-*.jar`)
-- An NVIDIA NIM API key (https://build.nvidia.com) — model used: `nvidia/nemotron-3-ultra-550b-a55b`
+### Prerequisites
 
-## Installation
+| Tool | Version | Needed for |
+|---|---|---|
+| Python | 3.11+ (tested on 3.12 and 3.14) | everything |
+| Node.js | 20+ with npm (tested on 24) | builds the UI on first run; without it the original pages are served |
+| Docker Desktop | current | channel order DB (any Postgres 16 on `127.0.0.1:5433` also works) and the Zetaris stack |
+| Java JDK | 11+ (tested on 21), with `JAVA_HOME` set | Zetaris JDBC driver (agent runs only) |
+| Zetaris platform bundle | from the hackathon materials, extracted to `./zetaris-platform/` | agent runs and the federated query panel |
+| NVIDIA NIM API key or Meterless Runtime token | — | agent runs |
+
+The storefront and ops screens, Reset demo, Scenario 1 and order flows need only Python and Postgres.
+Agent runs need Zetaris and a model key as well.
+
+### Setup
 
 ```bash
 py -3.12 -m venv .venv
@@ -64,9 +72,26 @@ py -3.12 -m venv .venv
 
 # or run the idempotent setup script (venv + deps + checks):
 py -3.12 scripts/setup.py
+
+copy .env.example .env      # Windows; cp on macOS/Linux. Then fill in the values below.
 ```
 
-Create `.env` from `.env.example` and fill in:
+### Run
+
+```bash
+.venv\Scripts\python.exe scripts/start_demo.py
+```
+
+This builds the UI on first run (`npm ci` and `npm run build` in `demo/app`), starts the channel order DB
+(skipped if one already answers on port 5433), the source REST APIs on port 8901, and the demo UI.
+Open **http://localhost:8902** for the landing page, or **http://localhost:8902/app** for the app, and choose **Reset demo** in the sidebar once to load the baseline orders.
+
+To work on the UI with hot reload: keep the demo running, then `cd demo/app && npm install && npm run dev`
+and open http://localhost:5173 (API calls are forwarded to port 8902).
+
+### Configuration
+
+Fill in `.env`:
 
 | Variable | Where to get it |
 |---|---|
@@ -76,7 +101,7 @@ Create `.env` from `.env.example` and fill in:
 | `ZETARIS_JDBC_JAR` | `zetaris-platform/jdbc/ndp-jdbc-driver-*.jar` |
 | `CHANNELS_DB_PASSWORD` | any local password for the demo order DB (default `omni_demo_pw`) |
 
-## Run the demo stack
+### Run each service separately
 
 ```bash
 # 1. Zetaris platform
@@ -92,7 +117,7 @@ docker compose -f demo/docker-compose.channels.yml up -d
 .venv\Scripts\python.exe demo/server.py
 ```
 
-One command for steps 2–4: `.venv\Scripts\python.exe scripts/start_demo.py`
+`scripts/start_demo.py` runs steps 2–4 for you.
 
 First-time Zetaris source registration (writes to the instance — run once):
 
@@ -103,13 +128,23 @@ First-time Zetaris source registration (writes to the instance — run once):
 
 ## Use it
 
-- `http://localhost:8902/channels` — place orders on DTC / Amazon / Etsy / Walmart tabs
-  (each writes to that channel's own system: 3 Postgres tables + 1 REST API)
-- `http://localhost:8902/ops` — Dashboard / Orders / Inventory tabs: federated stock view,
-  inbound shipments with projected dates, alerts, and **▶ Run allocation cycle** (runs the real agent)
+A landing page at `http://localhost:8902/` and the app at `/app`, with a sidebar and a search palette (Ctrl+K / ⌘K). **Auto / Light / Dark** in the top bar switches the theme; Auto follows the OS.
+
+| Section | URL | What it does |
+|---|---|---|
+| Landing page | `/` | What the product does, with a live 3D view of the current channel caps |
+| Overview | `/app` (also `/ops`) | KPIs, what needs attention, stock health per SKU, charts, recent orders, the live **Agent run** trace |
+| Orders | `/orders` | Every order in one queue: filter, search, fulfil, split (partial), cancel, bulk actions |
+| Inventory | `/inventory`, `/inventory/<SKU>` | Stock per SKU, channel allocations, inbound shipments with projected arrival, days of cover. A product page shows its cap rails, inbound POs, agent notes and open orders |
+| Agent | `/agent` | How channels are ranked, every decision with its savings maths, **Approve** / **Deny** held changes |
+| Storefronts | `/storefronts` (also `/channels`) | Place orders on DTC / Amazon / Etsy / Walmart; each writes to that channel's own system (3 Postgres tables + 1 REST API) |
+| Data sources | `/sources` | The fragmented-sources-to-Zetaris diagram and the live federated SQL query |
+
+**Run allocation cycle** (top right) runs the real agent. The Agent run card shows its status (queued, running, waiting for you, done, failed), elapsed time, each step, a lamp for every system it has read, and **Run again** after a failure. The original pages are still served at
+`/classic/channels` and `/classic/ops`.
 - CLI: `.venv\Scripts\python.exe -m src.main "Run the allocation cycle for all four SKUs" --show-trace`
 - Validate: `.venv\Scripts\python.exe scripts\validate_stack.py` → expect 20 PASS / 0 FAIL
-- Tests: `.venv\Scripts\python.exe -m pytest` → 38 passed
+- Tests: `.venv\Scripts\python.exe -m pytest` → 46 passed
 
 ## Design guarantees
 

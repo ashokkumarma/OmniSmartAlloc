@@ -6,6 +6,7 @@ Each component is started in the background; Ctrl+C stops the UI but leaves the 
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 import time
@@ -14,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PY = sys.executable
+APP = ROOT / "demo" / "app"
 
 
 def _wait(url: str, tries: int = 60) -> bool:
@@ -26,11 +28,44 @@ def _wait(url: str, tries: int = 60) -> bool:
     return False
 
 
+def _db_reachable() -> bool:
+    sys.path.insert(0, str(ROOT / "demo"))
+    import order_stores
+    import psycopg
+    try:
+        psycopg.connect(order_stores.DB_URL, connect_timeout=3).close()
+        return True
+    except psycopg.OperationalError:
+        return False
+
+
+def _build_app() -> None:
+    """Build the React UI (demo/app) on first run. Without Node the original pages are served instead."""
+    if (APP / "dist" / "index.html").is_file():
+        print("      UI already built")
+        return
+    npm = shutil.which("npm")
+    if not npm:
+        print("      Node.js not found: serving the original pages. Install Node 20+ and rerun for the new UI.")
+        return
+    try:
+        if not (APP / "node_modules").is_dir():
+            subprocess.run([npm, "ci", "--no-fund", "--no-audit"], cwd=APP, check=True)
+        subprocess.run([npm, "run", "build"], cwd=APP, check=True)
+    except subprocess.CalledProcessError:
+        print("      UI build failed: serving the original pages. Run `npm run build` in demo/app to see why.", file=sys.stderr)
+
+
 def main() -> int:
+    print("[0/3] UI build...")
+    _build_app()
     print("[1/3] channel order DB (Postgres)...")
-    subprocess.run(["docker", "compose", "-f", "demo/docker-compose.channels.yml", "up", "-d", "--wait"],
-                   cwd=ROOT, check=True)
-    print("      omni-channels-db healthy (host port 5433)")
+    if _db_reachable():
+        print("      already reachable on host port 5433, skipping docker compose")
+    else:
+        subprocess.run(["docker", "compose", "-f", "demo/docker-compose.channels.yml", "up", "-d", "--wait"],
+                       cwd=ROOT, check=True)
+        print("      omni-channels-db healthy (host port 5433)")
 
     print("[2/3] source REST APIs on :8901...")
     subprocess.Popen([PY, "demo/mock_apis.py", "8901"], cwd=ROOT,
@@ -42,8 +77,8 @@ def main() -> int:
 
     print("[3/3] demo UI on :8902...")
     print()
-    print("  Channels : http://localhost:8902/channels")
-    print("  Ops      : http://localhost:8902/ops")
+    print("  App      : http://localhost:8902/")
+    print("  (the original pages stay at /classic/channels and /classic/ops)")
     print()
     return subprocess.call([PY, "demo/server.py"], cwd=ROOT)
 

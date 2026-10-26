@@ -163,6 +163,7 @@ def run() -> dict:
              "sellable_units": sum(CAPS.values()), "shared_pool": False, "stepped_by_25pct_limit": False,
              "sold_in_window": sold_current, "remaining": remaining, "note": SEED_NOTE,
              "reason": "Window-start allocation for the 14-day planning window"}
+    OUTBOX.mkdir(parents=True, exist_ok=True)  # gitignored, so absent on a fresh clone
     with (OUTBOX / "allocations.jsonl").open("a", encoding="utf-8") as f:
         f.write(json.dumps(stamp) + "\n")
 
