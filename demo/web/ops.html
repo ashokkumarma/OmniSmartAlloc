@@ -15,12 +15,12 @@
   nav a { color:#67E8F9; font-size:13px }
   .grow { margin-left:auto }
   button { border:none; border-radius:9px; padding:9px 18px; font-weight:700; cursor:pointer }
-  #runBtn { background:linear-gradient(90deg,#38BDF8,#A78BFA); color:#0B1020 }
+  #runBtn { background:linear-gradient(90deg,#38BDF8,#A78BFA); color:#E4E9F7 }
   #runBtn:disabled { opacity:.5; cursor:wait }
   .tabs { display:flex; gap:8px; padding:14px 28px 0 }
   .tab { padding:10px 24px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
     background:#10152A; color:var(--mut); cursor:pointer; font-weight:700; font-size:14px }
-  .tab.active { background:#38BDF8; border-color:#38BDF8; color:#0B1020 }
+  .tab.active { background:#38BDF8; border-color:#38BDF8; color:#E4E9F7 }
   main { padding:22px 28px; display:flex; flex-direction:column; gap:18px }
   .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px }
   .kpi { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px }
@@ -33,9 +33,9 @@
   table { width:100%; border-collapse:collapse; font-size:12.5px }
   th { color:var(--mut); text-align:left; font-weight:600; padding:5px 8px; border-bottom:1px solid var(--line) }
   td { padding:6px 8px; border-bottom:1px solid #1A2140 }
-  .st { font-weight:800; font-size:11px; padding:2px 8px; border-radius:99px; color:#0B1020 }
+  .st { font-weight:800; font-size:11px; padding:2px 8px; border-radius:99px; color:#E4E9F7 }
   .status { font-weight:800; font-size:10px; padding:2px 8px; border-radius:99px; color:#fff }
-  .bar { height:7px; border-radius:99px; background:#0B1020; overflow:hidden; display:flex }
+  .bar { height:7px; border-radius:99px; background:#10152A; overflow:hidden; display:flex }
   .bar i { display:block; height:100% }
   .feed div { padding:8px 10px; border-left:3px solid; margin-bottom:8px; font-size:12.5px;
     background:#0E1330; border-radius:6px; color:#C9D1EA }
@@ -43,6 +43,51 @@
   .mono { font-family:Consolas,monospace; font-size:11px; white-space:pre-wrap; color:#9FB0D8 }
   canvas { max-height:230px }
   .late { color:#F87171; font-weight:700 }
+  #alBadge { background:#F59E0B; color:#E4E9F7; border-radius:99px; padding:1px 8px; font-size:11px; margin-left:6px }
+  .alchips { display:flex; gap:8px; flex-wrap:wrap }
+  .chip { border:1px solid var(--line); background:#10152A; color:var(--mut); border-radius:99px; padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer }
+  .chip b { color:#fff; margin-left:6px }
+  .chip.on { background:#1E2A4A; color:#fff; border-color:#38BDF8 }
+  .evgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(540px,1fr)); gap:16px }
+  .ev { --c:#22C55E; background:linear-gradient(180deg,#171E36,#131A2F); border:1px solid var(--line); border-left:4px solid var(--c); border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; gap:12px }
+  .ev.notify { --c:#38BDF8 } .ev.need { --c:#F59E0B } .ev.done { --c:#10B981 } .ev.deny { --c:#EF4444 }
+  .moves { display:flex; flex-direction:column; gap:6px; background:#0E1330; border-radius:8px; padding:8px 12px; font-size:13px; font-weight:700; color:#E4E9F7 }
+  .moves .mv { display:flex; align-items:center; gap:10px }
+  .mv-tag { font-size:10px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; border-radius:99px; padding:2px 10px; width:64px; text-align:center }
+  .mv-tag.red { background:#7F1D1D; color:#FCA5A5 } .mv-tag.grn { background:#14532D; color:#86EFAC } .mv-tag.gry { background:#334155; color:#94A3B8 }
+  .info-ic { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:99px;
+             border:1px solid var(--mut); color:var(--mut); font-size:10px; font-style:normal; font-weight:800; cursor:pointer; margin-left:6px; vertical-align:text-bottom }
+  .info-ic:hover { color:#67E8F9; border-color:#67E8F9 }
+  .calc { display:none; font-size:12px; color:#C9D1EA; background:#0E1330; border-radius:8px; padding:10px 12px; line-height:1.6 }
+  .calc.show { display:block }
+  .savebox { font-size:11px; color:var(--mut); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; font-weight:800 }
+  .savewrap { background:#0E1330; border-radius:10px; padding:12px 14px }
+  .savegrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px }
+  .savecard { border-radius:8px; padding:10px 12px; font-size:12px; line-height:1.6 }
+  .savecard.without { background:#1E1420; border:1px solid #4C1D1D }
+  .savecard.with { background:#13201A; border:1px solid #14532D }
+  .savecard h4 { margin:0 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.6px }
+  .savecard.without h4 { color:#FCA5A5 } .savecard.with h4 { color:#86EFAC }
+  .savecard .tot { font-size:17px; font-weight:800; color:#fff; margin-top:6px }
+  .savenet { text-align:center; padding-top:4px; border-top:1px dashed var(--line) }
+  .savenet .amt { font-size:22px; font-weight:800 }
+  .savenet .amt.pos { color:#86EFAC } .savenet .amt.neg { color:#FCA5A5 }
+  .ech { display:flex; align-items:center; gap:12px; border-top:1px solid var(--line); padding-top:10px }
+  .ech-why { font-size:12.5px; color:#C9D1EA; line-height:1.45; padding-left:2px }
+  .ev-why { font-size:13px; color:#C9D1EA; line-height:1.5; background:#10152A; border-radius:8px; padding:10px 14px }
+  .ev-why small.l { margin-bottom:4px }
+  .ev-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+  .ev-time { color:var(--mut); font-size:12px; margin-right:auto }
+  .pill { font-size:11px; font-weight:800; padding:3px 10px; border-radius:99px; border:1px solid var(--line); background:#0E1330 }
+  .badge2 { font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; color:#E4E9F7; background:var(--c) }
+  .ev-main { display:grid; grid-template-columns:1.3fr 1fr 1.2fr .7fr 1fr; gap:12px; align-items:end }
+  .ev small.l { display:block; color:var(--mut); font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:3px }
+  .cap { font-size:24px; font-weight:800; white-space:nowrap } .cap i { color:var(--mut); font-style:normal; font-weight:400; margin:0 6px }
+  .delta { font-size:12px; font-weight:800; padding:2px 8px; border-radius:99px; margin-left:8px; vertical-align:middle }
+  .delta.up { background:#14532D; color:#86EFAC } .delta.down { background:#7C2D12; color:#FDBA74 }
+  .kv { font-size:13px; font-weight:600 }
+  .ev-text { display:grid; grid-template-columns:1fr 1.4fr; gap:14px; font-size:12.5px; color:#C9D1EA; line-height:1.45; border-top:1px solid var(--line); padding-top:12px }
+  .ev-foot { display:flex; align-items:center; gap:12px; border-top:1px dashed var(--line); padding-top:12px; font-size:12px; color:var(--mut); margin-top:auto }
   .sec { color:var(--mut); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin:10px 0 6px }
   .mback { position:fixed; inset:0; background:rgba(5,8,20,.72); backdrop-filter:blur(3px); display:none;
     align-items:center; justify-content:center; z-index:50 }
@@ -50,7 +95,7 @@
     box-shadow:0 20px 60px rgba(124,58,237,.35) }
   .modal h4 { font-size:16px; margin-bottom:4px } .modal label { display:block; font-size:12px; color:var(--mut); margin:14px 0 6px }
   .modal input, .modal textarea { width:100%; padding:9px 11px; border-radius:9px; border:1px solid var(--line);
-    background:#0B1020; color:#fff; font:inherit }
+    background:#10152A; color:#fff; font:inherit }
   .modal input { font-size:20px; font-weight:800 }
   .pmstats { font-size:11.5px; color:var(--mut); margin-top:8px; line-height:1.6 }
   .pmerr { font-size:11.5px; color:#F87171; min-height:16px; margin-top:4px }
@@ -64,6 +109,9 @@
   <span class="pill">centralized stock via Zetaris</span>
   <span class="pill">decisions by Nemotron agent</span>
   <div class="grow"></div>
+  <button id="scn1Btn" style="background:linear-gradient(90deg,#C4B5FD,#8B5CF6);color:#0B1020;margin-right:10px" onclick="scenario1()">Scenario 1: Auto Apply</button>
+  <button id="histBtn" style="background:linear-gradient(90deg,#67E8F9,#38BDF8);color:#0B1020;margin-right:10px" onclick="genHistory()">⟳ Generate history orders</button>
+  <button id="resetBtn" style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:10px" onclick="resetDemo()">↺ Reset demo</button>
   <button id="runBtn" onclick="runAgent()">▶ Run allocation cycle</button>
   <nav style="margin-left:14px"><a href="/channels">← Channel storefronts</a></nav>
 </header>
@@ -71,6 +119,7 @@
   <div class="tab" id="tabDashboard" onclick="show('dashboard')">Dashboard</div>
   <div class="tab" id="tabOrders" onclick="show('orders')">Orders</div>
   <div class="tab" id="tabInventory" onclick="show('inventory')">Inventory</div>
+  <div class="tab" id="tabAgentLog" onclick="show('agentlog')">Agent log <span id="alBadge" style="display:none"></span></div>
 </div>
 <main>
   <div id="pgDashboard" style="display:flex;flex-direction:column;gap:18px">
@@ -90,6 +139,15 @@
         <button style="background:#B91C1C;padding:4px 12px;font-size:11px;color:#fff" onclick="settleAll('cancel')">Cancel all open</button>
       </span></h3><div class="feed" id="openOrders"></div></div>
     <div class="card" id="closedCard"><h3>Settled orders (fulfilled / cancelled) <small id="closedHint" style="text-transform:none;color:var(--mut)"></small></h3><div class="feed" id="closedOrders"></div></div>
+  </div>
+
+  <div id="pgAgentLog" style="display:flex;flex-direction:column;gap:18px">
+    <div class="card"><h3>How the agent ranks channels — margin-adjusted demand score</h3>
+      <div id="scoreGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+      <small style="color:var(--mut)">Score = Unit margin × Demand confidence — the agent allocates to channels in order of higher score. Higher the score, better the savings.</small>
+    </div>
+    <div class="alchips" id="alChips"></div>
+    <div class="evgrid" id="evCards"></div>
   </div>
 
   <div id="pgInventory" style="display:flex;flex-direction:column;gap:18px">
@@ -144,17 +202,23 @@ Chart.register(valueLabels);
 let S=null, charts={}, page='orders', ofilter='all';
 const $=id=>document.getElementById(id);
 const COL={DTC:'#7C3AED',Amazon:'#FF9900',Etsy:'#F1641E',Walmart:'#0071CE'};
-const chanColor=c=>COL[c]||'#64748B';
+const chanColor=c=>COL[c]||'#8B93AD';
 const grid={x:{ticks:{color:'#8B93AD'},grid:{display:false}},y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}};
 
 function show(p){ page=p;
-  for(const t of ['Dashboard','Orders','Inventory'])
+  for(const t of ['Dashboard','Orders','Inventory','AgentLog'])
     $('tab'+t).className='tab'+(p===t.toLowerCase()?' active':'');
-  for(const t of ['Dashboard','Orders','Inventory'])
+  for(const t of ['Dashboard','Orders','Inventory','AgentLog'])
     $('pg'+t).style.display=p===t.toLowerCase()?'flex':'none';
   render();
 }
-async function state(){ S=await (await fetch('/api/state')).json(); render(); }
+let AL=[], alFilter='all';
+async function state(){
+  const [s,l]=await Promise.all([fetch('/api/state'),fetch('/api/agent-log')]);
+  S=await s.json(); AL=(await l.json()).events; render();
+  const n=new Set(AL.filter(e=>e.status==='pending').map(e=>e.approval_id)).size, b=$('alBadge');
+  b.style.display=n?'inline':'none'; b.textContent=n;
+}
 function kpi(l,v){return `<div class="kpi"><b>${v}</b><small>${l}</small></div>`;}
 function kpiF(l,v,f){return `<div class="kpi${ofilter===f?' sel':''}" data-f="${f}" onclick="pickFilter('${f}')"><b>${v}</b><small>${l}</small></div>`;}
 function pickFilter(f){ ofilter = ofilter===f ? 'all' : f; render(); }
@@ -189,8 +253,8 @@ function renderDashboard(){
   if(charts.chOpen)charts.chOpen.destroy();
   charts.chOpen=new Chart($('chOpen'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
     datasets:chans.map(c=>({label:c,data:S.skus.map(p=>p.open_by_channel[c]||0),backgroundColor:chanColor(c),stack:'o'}))},
-    options:{scales:{x:{...grid.x,stacked:true},y:{...grid.y,stacked:true}},
-      plugins:{legend:{labels:{color:'#C9D1EA',boxWidth:10,font:{size:10}}}}}});
+    options:{layout:{padding:{top:44}},scales:{x:{...grid.x,stacked:true},y:{...grid.y,stacked:true}},
+      plugins:{legend:{padding:24,labels:{color:'#C9D1EA'},boxWidth:10,font:{size:10}}}}});
   const mix={'awaiting shipment':0,shipped:0,cancelled:0};
   S.orders.forEach(o=>{ mix.shipped+=o.fulfilled_qty||0;
     if(o.status==='open'||o.status==='partial') mix['awaiting shipment']+=o.remaining;
@@ -252,7 +316,7 @@ function renderInventory(){
   charts.alloc=new Chart($('alloc'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
     datasets:[...chans.map(c=>({label:c+' allowance',data:mk(p=>p.allocation?p.allocation[c]||0:0),backgroundColor:chanColor(c),stack:'a'})),
       ...chans.map(c=>({label:c+' open',data:mk(p=>p.open_by_channel[c]||0),backgroundColor:chanColor(c)+'55',borderColor:chanColor(c),borderWidth:1,borderSkipped:false,stack:'c'}))]},
-    options:{scales:grid,plugins:{legend:{labels:{color:'#C9D1EA',boxWidth:10,font:{size:10}}}}}});
+    options:{layout:{padding:{top:44}},scales:grid,plugins:{legend:{padding:24,labels:{color:'#C9D1EA'},boxWidth:10,font:{size:10}}}}});
   if(charts.doc)charts.doc.destroy();
   charts.doc=new Chart($('doc'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
     datasets:[{label:'Days of cover',data:mk(p=>p.days_of_cover??0),backgroundColor:S.skus.map(p=>p.state_color)}]},
@@ -264,8 +328,103 @@ function renderInventory(){
   $('agenttail').textContent = S.agent.running?'Agent is running…':'';
 }
 
+const fmtTs=ts=>new Date(ts).toLocaleString('en-US',{timeZone:'UTC',month:'2-digit',day:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}).replace(', ',' ')+' UTC';
+let scoreCharts=[];
+function renderScoreCard(){
+  const grid=$('scoreGrid');
+  const skus=(S.skus||[]).map(p=>p.sku);
+  grid.innerHTML=skus.map(sku=>{
+    const ev=AL.find(e=>e.sku===sku);
+    const chans=(ev?ev.channels
+      :S.economics.filter(r=>r.sku===sku).map(r=>({channel:r.channel,conf:r.demand_confidence,margin:r.unit_margin,score:+(r.unit_margin*r.demand_confidence).toFixed(1)})))
+      .sort((a,b)=>b.score-a.score);
+    const order=chans.map((c,i)=>`<b style="color:${chanColor(c.channel)}">${i+1}. ${esc(c.channel)}</b>`).join(' → ');
+    return `<div><div style="font-size:15px;font-weight:800;color:#E4E9F7;text-align:center;margin-bottom:2px">${esc(sku)}</div>
+      <div style="font-size:12px;text-align:center;margin-bottom:4px">${order}</div>
+      <div style="height:150px"><canvas id="sc-${sku}"></canvas></div></div>`;}).join('');
+  scoreCharts.forEach(c=>c.destroy()); scoreCharts=[];
+  skus.forEach(sku=>{
+    const ev=AL.find(e=>e.sku===sku);
+    const chans=(ev?ev.channels
+      :S.economics.filter(r=>r.sku===sku).map(r=>({channel:r.channel,conf:r.demand_confidence,margin:r.unit_margin,score:+(r.unit_margin*r.demand_confidence).toFixed(1)})))
+      .sort((a,b)=>b.score-a.score);
+    const xs=chans.map(c=>c.conf);
+    const xmin=Math.max(0,Math.floor(Math.min(...xs)*10-1)/10);
+    const xmax=Math.ceil(Math.max(...xs)*10+2)/10;
+    scoreCharts.push(new Chart($('sc-'+sku),{type:'scatter',
+      data:{datasets:[{data:chans.map(c=>({x:c.conf,y:c.margin,c:c.channel,s:c.score,rank:chans.indexOf(c)+1})),pointRadius:7,pointHoverRadius:9,
+        backgroundColor:chans.map(c=>chanColor(c.channel)),borderColor:'#fff',borderWidth:1}]},
+      options:{maintainAspectRatio:false,layout:{padding:{right:4}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:p=>`#${p.raw.rank} ${p.raw.c}: margin $${p.raw.y}, confidence ${p.raw.x} → score ${p.raw.s}`}}},
+        scales:{x:{min:xmin,max:xmax,title:{display:true,text:'demand confidence',color:'#8B93AD',font:{size:12}},ticks:{color:'#8B93AD',font:{size:10}},grid:{color:'#232B45'}},
+                y:{title:{display:true,text:'margin $/unit',color:'#8B93AD',font:{size:12}},ticks:{color:'#8B93AD',font:{size:10},callback:v=>'$'+v},grid:{color:'#232B45'}}}},
+      plugins:[{id:'ptLabels',afterDatasetsDraw(ch){
+        const meta=ch.getDatasetMeta(0);
+        meta.data.forEach((el,i)=>{const p=ch.data.datasets[0].data[i];
+          const label=`#${p.rank} ${p.c}`;
+          ch.ctx.fillStyle='#E8ECF7';ch.ctx.font='700 9px Inter,system-ui';
+          const w=ch.ctx.measureText(label).width;
+          const x=el.x+9+w>ch.width-4?el.x-w-9:el.x+9;
+          ch.ctx.fillText(label,x,el.y+3);});}}]}));
+  });
+}
+const evClass=e=>({approved:'done',pending:'need',denied:'deny'})[e.status]||(e.channels.some(c=>c.row_approval==='Auto-apply and notify')?'notify':'');
+const evGroup=e=>({pending:'Needs approval',approved:'Approved',denied:'Denied'})[e.status]||'Auto-apply';
+const savTotal=e=>({pending:`up to $${e.net_savings} if approved`,approved:`$${e.net_savings}`,denied:`$${e.net_savings} declined`})[e.status]||(e.net_savings?`+$${e.net_savings}`:'—');
+function renderAgentLog(){
+  renderScoreCard();
+  const groups=['Auto-apply','Needs approval','Approved','Denied'];
+  const count=g=>AL.filter(e=>evGroup(e)===g).length;
+  $('alChips').innerHTML=[['all','All',AL.length],...groups.map(g=>[g,g,count(g)])].map(([k,l,n])=>
+    `<span class="chip${alFilter===k?' on':''}" onclick="alFilter='${k}';renderAgentLog()">${l}<b>${n}</b></span>`).join('');
+  const rows=AL.filter(e=>alFilter==='all'||evGroup(e)===alFilter);
+  $('evCards').innerHTML=rows.map(e=>{
+    const cls=evClass(e);
+    const chanRows=e.channels.map(c=>{
+      const d=c.cap_to-c.cap_from, col=chanColor(c.channel);
+      return `<div class="ech"><span class="pill" style="color:${col};border-color:${col}">${esc(c.channel)}</span>
+        <div class="cap" style="font-size:18px">${c.cap_from}<i>→</i>${c.cap_to}<span class="delta ${d>0?'up':'down'}">${d>0?'+':''}${d}</span></div>
+        <span class="kv" style="font-size:12px;color:var(--mut)">${esc(c.savings)}<i class="info-ic" onclick="toggleCalc('${e.id}-${c.channel}')">i</i></span></div>
+      <div class="calc" id="calc-${e.id}-${c.channel}">${c.calc.map(l=>esc(l)).join('<br>')}</div>`;}).join('');
+    const foot=e.status==='pending'
+      ? `<div class="ev-foot"><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;padding:8px 18px" onclick="approveEv('${e.approval_id}')">✔ Approve</button>
+             <button style="background:linear-gradient(90deg,#FCA5A5,#EF4444);color:#0B1020;padding:8px 18px" onclick="denyEv('${e.approval_id}')">✖ Deny</button>
+             <span>Nothing is written until you approve — your decision applies the <b>whole</b> ${e.sku} proposal.</span></div>`
+      : e.status==='approved'?`<div class="ev-foot"><span style="color:#6EE7B7;font-weight:700">✔ Approved${e.approved_ts?' '+fmtTs(e.approved_ts):''} — allocation written</span></div>`
+      : e.status==='denied'?`<div class="ev-foot"><span style="color:#FCA5A5;font-weight:700">✖ Denied${e.approved_ts?' '+fmtTs(e.approved_ts):''}${e.deny_reason?` — ${esc(e.deny_reason)}`:''}. The agent sees this reason on its next run.</span></div>`:'';
+    return `<div class="ev ${cls}">
+      <div class="ev-top"><span class="ev-time">${fmtTs(e.ts)}</span><span class="pill">${esc(e.sku)}</span>
+        ${e.channels.map(c=>`<span class="pill" style="color:${chanColor(c.channel)};border-color:${chanColor(c.channel)};font-size:10px">${esc(c.channel)}</span>`).join('')}
+        <span class="badge2">${esc(e.approval)}</span></div>
+      <div class="savewrap">
+        <div class="savebox">Projected saving calculation</div>
+        <div class="savegrid">
+          <div class="savecard without"><h4>Without this change</h4>${e.without_change.lines.map(l=>esc(l)).join('<br>')}<div class="tot">$${e.without_change.total}</div></div>
+          <div class="savecard with"><h4>With this change</h4>${e.with_change.lines.map(l=>esc(l)).join('<br>')}<div class="tot">$${e.with_change.total}</div></div>
+        </div>
+        <div class="savenet">Projected savings from this change <span class="amt ${e.net_savings>=0?'pos':'neg'}">${e.net_savings>=0?'+':''}$${e.net_savings}</span>
+          <div style="font-size:11px;color:var(--mut);margin-top:2px">assumes the units sell on whichever channel gets them</div></div>
+      </div>
+      <div class="ev-why"><small class="l">Why this change</small>${(Array.isArray(e.why)?e.why:[e.why]).map(b=>`<div style="margin-top:3px">• ${esc(b)}</div>`).join('')}</div>
+      <div class="moves">${(e.moves.reduce||[]).length?`<div class="mv"><span class="mv-tag red">Reduce</span>${e.moves.reduce.map(m=>`<span style="color:${chanColor(m.channel)}">${m.channel}</span> −${m.units}`).join(' · ')}</div>`:''}${(e.moves.add||[]).length?`<div class="mv"><span class="mv-tag grn">Add</span>${e.moves.add.map(m=>`<span style="color:${chanColor(m.channel)}">${m.channel}</span> +${m.units}`).join(' · ')}</div>`:''}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">${chanRows}</div>
+      ${foot}</div>`;}).join('')
+    || '<small style="color:var(--mut)">No agent events yet. Click “Run allocation cycle” — every change the agent proposes or applies shows up here.</small>';
+}
+function toggleCalc(id){ document.getElementById('calc-'+id).classList.toggle('show'); }
+async function approveEv(id){
+  const r=await fetch(`/api/approvals/${id}/approve`,{method:'POST'});
+  if(!r.ok) alert((await r.json()).error); state();
+}
+async function denyEv(id){
+  const reason=prompt('Why are you denying this change? The agent sees this reason on its next run.');
+  if(reason===null) return;
+  if(!reason.trim()){ alert('A reason is required to deny.'); return; }
+  const r=await fetch(`/api/approvals/${id}/deny`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});
+  if(!r.ok) alert((await r.json()).error); state();
+}
 function render(){ if(!S) return;
-  page==='dashboard'?renderDashboard():page==='orders'?renderOrders():renderInventory(); }
+  page==='dashboard'?renderDashboard():page==='orders'?renderOrders():page==='agentlog'?renderAgentLog():renderInventory(); }
 async function settle(id,a,body){
   const r=await fetch(`/api/order/${id}/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
   if(!r.ok) alert((await r.json()).error); state(); }
@@ -292,13 +451,35 @@ async function submitPartial(){
 document.addEventListener('keydown',e=>{ if(!pOrder) return;
   if(e.key==='Escape') closePartial(); if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA') submitPartial(); });
 async function settleAll(a){ for(const o of S.orders.filter(o=>o.status==='open')) await fetch(`/api/order/${o.id}/${a}`,{method:'POST'}); state(); }
+async function scenario1(){
+  if(!confirm('Load Scenario 1 (LAMP-002: DTC selling ahead of forecast while Amazon lags)? This replaces all LAMP-002 orders, stock, inbound, margins and allocation; other SKUs are untouched.')) return;
+  const b=$('scn1Btn'); b.disabled=true; b.textContent='Loading scenario…';
+  const r=await (await fetch('/api/scenario/1',{method:'POST'})).json();
+  b.disabled=false; b.textContent='Scenario 1: Auto Apply';
+  const bad=r.checks.filter(c=>c.ok===false), info=r.checks.filter(c=>c.ok===null&&c.name.startsWith('engine preview'));
+  alert(`Scenario 1 loaded for LAMP-002: ${r.summary.orders_total} orders, on hand ${r.summary.on_hand}, sellable ${r.summary.sellable}.\n`+
+    `Checks: ${r.passed} passed, ${r.failed} failed`+(bad.length?'\n- '+bad.map(c=>c.name).join('\n- '):'')+
+    (info.length?'\n\n'+info.map(c=>c.name+': '+c.detail).join('\n'):'')); state();
+}
+async function genHistory(){
+  const b=$('histBtn'); b.disabled=true; b.textContent='Generating…';
+  const r=await (await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"days":90}'})).json();
+  b.disabled=false; b.textContent='⟳ Generate history orders';
+  alert(`Generated ${r.generated} orders: `+Object.entries(r.by_channel).map(([c,n])=>`${c} ${n}`).join(', ')); state();
+}
+async function resetDemo(){
+  if(!confirm('Reset the demo? This wipes ALL orders and restores the baseline stock, allocation split and channel margins.')) return;
+  const b=$('resetBtn'); b.disabled=true; b.textContent='Resetting…';
+  await fetch('/api/reset',{method:'POST'});
+  b.disabled=false; b.textContent='↺ Reset demo'; state();
+}
 async function runAgent(){
   const b=$('runBtn'); b.disabled=true; b.textContent='Agent running…';
   await fetch('/api/agent/run',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"scope":"all"}'});
   const t=setInterval(async()=>{const j=await (await fetch('/api/agent/status')).json();
     if(!j.running){clearInterval(t);b.disabled=false;b.textContent='▶ Run allocation cycle';state();}},2000);
 }
-show('dashboard'); state(); setInterval(state,6000);
+show('dashboard'); state();
 </script>
 </body>
 </html>

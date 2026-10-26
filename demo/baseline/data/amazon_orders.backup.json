@@ -1,0 +1,37 @@
+{
+  "orders": [
+    {
+      "id": "28f23e60",
+      "ts": "2026-10-25T02:43:25Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0867cd55",
+      "ts": "2026-10-25T02:59:24Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 0,
+      "status": "open",
+      "partial_shipments": []
+    },
+    {
+      "id": "bdcae8cc",
+      "ts": "2026-10-25T02:59:30Z",
+      "sku": "LAMP-002",
+      "qty": 10,
+      "fulfilled_qty": 5,
+      "status": "partial",
+      "partial_shipments": [
+        {
+          "ts": "2026-10-25T03:11:02Z",
+          "qty": 5,
+          "reason": ""
+        }
+      ]
+    }
+  ]
+}

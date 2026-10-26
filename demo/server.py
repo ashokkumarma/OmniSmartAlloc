@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -30,6 +31,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "demo"))
 import order_stores  # noqa: E402
+from src.allocation import agent_log  # noqa: E402
 
 DATA = ROOT / "demo" / "data"
 OUTBOX = ROOT / "demo" / "outbox"
@@ -164,7 +166,7 @@ def _create_order(body: dict) -> tuple[int, dict]:
             return 404, {"error": f"unknown sku {sku}"}
         available = (row.get("on_hand") or 0) - (row.get("committed") or 0)
         if qty > available:
-            return 409, {"error": f"only {available} units available (agent buffer + committed protect the rest)"}
+            return 409, {"error": f"only {available} units available (committed orders protect the rest)"}
         allocs = _jsonl(OUTBOX / "allocations.jsonl")
         latest = next((r for r in reversed(allocs) if r["sku"] == sku), None)
         open_ch = sum(o["remaining"] for o in _orders() if o["sku"] == sku and o["channel"] == channel and o["status"] in OPEN_STATUSES)
@@ -212,8 +214,86 @@ def _settle_order(order_id: str, action: str, qty: int | None = None, reason: st
         return 200, {"order": order}
 
 
+BASELINE = Path(__file__).resolve().parent / "baseline"
+
+
+def _reset() -> dict:
+    """Restore the demo to the saved baseline state (see demo/baseline/save_baseline.py)."""
+    with _LOCK:
+        if not (BASELINE / "orders.json").exists():
+            return {"reset": False, "error": "no baseline saved — run demo/baseline/save_baseline.py"}
+        for f in (BASELINE / "data").glob("*.json"):
+            shutil.copy2(f, DATA / f.name)
+        order_stores.clear_all()
+        orders = json.loads((BASELINE / "orders.json").read_text(encoding="utf-8"))
+        if orders:
+            order_stores.save_many(orders)
+        for f in (BASELINE / "outbox").glob("*.jsonl"):
+            (OUTBOX / f.name).write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
+        return {"reset": True, "skus": len(_load("wms_inventory.json")["inventory"]),
+                "orders_restored": len(orders), "baseline": str(BASELINE)}
+
+
+def _gen_history(days: int = 90, seed: int = 42) -> dict:
+    """Simulate `days` of orders across channels, weighted by demand_confidence and velocity.
+    Older orders arrive fulfilled/cancelled; the last 3 days leave open+partial orders (which
+    also bump committed so WMS stays consistent)."""
+    import random
+    rng = random.Random(seed)
+    econ = [e for e in _load("channel_economics.json")["economics"] if e["channel"] in CHANNELS]
+    now = time.time()
+    orders: list[dict] = []
+    for e in econ:
+        conf, v7 = e.get("demand_confidence") or 1.0, max(e.get("v7") or 0.5, 0.5)
+        n = max(2, min(60, round(days * v7 * conf / 10)))
+        for _ in range(n):
+            ts = now - rng.uniform(0, days * 86400)
+            qty = rng.choices([1, 2, 3, 4, 5], weights=[50, 25, 12, 8, 5])[0]
+            if ts > now - 3 * 86400:  # last 3 days -> some still open/partial
+                roll, status, fqty = rng.random(), "open", 0
+                if roll > 0.5: status, fqty = "fulfilled", qty
+                elif roll > 0.3:
+                    status = "partial"; fqty = rng.randint(1, qty - 1) if qty > 1 else 0
+                    if fqty == 0: status = "open"
+            else:
+                roll = rng.random()
+                status, fqty = ("cancelled", 0) if roll < 0.1 else ("fulfilled", qty)
+            orders.append({"id": uuid.uuid4().hex[:8], "channel": e["channel"], "sku": e["sku"],
+                           "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(ts)), "qty": qty,
+                           "fulfilled_qty": fqty, "status": status,
+                           "partial_shipments": [{"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(ts)),
+                                                  "qty": fqty, "reason": "split shipment (generated)"}] if status == "partial" else []})
+    with _LOCK:
+        order_stores.save_many(orders)
+        inv = _load("wms_inventory.json")
+        for o in orders:
+            if o["status"] == "open":
+                adj = o["qty"]
+            elif o["status"] == "partial":
+                adj = o["qty"] - o["fulfilled_qty"]
+            else:
+                continue
+            for r in inv["inventory"]:
+                if r["sku"] == o["sku"]:
+                    r["committed"] = (r.get("committed") or 0) + adj
+        _save("wms_inventory.json", inv)
+    counts = {ch: sum(1 for o in orders if o["channel"] == ch) for ch in CHANNELS}
+    return {"generated": len(orders), "by_channel": counts}
+
+
+def _scenario1() -> dict:
+    """Scenario 1 (LAMP-002: DTC ahead of forecast, Amazon lagging): load the starting data, then verify it."""
+    from scenarios import seed_lamp002, verify_lamp002
+    with _LOCK:
+        summary = seed_lamp002.run()
+    _FED["result"] = None
+    checks = verify_lamp002.run_checks()
+    return {"summary": summary, "checks": checks,
+            "passed": sum(1 for c in checks if c["ok"] is True), "failed": sum(1 for c in checks if c["ok"] is False)}
+
+
 def _run_agent(scope: str) -> None:
-    q = ("Run the allocation cycle for every SKU in the catalog: MUG-001, LAMP-002, KBD-003 and LOCK-004."
+    q = ("Run the allocation cycle for every SKU in the catalog: MUG-001, LAMP-002, RUG-003 and LOCK-004."
          if scope == "all" else f"Run the allocation cycle for SKU {scope}.")
     _AGENT_JOB.update(running=True, tail="")
     try:
@@ -250,6 +330,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(200, _AGENT_JOB)
         if path == "/api/federated":
             return self._json(200, _federated())
+        if path == "/api/agent-log":
+            return self._json(200, {"events": agent_log.events(OUTBOX)})
         self._json(404, {"error": "not found"})
 
     def do_POST(self) -> None:
@@ -262,6 +344,18 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(*_create_order(body))
         if m := re.match(r"^/api/order/([0-9a-f]+)/(fulfill|partial|cancel)$", path):
             return self._json(*_settle_order(m.group(1), m.group(2), body.get("qty"), str(body.get("reason") or "").strip()))
+        if m := re.match(r"^/api/approvals/([0-9a-f]+)/approve$", path):
+            with _LOCK:
+                return self._json(*agent_log.approve(OUTBOX, m.group(1)))
+        if m := re.match(r"^/api/approvals/([0-9a-f]+)/deny$", path):
+            with _LOCK:
+                return self._json(*agent_log.deny(OUTBOX, m.group(1), str(body.get("reason", "")).strip()))
+        if path == "/api/scenario/1":
+            return self._json(200, _scenario1())
+        if path == "/api/history":
+            return self._json(200, _gen_history(int(body.get("days") or 90)))
+        if path == "/api/reset":
+            return self._json(200, _reset())
         if path == "/api/agent/run":
             if _AGENT_JOB["running"]:
                 return self._json(409, {"error": "agent already running"})

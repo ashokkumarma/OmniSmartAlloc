@@ -29,7 +29,7 @@
   .stock b { color:#fff; font-size:15px }
   button { border:none; border-radius:9px; padding:8px 14px; font-weight:700; cursor:pointer; color:#fff }
   input[type=number] { width:58px; padding:7px; border-radius:8px; border:1px solid var(--line);
-    background:#0B1020; color:#fff; font-weight:700 }
+    background:#10152A; color:#fff; font-weight:700 }
   .feed div { padding:8px 10px; border-left:3px solid; margin-bottom:8px; font-size:13px;
     background:#0E1330; border-radius:6px; color:#C9D1EA }
   .feed small { color:var(--mut) }
@@ -52,7 +52,7 @@
 <header>
   <div class="logo">Omni<b>SmartAlloc</b></div>
   <span class="pill">4 sales channels → one shared stock pool</span>
-  <nav><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
+  <nav style="display:flex;align-items:center"><button id="scn1Btn" style="background:linear-gradient(90deg,#C4B5FD,#8B5CF6);color:#0B1020;margin-right:10px;padding:8px 16px" onclick="scenario1()">Scenario 1: Auto Apply</button><button style="background:linear-gradient(90deg,#67E8F9,#38BDF8);color:#0B1020;margin-right:10px;padding:8px 16px" onclick="genHistory()">⟳ Generate history</button><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:14px;padding:8px 16px" onclick="resetDemo()">↺ Reset demo</button><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
 </header>
 <div class="tabs" id="tabs"></div>
 <main>
@@ -61,15 +61,22 @@
     <div class="grid">
       <div class="card"><h3>Place an order</h3><div id="products"></div></div>
       <div>
-        <div class="card" style="margin-bottom:20px"><h3>Units sold on this channel (open orders)</h3><canvas id="chart"></canvas></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+          <div class="card"><h3>Open Orders</h3><canvas id="chart"></canvas></div>
+          <div class="card"><h3>Closed Orders</h3><canvas id="chartClosed"></canvas></div>
+        </div>
         <div class="card"><h3>Order feed</h3><div class="feed" id="feed"></div></div>
       </div>
     </div>
   </div>
   <div id="sumView" style="display:none">
-    <div class="grid">
-      <div class="card"><h3>Open orders — remaining units, every channel</h3><canvas id="sumChart"></canvas></div>
+    <div class="grid" style="grid-template-columns:1.1fr 0.8fr 1.1fr 0.9fr">
+      <div class="card"><h3>Open orders — remaining units, every channel</h3>
+        <div id="sumLegend" style="display:flex;gap:14px;margin-bottom:10px"></div><canvas id="sumChart"></canvas></div>
       <div class="card"><h3>Open order feed</h3><div class="feed" id="sumFeed"></div></div>
+      <div class="card"><h3>Warehouse inventory — allocated units per channel</h3>
+        <div id="allocLegend" style="display:flex;gap:14px;margin-bottom:10px"></div><canvas id="allocChart"></canvas></div>
+      <div class="card"><h3>Profit margin % by channel</h3><canvas id="marginChart"></canvas></div>
     </div>
     <div class="card" style="margin-top:20px"><h3>Where the data lives — fragmented sources, one federation</h3>
       <div class="srcrow" id="srcDiagram"></div>
@@ -77,7 +84,7 @@
     <div class="card" style="margin-top:20px"><h3>Live federated query — one Lightning SQL statement across Postgres + REST
       <small id="fedMeta" style="text-transform:none;color:var(--mut);float:right"></small></h3>
       <div class="grid" style="grid-template-columns:1fr 1.2fr">
-        <pre id="fedSql" style="font-family:Consolas,monospace;font-size:11px;color:#9FB0D8;background:#0B1020;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;margin:0"></pre>
+        <pre id="fedSql" style="font-family:Consolas,monospace;font-size:11px;color:#9FB0D8;background:#10152A;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;margin:0"></pre>
         <div><table style="width:100%;border-collapse:collapse;font-size:12.5px" id="fedTable"></table>
           <canvas id="fedChart" style="margin-top:12px"></canvas></div>
       </div>
@@ -111,7 +118,7 @@ const valueLabels={id:'valueLabels',afterDatasetsDraw(chart){
   }
   ctx.restore(); }};
 Chart.register(valueLabels);
-let S = null, cur = "Summary", chart = null, sumChart = null, fedChart = null, fedAt = 0, qtys = {};
+let S = null, cur = "Summary", chart = null, chartClosed = null, sumChart = null, feedExp = {}; fedChart = null, fedAt = 0, qtys = {}, allocChart = null, marginChart = null;
 const $ = id => document.getElementById(id);
 const sub = {DTC:"Our own storefront", Amazon:"Marketplace — Buy Box & ranking at stake", Etsy:"Handmade / enthusiast marketplace", Walmart:"Big-box marketplace"};
 
@@ -132,20 +139,46 @@ function renderSummary(){
   $('chanMargin').textContent = '';
   $('chanSub').textContent = 'all open orders + where the data actually lives';
   const open = S.orders.filter(o=>o.status==='open'||o.status==='partial');
-  $('sumFeed').innerHTML = open.map(o=>
+  const exp = !!feedExp.sum, shown = exp ? open : open.slice(0,4);
+  $('sumFeed').innerHTML = (shown.map(o=>
     `<div style="border-color:${S.channels.find(c=>c.name===o.channel).color}">
       <b>${o.remaining} of ${o.qty}× ${o.sku}</b> <span class="badge" style="background:${o.status==='open'?'#B45309':'#7C3AED'};color:#fff">${o.status}</span>
       <br><small>${o.channel} · ${o.ts.replace('T',' ').slice(0,19)}Z · #${o.id}</small></div>`).join('')
-    || '<small style="color:var(--mut)">No open orders.</small>';
+    || '<small style="color:var(--mut)">No open orders.</small>') +
+    (open.length>4 ? `<div style="text-align:center;margin-top:8px"><a href="javascript:void 0" style="color:#67E8F9;font-size:12px" onclick="feedExp.sum=${!exp};render()">${exp?'▴ Show less':'▾ '+(open.length-4)+' more'}</a></div>` : '');
+  const legendRow = `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#C9D1EA">`;
+  $('sumLegend').innerHTML = $('allocLegend').innerHTML =
+    S.channels.map(c=>`${legendRow}<i style="width:10px;height:10px;border-radius:2px;background:${c.color}"></i>${c.name}</span>`).join('');
   if (sumChart) sumChart.destroy();
   sumChart = new Chart($('sumChart'), {type:'bar', data:{
     labels:S.skus.map(p=>p.sku),
     datasets:S.channels.map(c=>({label:c.name,
       data:S.skus.map(p=>open.filter(o=>o.channel===c.name&&o.sku===p.sku).reduce((a,o)=>a+o.remaining,0)),
       backgroundColor:c.color, stack:'o'}))},
-    options:{plugins:{legend:{labels:{color:'#C9D1EA',boxWidth:10,font:{size:10}}}},scales:{
+    options:{layout:{padding:{top:20}},plugins:{legend:{display:false}},scales:{
       x:{stacked:true,ticks:{color:'#8B93AD'},grid:{display:false}},
       y:{stacked:true,title:{display:true,text:'units awaiting shipment',color:'#8B93AD'},ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}}}});
+  if (allocChart) allocChart.destroy();
+  allocChart = new Chart($('allocChart'), {type:'bar', data:{
+    labels:S.skus.map(p=>p.sku),
+    datasets:S.channels.map(c=>({label:c.name,
+      data:S.skus.map(p=>p.allocation?(p.allocation[c.name]||0):0),
+      backgroundColor:c.color, barPercentage:0.9, categoryPercentage:0.6}))},
+    options:{layout:{padding:{top:20}},plugins:{legend:{display:false}},scales:{
+      x:{ticks:{color:'#8B93AD'},grid:{display:false}},
+      y:{title:{display:true,text:'allocated units',color:'#8B93AD'},ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}}}});
+  if (marginChart) marginChart.destroy();
+  const mpcts = S.channels.map(c=>{
+    const rows = S.economics.filter(e=>e.channel===c.name);
+    const pcts = rows.map(e=>{const pr=S.skus.find(p=>p.sku===e.sku)?.price; return pr?Math.round(e.unit_margin/pr*100):0}).filter(v=>v>0);
+    return pcts.length ? Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length) : 0;});
+  marginChart = new Chart($('marginChart'), {type:'bar', data:{
+    labels:S.channels.map(c=>c.name),
+    datasets:[{data:mpcts, backgroundColor:S.channels.map(c=>c.color)}]},
+    options:{plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>` margin ${c.raw}%`}}},
+      scales:{y:{max:100,title:{display:true,text:'margin %',color:'#8B93AD'},ticks:{color:'#8B93AD',callback:v=>v+'%'},grid:{color:'#232B45'}},
+      x:{ticks:{color:'#8B93AD'},grid:{display:false}}}}});
   const chBox = c=>{const os=open.filter(o=>o.channel===c.name), n=os.reduce((a,o)=>a+o.remaining,0);
     return `<div class="srcbox" style="border-color:${c.color};min-width:120px"><h4 style="color:${c.color}">${c.name}</h4>
       <small><b>${c.source.type}</b><br>${c.source.location}<br><b>${os.length}</b> open · <b>${n}</b> units</small></div>`;};
@@ -174,7 +207,7 @@ async function loadFederated(){
   $('fedSql').textContent = f.sql;
   if (!f.ok) { $('fedMeta').textContent = ''; $('fedTable').innerHTML = `<tr><td style="color:#F87171">${f.error}</td></tr>`; return; }
   $('fedMeta').textContent = `${f.rows.length} source rows · ${f.ms} ms · via Zetaris JDBC`;
-  const col = ch => (S.channels.find(c=>c.name===ch)||{}).color || '#64748B';
+  const col = ch => (S.channels.find(c=>c.name===ch)||{}).color || '#8B93AD';
   const rows = S.channels.map(c => f.rows.find(r=>r.channel===c.name) ||
     {channel:c.name, source_system:`${c.source.type} (no rows yet)`, orders:0, units_ordered:0, units_shipped:0, units_open:0});
   $('fedTable').innerHTML = `<tr>${['Channel','Source system','Orders','Ordered','Shipped','Open'].map(h=>`<th style="text-align:left;color:var(--mut);padding:5px 6px;border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr>` +
@@ -213,18 +246,39 @@ function render(){
     </div>`;
   }).join('');
   const orders = S.orders.filter(o => o.channel===cur);
-  $('feed').innerHTML = orders.length ? orders.slice(0,10).map(o =>
+  const fexp = !!feedExp[cur], fshown = fexp ? orders : orders.slice(0,4);
+  $('feed').innerHTML = (fshown.length ? fshown.map(o =>
     `<div style="border-color:${S.channels.find(c=>c.name===o.channel).color}">
       <b>${o.qty}× ${o.sku}</b> <span class="badge" style="background:${({open:'#B45309',partial:'#7C3AED',fulfilled:'#15803D',cancelled:'#B91C1C'})[o.status]};color:#fff">${o.status}</span>${o.fulfilled_qty?` <small>shipped ${o.fulfilled_qty}/${o.qty}</small>`:''}
       <br><small>${o.ts.replace('T',' ').slice(0,19)}Z · #${o.id}</small></div>`).join('')
-    : '<small style="color:var(--mut)">No orders yet on this channel.</small>';
+    : '<small style="color:var(--mut)">No orders yet on this channel.</small>') +
+    (orders.length>4 ? `<div style="text-align:center;margin-top:8px"><a href="javascript:void 0" style="color:#67E8F9;font-size:12px" onclick="feedExp['${cur}']=${!fexp};render()">${fexp?'▴ Show less':'▾ '+(orders.length-4)+' more'}</a></div>` : '');
   const labels = S.skus.map(p=>p.sku), data = S.skus.map(p=>p.open_by_channel[cur]||0);
+  const closedData = S.skus.map(p=>S.orders.filter(o=>o.channel===cur&&o.sku===p.sku&&o.status!=='open'&&o.status!=='partial')
+    .reduce((a,o)=>a+(o.status==='fulfilled'?o.qty:o.fulfilled_qty),0));
+  const chColor = S.channels.find(c=>c.name===cur).color;
+  const chOpts = {plugins:{legend:{display:false}}, scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}};
   if (chart) chart.destroy();
-  chart = new Chart($('chart'), {type:'bar', data:{labels, datasets:[{data,
-    backgroundColor:S.channels.find(c=>c.name===cur).color}]},
-    options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}}});
+  chart = new Chart($('chart'), {type:'bar', data:{labels, datasets:[{data, backgroundColor:chColor}]}, options:chOpts});
+  if (chartClosed) chartClosed.destroy();
+  chartClosed = new Chart($('chartClosed'), {type:'bar', data:{labels, datasets:[{data:closedData, backgroundColor:chColor+'99'}]}, options:chOpts});
 }
 
+async function scenario1(){
+  if(!confirm('Load Scenario 1 (LAMP-002: DTC selling ahead of forecast while Amazon lags)? This replaces all LAMP-002 orders, stock, inbound, margins and allocation; other SKUs are untouched.')) return;
+  const b=$('scn1Btn'); b.disabled=true; b.textContent='Loading scenario…';
+  const r=await (await fetch('/api/scenario/1',{method:'POST'})).json();
+  b.disabled=false; b.textContent='Scenario 1: Auto Apply';
+  toast(`Scenario 1 loaded for LAMP-002: ${r.summary.orders_total} orders, sellable ${r.summary.sellable}. Checks: ${r.passed} passed, ${r.failed} failed`, r.failed===0); state();
+}
+async function genHistory(){
+  const r=await (await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"days":90}'})).json();
+  toast(`Generated ${r.generated} history orders`, true); state();
+}
+async function resetDemo(){
+  if(!confirm('Reset the demo? This wipes ALL orders and restores the baseline stock, allocations and margins.')) return;
+  await fetch('/api/reset',{method:'POST'}); state();
+}
 async function order(sku){
   const qty = +$('q_'+sku).value;
   const r = await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -235,7 +289,7 @@ async function order(sku){
 }
 function toast(msg, ok){ const t=$('toast'); t.textContent=msg; t.className='toast '+(ok?'ok':'err');
   t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4200); }
-state(); setInterval(state, 8000);
+state();
 </script>
 </body>
 </html>

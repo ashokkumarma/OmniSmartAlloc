@@ -13,11 +13,11 @@ def mug(**kw) -> SkuInput:
 
 def test_worked_example_matches_the_document():
     r = allocate(mug())
-    assert (r["state"], r["sellable_units"], r["buffer_units"]) == ("Tight", 328, 12)
-    assert r["days_of_cover"] == 10.9 and r["time_to_replenish_days"] == 18
+    assert (r["state"], r["sellable_units"], r["buffer_units"]) == ("Tight", 340, 0)
+    assert r["days_of_cover"] == 11.3 and r["time_to_replenish_days"] == 18
     assert r["inbound_credit_units"] == 0
-    assert r["allocation"] == {"DTC": 130, "Etsy": 65, "Amazon": 114, "Walmart": 19}
-    assert sum(r["allocation"].values()) == 328
+    assert r["allocation"] == {"DTC": 130, "Etsy": 65, "Amazon": 126, "Walmart": 19}
+    assert sum(r["allocation"].values()) == 340
     assert r["confidence"] == "medium" and "Expedite inbound PO" in r["recommended_human_actions"]
     assert r["alerts"] and r["write_allowed"]
     assert [c["score"] for c in r["channels"]] == [12.6, 6.0, 8.8, 4.5]

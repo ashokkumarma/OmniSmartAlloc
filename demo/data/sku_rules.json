@@ -1,6 +1,32 @@
-{"rules": [
-  {"sku": "MUG-001", "locked": false, "manual_override": false, "clearance": false, "promo_multiplier": 1.0},
-  {"sku": "LAMP-002", "locked": false, "manual_override": false, "clearance": false, "promo_multiplier": 1.0},
-  {"sku": "KBD-003", "locked": false, "manual_override": false, "clearance": false, "promo_multiplier": 1.0},
-  {"sku": "LOCK-004", "locked": true, "manual_override": false, "clearance": false, "promo_multiplier": 1.0}
-]}
+{
+  "rules": [
+    {
+      "sku": "MUG-001",
+      "locked": false,
+      "manual_override": false,
+      "clearance": false,
+      "promo_multiplier": 1.0
+    },
+    {
+      "sku": "RUG-003",
+      "locked": false,
+      "manual_override": false,
+      "clearance": false,
+      "promo_multiplier": 1.0
+    },
+    {
+      "sku": "LOCK-004",
+      "locked": true,
+      "manual_override": false,
+      "clearance": false,
+      "promo_multiplier": 1.0
+    },
+    {
+      "sku": "LAMP-002",
+      "locked": false,
+      "manual_override": false,
+      "clearance": false,
+      "promo_multiplier": 1.0
+    }
+  ]
+}

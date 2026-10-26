@@ -43,6 +43,35 @@ def load_all() -> list[dict]:
     return sorted(orders, key=lambda o: o["ts"])
 
 
+def clear_all() -> None:
+    """Wipe every channel's orders (used by the demo reset)."""
+    with psycopg.connect(DB_URL) as conn:
+        for table in PG_TABLES.values():
+            conn.execute(f"TRUNCATE {table}")
+    _amazon_write([])
+
+
+def save_many(orders: list[dict]) -> None:
+    """Bulk-insert orders into each channel's own store (used by history generation)."""
+    by_ch: dict[str, list[dict]] = {}
+    for o in orders:
+        rec = {k: o.get(k) for k in FIELDS}
+        rec["fulfilled_qty"] = rec["fulfilled_qty"] or 0
+        rec["partial_shipments"] = rec["partial_shipments"] or []
+        by_ch.setdefault(o["channel"], []).append(rec)
+    with psycopg.connect(DB_URL) as conn:
+        for ch, rows in by_ch.items():
+            if ch == "Amazon":
+                continue
+            for r in rows:
+                conn.execute(
+                    f"INSERT INTO {PG_TABLES[ch]} ({', '.join(FIELDS)}) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (r["id"], r["ts"], r["sku"], r["qty"], r["fulfilled_qty"], r["status"],
+                     json.dumps(r["partial_shipments"])))
+    if by_ch.get("Amazon"):
+        _amazon_write(sorted(_amazon_read() + by_ch["Amazon"], key=lambda o: o["ts"]))
+
+
 def save(order: dict) -> None:
     """Insert or update one order in its channel's own system."""
     rec = {k: order.get(k) for k in FIELDS}

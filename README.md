@@ -23,7 +23,7 @@ The agent cannot answer "should I allocate, and where?" from any single source:
 Zetaris exposes all of them as queryable tables (`omnismart.*`, `CHANNEL_DB.*`); a single Lightning SQL
 statement can `UNION` a Postgres table with a REST response. The agent runs read-only SQL through a
 `ensure_read_only` guard and all arithmetic happens in a deterministic engine (`src/allocation/engine.py`) —
-buffer → inbound credit → state (Abundant/Balanced/Tight/Critical) → margin-ranked allocation →
+sellable (on-hand minus committed) → inbound credit → state (Abundant/Balanced/Tight/Critical) → margin-ranked allocation →
 25% per-run change limit → guarded write to `demo/outbox/`.
 
 ## Repository layout

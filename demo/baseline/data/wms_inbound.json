@@ -1,0 +1,52 @@
+{
+  "inbound": [
+    {
+      "po": "PO-9001",
+      "sku": "MUG-001",
+      "qty": 200,
+      "eta_days": 5,
+      "status": "in_transit",
+      "supplier": "ACME-EAST"
+    },
+    {
+      "po": "PO-9001",
+      "sku": "LAMP-002",
+      "qty": 200,
+      "eta_days": 5,
+      "status": "in_transit",
+      "supplier": "ACME-EAST"
+    },
+    {
+      "po": "PO-9001",
+      "sku": "RUG-003",
+      "qty": 200,
+      "eta_days": 5,
+      "status": "in_transit",
+      "supplier": "ACME-EAST"
+    },
+    {
+      "po": "PO-9001",
+      "sku": "LOCK-004",
+      "qty": 200,
+      "eta_days": 5,
+      "status": "in_transit",
+      "supplier": "ACME-EAST"
+    },
+    {
+      "po": "PO-9003",
+      "sku": "RUG-003",
+      "qty": 200,
+      "eta_days": 40,
+      "status": "planned",
+      "supplier": "KEYCO"
+    },
+    {
+      "po": "PO-7001",
+      "sku": "LAMP-002",
+      "qty": 200,
+      "eta_days": 4,
+      "status": "in_transit",
+      "supplier": "BRIGHT"
+    }
+  ]
+}

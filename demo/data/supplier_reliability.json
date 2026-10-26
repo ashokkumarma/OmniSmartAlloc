@@ -1,5 +1,19 @@
-{"suppliers": [
-  {"supplier": "ACME-EAST", "on_time_rate": 0.80, "typical_delay_days": 4},
-  {"supplier": "BRIGHT", "on_time_rate": 0.95, "typical_delay_days": 1},
-  {"supplier": "KEYCO", "on_time_rate": 0.60, "typical_delay_days": 10}
-]}
+{
+  "suppliers": [
+    {
+      "supplier": "ACME-EAST",
+      "on_time_rate": 0.8,
+      "typical_delay_days": 4
+    },
+    {
+      "supplier": "BRIGHT",
+      "on_time_rate": 0.9,
+      "typical_delay_days": 1
+    },
+    {
+      "supplier": "KEYCO",
+      "on_time_rate": 0.6,
+      "typical_delay_days": 10
+    }
+  ]
+}

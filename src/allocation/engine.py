@@ -8,7 +8,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Any
 
-MIN_BUFFER, BUFFER_PCT = 2, 0.03
+
 FLOOR_PCT, P80_FACTOR, DEFAULT_HORIZON, FLEX = 0.15, 1.2, 14, 0.20
 NO_DEMAND_DOC = 9999.0
 STATES = ("Abundant", "Balanced", "Tight", "Critical")
@@ -113,9 +113,9 @@ def allocate(inp: SkuInput) -> dict[str, Any]:
     human: list[str] = []
     alerts: list[dict[str, Any]] = []
 
-    buffer = _ceil(max(MIN_BUFFER, BUFFER_PCT * inp.on_hand) * max(1.0, inp.promo_multiplier))
-    sellable = max(0, _floor(inp.on_hand - inp.committed - buffer))
-    reasoning.append(f"Sellable = {inp.on_hand:g} on hand - {inp.committed:g} committed - {buffer} buffer = {sellable}")
+    buffer = 0
+    sellable = max(0, _floor(inp.on_hand - inp.committed))
+    reasoning.append(f"Sellable = {inp.on_hand:g} on hand - {inp.committed:g} committed = {sellable}")
 
     total_demand = sum(c.forecast_daily for c in inp.channels)
     stockout_days = sellable / total_demand if total_demand > 0 else NO_DEMAND_DOC
@@ -209,6 +209,7 @@ def allocate(inp: SkuInput) -> dict[str, Any]:
         "alerts": alerts, "horizon_days": round(horizon, 1), "shipments": shipments,
         "channels": [{"name": c.name, "unit_margin": c.unit_margin, "demand_confidence": c.demand_confidence,
                       "score": round(c.score, 2), "forecast_per_day": round(c.forecast_daily, 2),
+                      "v7": round(c.v7, 3), "v90": round(c.v90, 3),
                       "demand_p50": _ceil(c.forecast_daily * horizon),
                       "demand_p80": _ceil(c.forecast_daily * horizon * P80_FACTOR)} for c in inp.channels],
     }

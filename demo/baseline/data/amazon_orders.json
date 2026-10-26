@@ -1,0 +1,3223 @@
+{
+  "orders": [
+    {
+      "id": "9eb8f921",
+      "ts": "2026-07-27T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4435c3e4",
+      "ts": "2026-07-27T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "35b89236",
+      "ts": "2026-07-27T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8c2e4291",
+      "ts": "2026-07-27T20:31:26Z",
+      "sku": "MUG-001",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e0342628",
+      "ts": "2026-07-28T03:24:20Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a07e38bb",
+      "ts": "2026-07-28T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a7a155ae",
+      "ts": "2026-07-28T05:27:05Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "290078b4",
+      "ts": "2026-07-28T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ae5eef49",
+      "ts": "2026-07-28T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b8e52ea9",
+      "ts": "2026-07-28T22:33:02Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "cd931149",
+      "ts": "2026-07-29T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a07b0660",
+      "ts": "2026-07-29T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c787d027",
+      "ts": "2026-07-29T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8d6855f4",
+      "ts": "2026-07-29T22:22:08Z",
+      "sku": "MUG-001",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c4648592",
+      "ts": "2026-07-30T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e3bb39c3",
+      "ts": "2026-07-30T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "379f7686",
+      "ts": "2026-07-30T17:40:17Z",
+      "sku": "LOCK-004",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3426b47d",
+      "ts": "2026-07-30T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4352515c",
+      "ts": "2026-07-31T03:07:28Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "00fb3de8",
+      "ts": "2026-07-31T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5886eff7",
+      "ts": "2026-07-31T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "10790a65",
+      "ts": "2026-07-31T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7cfd7143",
+      "ts": "2026-08-01T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6d92bde8",
+      "ts": "2026-08-01T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "76d4381c",
+      "ts": "2026-08-01T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f0a1c93c",
+      "ts": "2026-08-02T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "20e17634",
+      "ts": "2026-08-02T06:53:06Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3fefd89a",
+      "ts": "2026-08-02T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b09c8307",
+      "ts": "2026-08-02T16:00:30Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2a40d2fb",
+      "ts": "2026-08-02T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "dc8543e5",
+      "ts": "2026-08-03T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d53096f0",
+      "ts": "2026-08-03T10:01:16Z",
+      "sku": "MUG-001",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bff5f358",
+      "ts": "2026-08-03T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4b6833c0",
+      "ts": "2026-08-03T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7cc67b78",
+      "ts": "2026-08-04T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5c09b44d",
+      "ts": "2026-08-04T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e426e532",
+      "ts": "2026-08-04T13:50:31Z",
+      "sku": "LOCK-004",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "49dce621",
+      "ts": "2026-08-04T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d17a71ee",
+      "ts": "2026-08-05T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "25c9865e",
+      "ts": "2026-08-05T07:26:50Z",
+      "sku": "MUG-001",
+      "qty": 3,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9b7d640a",
+      "ts": "2026-08-05T10:29:18Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4307ba20",
+      "ts": "2026-08-05T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9b9afcfe",
+      "ts": "2026-08-05T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "621460af",
+      "ts": "2026-08-06T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c7e21b48",
+      "ts": "2026-08-06T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a960f0f4",
+      "ts": "2026-08-06T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "afa4f25c",
+      "ts": "2026-08-07T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b075c230",
+      "ts": "2026-08-07T05:14:35Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5336b3f3",
+      "ts": "2026-08-07T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bde8464f",
+      "ts": "2026-08-07T15:45:01Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "21b95a0d",
+      "ts": "2026-08-07T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1338bd8c",
+      "ts": "2026-08-08T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5cc4b45b",
+      "ts": "2026-08-08T06:37:36Z",
+      "sku": "RUG-003",
+      "qty": 1,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4568d089",
+      "ts": "2026-08-08T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ce55e28e",
+      "ts": "2026-08-08T12:25:16Z",
+      "sku": "RUG-003",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "13493e62",
+      "ts": "2026-08-08T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "87d42569",
+      "ts": "2026-08-09T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4beaa6ea",
+      "ts": "2026-08-09T05:45:40Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f7745c4d",
+      "ts": "2026-08-09T06:27:35Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f15845c3",
+      "ts": "2026-08-09T07:51:23Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a172e7e7",
+      "ts": "2026-08-09T09:04:13Z",
+      "sku": "LOCK-004",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3da09460",
+      "ts": "2026-08-09T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "dbe1faa4",
+      "ts": "2026-08-09T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a9237db4",
+      "ts": "2026-08-10T01:55:00Z",
+      "sku": "RUG-003",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bcf077df",
+      "ts": "2026-08-10T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0a1c5275",
+      "ts": "2026-08-10T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d7b39e39",
+      "ts": "2026-08-10T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f05b313a",
+      "ts": "2026-08-11T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "889c247c",
+      "ts": "2026-08-11T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8bdf20c3",
+      "ts": "2026-08-11T18:05:05Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "18f0f94f",
+      "ts": "2026-08-11T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d95a49de",
+      "ts": "2026-08-12T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3b30db59",
+      "ts": "2026-08-12T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bd25065b",
+      "ts": "2026-08-12T13:38:38Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6bdd41ad",
+      "ts": "2026-08-12T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c146def4",
+      "ts": "2026-08-12T22:09:33Z",
+      "sku": "RUG-003",
+      "qty": 5,
+      "fulfilled_qty": 5,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3f922ce2",
+      "ts": "2026-08-13T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "40c724c6",
+      "ts": "2026-08-13T06:01:44Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "63e33da6",
+      "ts": "2026-08-13T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "49cc968a",
+      "ts": "2026-08-13T18:19:50Z",
+      "sku": "RUG-003",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "43a14cb5",
+      "ts": "2026-08-13T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c7acfbfe",
+      "ts": "2026-08-14T02:46:49Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "378dd545",
+      "ts": "2026-08-14T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a79c208e",
+      "ts": "2026-08-14T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "60b56881",
+      "ts": "2026-08-14T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "74c6c22b",
+      "ts": "2026-08-14T21:26:10Z",
+      "sku": "LOCK-004",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5389329c",
+      "ts": "2026-08-15T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4c1fdc6e",
+      "ts": "2026-08-15T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9f578fd6",
+      "ts": "2026-08-15T15:06:03Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "70350ee1",
+      "ts": "2026-08-15T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "519434d1",
+      "ts": "2026-08-16T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "22c07e46",
+      "ts": "2026-08-16T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6aa64613",
+      "ts": "2026-08-16T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e12defaf",
+      "ts": "2026-08-17T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0a12b5ee",
+      "ts": "2026-08-17T09:21:23Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c4ac7700",
+      "ts": "2026-08-17T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "91f77772",
+      "ts": "2026-08-17T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9cf9dc34",
+      "ts": "2026-08-18T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ebeaf04d",
+      "ts": "2026-08-18T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "863457a0",
+      "ts": "2026-08-18T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e9ff9031",
+      "ts": "2026-08-19T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "eaa27a9e",
+      "ts": "2026-08-19T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0370200c",
+      "ts": "2026-08-19T12:24:55Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f48b8cd5",
+      "ts": "2026-08-19T13:57:31Z",
+      "sku": "RUG-003",
+      "qty": 1,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "478309a8",
+      "ts": "2026-08-19T14:24:21Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8e5703da",
+      "ts": "2026-08-19T18:29:21Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7d2e53c7",
+      "ts": "2026-08-19T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d7464e69",
+      "ts": "2026-08-20T01:54:55Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "11f95f21",
+      "ts": "2026-08-20T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "cf59b26a",
+      "ts": "2026-08-20T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c90577ff",
+      "ts": "2026-08-20T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "12ea584e",
+      "ts": "2026-08-20T21:04:37Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ce4b97cb",
+      "ts": "2026-08-21T02:19:22Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5744af18",
+      "ts": "2026-08-21T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f3438f69",
+      "ts": "2026-08-21T04:10:12Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0e10aaa2",
+      "ts": "2026-08-21T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ec4a49b3",
+      "ts": "2026-08-21T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9f4db5f3",
+      "ts": "2026-08-21T21:46:07Z",
+      "sku": "LOCK-004",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "883c5e61",
+      "ts": "2026-08-22T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b90d8a56",
+      "ts": "2026-08-22T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e990baff",
+      "ts": "2026-08-22T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b1bce7ac",
+      "ts": "2026-08-23T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f6a3aff7",
+      "ts": "2026-08-23T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "77041ade",
+      "ts": "2026-08-23T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b524025e",
+      "ts": "2026-08-24T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a33b2c39",
+      "ts": "2026-08-24T07:55:53Z",
+      "sku": "RUG-003",
+      "qty": 4,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "533f0c2e",
+      "ts": "2026-08-24T10:43:55Z",
+      "sku": "RUG-003",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5b6e10d1",
+      "ts": "2026-08-24T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4a05ccc3",
+      "ts": "2026-08-24T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a4c0e904",
+      "ts": "2026-08-25T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e3338234",
+      "ts": "2026-08-25T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f00fe25d",
+      "ts": "2026-08-25T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "df2ebefc",
+      "ts": "2026-08-26T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1e9632fb",
+      "ts": "2026-08-26T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ba131bbd",
+      "ts": "2026-08-26T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "82a1fa10",
+      "ts": "2026-08-27T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b0228760",
+      "ts": "2026-08-27T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "24aec742",
+      "ts": "2026-08-27T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "001032a5",
+      "ts": "2026-08-28T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "21547f99",
+      "ts": "2026-08-28T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "20ae347b",
+      "ts": "2026-08-28T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3950fbb1",
+      "ts": "2026-08-29T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f2b7766d",
+      "ts": "2026-08-29T11:52:46Z",
+      "sku": "LOCK-004",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "46779836",
+      "ts": "2026-08-29T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a79402e1",
+      "ts": "2026-08-29T17:01:12Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "473c4a30",
+      "ts": "2026-08-29T18:04:43Z",
+      "sku": "RUG-003",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "74068167",
+      "ts": "2026-08-29T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "09a2a413",
+      "ts": "2026-08-29T23:39:58Z",
+      "sku": "RUG-003",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6e12b8ea",
+      "ts": "2026-08-30T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "50541133",
+      "ts": "2026-08-30T05:57:29Z",
+      "sku": "LOCK-004",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3147270c",
+      "ts": "2026-08-30T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "61b845aa",
+      "ts": "2026-08-30T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "58ed65f1",
+      "ts": "2026-08-31T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e1a84e37",
+      "ts": "2026-08-31T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e71ef53c",
+      "ts": "2026-08-31T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "91bcc540",
+      "ts": "2026-09-01T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b661fe98",
+      "ts": "2026-09-01T08:32:29Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "35110697",
+      "ts": "2026-09-01T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "994038ba",
+      "ts": "2026-09-01T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8cab10cd",
+      "ts": "2026-09-02T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "24f11764",
+      "ts": "2026-09-02T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8759342a",
+      "ts": "2026-09-02T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c11755bc",
+      "ts": "2026-09-03T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bff6b2a9",
+      "ts": "2026-09-03T05:09:01Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0b22c985",
+      "ts": "2026-09-03T08:45:12Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3118f565",
+      "ts": "2026-09-03T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e04e7426",
+      "ts": "2026-09-03T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1d553214",
+      "ts": "2026-09-04T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "61661711",
+      "ts": "2026-09-04T07:53:28Z",
+      "sku": "RUG-003",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "434ceb5d",
+      "ts": "2026-09-04T09:31:15Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6a5920a0",
+      "ts": "2026-09-04T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "45f7f904",
+      "ts": "2026-09-04T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0b6b4f19",
+      "ts": "2026-09-05T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4c8b55a5",
+      "ts": "2026-09-05T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f7569049",
+      "ts": "2026-09-05T18:30:52Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "965becab",
+      "ts": "2026-09-05T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "fe7d3e76",
+      "ts": "2026-09-06T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "86c25bad",
+      "ts": "2026-09-06T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "32570068",
+      "ts": "2026-09-06T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f3b2c19a",
+      "ts": "2026-09-06T23:49:56Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d51b2923",
+      "ts": "2026-09-07T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "37223bbc",
+      "ts": "2026-09-07T05:51:11Z",
+      "sku": "LOCK-004",
+      "qty": 5,
+      "fulfilled_qty": 5,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1d49b6af",
+      "ts": "2026-09-07T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c9062b79",
+      "ts": "2026-09-07T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f7b3d4c9",
+      "ts": "2026-09-08T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9279e264",
+      "ts": "2026-09-08T10:55:10Z",
+      "sku": "RUG-003",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "642d88d2",
+      "ts": "2026-09-08T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4160bb08",
+      "ts": "2026-09-08T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7c24e4a1",
+      "ts": "2026-09-09T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9f85e4ad",
+      "ts": "2026-09-09T05:00:36Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "70073227",
+      "ts": "2026-09-09T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0d94f038",
+      "ts": "2026-09-09T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bb8a7d46",
+      "ts": "2026-09-10T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a55693d5",
+      "ts": "2026-09-10T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5eb9e12e",
+      "ts": "2026-09-10T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2c0e1776",
+      "ts": "2026-09-11T02:02:35Z",
+      "sku": "LOCK-004",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2e1523b1",
+      "ts": "2026-09-11T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c46cb4ed",
+      "ts": "2026-09-11T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d1168e80",
+      "ts": "2026-09-11T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "fc79485b",
+      "ts": "2026-09-12T01:59:21Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7ec79ef3",
+      "ts": "2026-09-12T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4fb28772",
+      "ts": "2026-09-12T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d6252edf",
+      "ts": "2026-09-12T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "643d4d25",
+      "ts": "2026-09-13T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "cbf8c99b",
+      "ts": "2026-09-13T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2f949e11",
+      "ts": "2026-09-13T12:52:27Z",
+      "sku": "RUG-003",
+      "qty": 5,
+      "fulfilled_qty": 5,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "af685340",
+      "ts": "2026-09-13T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7f454911",
+      "ts": "2026-09-14T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e92a7d31",
+      "ts": "2026-09-14T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "819be9ae",
+      "ts": "2026-09-14T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d865dbe8",
+      "ts": "2026-09-14T20:38:10Z",
+      "sku": "LOCK-004",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c2a665ee",
+      "ts": "2026-09-15T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4725a94e",
+      "ts": "2026-09-15T09:58:07Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "63697f86",
+      "ts": "2026-09-15T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "30be30de",
+      "ts": "2026-09-15T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ee49c4bf",
+      "ts": "2026-09-16T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c36df4b8",
+      "ts": "2026-09-16T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e4266866",
+      "ts": "2026-09-16T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d537984f",
+      "ts": "2026-09-16T23:54:12Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "12eb6222",
+      "ts": "2026-09-17T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6847557f",
+      "ts": "2026-09-17T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "fecf7ed4",
+      "ts": "2026-09-17T16:03:01Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "efedaa77",
+      "ts": "2026-09-17T17:16:40Z",
+      "sku": "MUG-001",
+      "qty": 5,
+      "fulfilled_qty": 5,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "77514cd2",
+      "ts": "2026-09-17T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e60fad86",
+      "ts": "2026-09-18T01:26:53Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "dfc6cd57",
+      "ts": "2026-09-18T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "fac0ee17",
+      "ts": "2026-09-18T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7493cde1",
+      "ts": "2026-09-18T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f48d8610",
+      "ts": "2026-09-18T21:25:12Z",
+      "sku": "RUG-003",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "49af0604",
+      "ts": "2026-09-19T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8bbd56af",
+      "ts": "2026-09-19T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "df2e9c4d",
+      "ts": "2026-09-19T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "62d9e313",
+      "ts": "2026-09-20T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "901e35e6",
+      "ts": "2026-09-20T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a2afb3d8",
+      "ts": "2026-09-20T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d53762d8",
+      "ts": "2026-09-21T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3e5ef57b",
+      "ts": "2026-09-21T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "413da563",
+      "ts": "2026-09-21T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "cdefb5a9",
+      "ts": "2026-09-22T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "24423b8a",
+      "ts": "2026-09-22T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c542161c",
+      "ts": "2026-09-22T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7bd79119",
+      "ts": "2026-09-23T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "917b8f89",
+      "ts": "2026-09-23T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a008fa83",
+      "ts": "2026-09-23T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1eb6e998",
+      "ts": "2026-09-24T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1ca31971",
+      "ts": "2026-09-24T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6c6d1244",
+      "ts": "2026-09-24T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0e422239",
+      "ts": "2026-09-25T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "42bc9e72",
+      "ts": "2026-09-25T08:42:33Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1d451bdb",
+      "ts": "2026-09-25T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3272dcb2",
+      "ts": "2026-09-25T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a0adf938",
+      "ts": "2026-09-26T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3199395e",
+      "ts": "2026-09-26T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d8b08b77",
+      "ts": "2026-09-26T19:56:05Z",
+      "sku": "RUG-003",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "526354ff",
+      "ts": "2026-09-26T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bf21a7d3",
+      "ts": "2026-09-27T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1b2f302f",
+      "ts": "2026-09-27T06:59:09Z",
+      "sku": "RUG-003",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "be556e5e",
+      "ts": "2026-09-27T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e7754ce6",
+      "ts": "2026-09-27T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "192b30ea",
+      "ts": "2026-09-27T23:40:44Z",
+      "sku": "LOCK-004",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e3a18e58",
+      "ts": "2026-09-28T01:08:09Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "055bd37a",
+      "ts": "2026-09-28T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "abe58d7c",
+      "ts": "2026-09-28T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2885c07d",
+      "ts": "2026-09-28T18:58:49Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6aa377af",
+      "ts": "2026-09-28T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "be2fac99",
+      "ts": "2026-09-29T02:05:06Z",
+      "sku": "MUG-001",
+      "qty": 5,
+      "fulfilled_qty": 5,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "27707326",
+      "ts": "2026-09-29T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0bd74716",
+      "ts": "2026-09-29T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0b5af2e8",
+      "ts": "2026-09-29T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "62091c32",
+      "ts": "2026-09-30T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "92a4d254",
+      "ts": "2026-09-30T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8dca3b5d",
+      "ts": "2026-09-30T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0da14d5c",
+      "ts": "2026-10-01T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "92687bd4",
+      "ts": "2026-10-01T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "644155e9",
+      "ts": "2026-10-01T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "00840cf4",
+      "ts": "2026-10-01T22:08:07Z",
+      "sku": "MUG-001",
+      "qty": 3,
+      "fulfilled_qty": 3,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5012484e",
+      "ts": "2026-10-01T22:08:28Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "04ad20f5",
+      "ts": "2026-10-02T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "64f2ba36",
+      "ts": "2026-10-02T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "a195bddb",
+      "ts": "2026-10-02T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9342e84c",
+      "ts": "2026-10-03T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ff300747",
+      "ts": "2026-10-03T07:23:31Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "19053a9a",
+      "ts": "2026-10-03T07:59:23Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1447ec52",
+      "ts": "2026-10-03T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6ef97cd2",
+      "ts": "2026-10-03T15:08:56Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "c812c29a",
+      "ts": "2026-10-03T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9b5e9837",
+      "ts": "2026-10-04T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "dc9bf0ee",
+      "ts": "2026-10-04T07:24:44Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6a1198b7",
+      "ts": "2026-10-04T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "670b59d9",
+      "ts": "2026-10-04T14:56:01Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "25629835",
+      "ts": "2026-10-04T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "70528261",
+      "ts": "2026-10-05T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4f15f393",
+      "ts": "2026-10-05T04:27:35Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d21a0828",
+      "ts": "2026-10-05T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "62f51a4a",
+      "ts": "2026-10-05T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "fc63a3d2",
+      "ts": "2026-10-05T23:18:16Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "90d591f3",
+      "ts": "2026-10-06T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6b0f7f58",
+      "ts": "2026-10-06T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "402b9b0c",
+      "ts": "2026-10-06T12:13:21Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "abfd7967",
+      "ts": "2026-10-06T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "964befd0",
+      "ts": "2026-10-07T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "010a77c6",
+      "ts": "2026-10-07T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "66fcb8fd",
+      "ts": "2026-10-07T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2beda1ae",
+      "ts": "2026-10-08T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4907a428",
+      "ts": "2026-10-08T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3a15e13e",
+      "ts": "2026-10-08T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9cae350a",
+      "ts": "2026-10-09T01:35:31Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "3b96777f",
+      "ts": "2026-10-09T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6a258205",
+      "ts": "2026-10-09T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4e645267",
+      "ts": "2026-10-09T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5ec3981d",
+      "ts": "2026-10-10T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "2717dcdd",
+      "ts": "2026-10-10T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "6f264309",
+      "ts": "2026-10-10T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e99dfe49",
+      "ts": "2026-10-11T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7e3716e9",
+      "ts": "2026-10-11T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "d4757a27",
+      "ts": "2026-10-11T14:55:09Z",
+      "sku": "MUG-001",
+      "qty": 5,
+      "fulfilled_qty": 0,
+      "status": "cancelled",
+      "partial_shipments": []
+    },
+    {
+      "id": "04edfd53",
+      "ts": "2026-10-11T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "09e8b9e6",
+      "ts": "2026-10-11T21:08:19Z",
+      "sku": "MUG-001",
+      "qty": 4,
+      "fulfilled_qty": 4,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b08338ca",
+      "ts": "2026-10-12T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b9fc9782",
+      "ts": "2026-10-12T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ff6cf637",
+      "ts": "2026-10-12T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b6ec3708",
+      "ts": "2026-10-13T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "dde8cb94",
+      "ts": "2026-10-13T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ddccd526",
+      "ts": "2026-10-13T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "5c2f9c34",
+      "ts": "2026-10-14T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "92c3d788",
+      "ts": "2026-10-14T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4f8bc4bd",
+      "ts": "2026-10-14T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e427586d",
+      "ts": "2026-10-15T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "4d040392",
+      "ts": "2026-10-15T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bb5a6b66",
+      "ts": "2026-10-15T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e63ccfdb",
+      "ts": "2026-10-16T03:46:34Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ddb3df00",
+      "ts": "2026-10-16T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "639d3269",
+      "ts": "2026-10-16T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b5995808",
+      "ts": "2026-10-16T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "1ecd8f40",
+      "ts": "2026-10-16T22:23:29Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "34a89e2e",
+      "ts": "2026-10-17T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "0fc90780",
+      "ts": "2026-10-17T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "e1320f54",
+      "ts": "2026-10-17T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "78a8180e",
+      "ts": "2026-10-18T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "02ca63cc",
+      "ts": "2026-10-18T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b1515044",
+      "ts": "2026-10-18T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "9e8e6d48",
+      "ts": "2026-10-19T04:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "dc6bf708",
+      "ts": "2026-10-19T06:16:51Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8391a29c",
+      "ts": "2026-10-19T09:55:19Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "12c1587a",
+      "ts": "2026-10-19T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "8780e7a9",
+      "ts": "2026-10-19T20:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "67b4e2da",
+      "ts": "2026-10-20T06:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "bd4045fe",
+      "ts": "2026-10-20T12:19:17Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "185f462b",
+      "ts": "2026-10-20T18:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "86c01bac",
+      "ts": "2026-10-21T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f20d8075",
+      "ts": "2026-10-21T20:41:45Z",
+      "sku": "RUG-003",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "f8f412dd",
+      "ts": "2026-10-22T11:00:42Z",
+      "sku": "RUG-003",
+      "qty": 2,
+      "fulfilled_qty": 2,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "b88fd26e",
+      "ts": "2026-10-22T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "7d289951",
+      "ts": "2026-10-23T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ba8e86ac",
+      "ts": "2026-10-23T13:26:07Z",
+      "sku": "MUG-001",
+      "qty": 2,
+      "fulfilled_qty": 1,
+      "status": "partial",
+      "partial_shipments": [
+        {
+          "ts": "2026-10-23T13:26:07Z",
+          "qty": 1,
+          "reason": "split shipment (generated)"
+        }
+      ]
+    },
+    {
+      "id": "2502d0e9",
+      "ts": "2026-10-24T12:00:00Z",
+      "sku": "LAMP-002",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    },
+    {
+      "id": "ba3731bd",
+      "ts": "2026-10-24T22:05:15Z",
+      "sku": "MUG-001",
+      "qty": 1,
+      "fulfilled_qty": 1,
+      "status": "fulfilled",
+      "partial_shipments": []
+    }
+  ]
+}
