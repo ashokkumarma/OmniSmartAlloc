@@ -56,7 +56,7 @@
 <header>
   <div class="logo">Omni<b>SmartAlloc</b></div>
   <span class="pill">4 sales channels → one shared stock pool</span>
-  <nav style="display:flex;align-items:center"><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:14px;padding:8px 16px" onclick="resetDemo()">↺ Reset demo data</button><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
+  <nav style="display:flex;align-items:center"><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:14px;padding:8px 16px" onclick="resetDemo()">↺ Reset demo data</button><a href="/ims">Inventory Management Smart Service →</a></nav>
 </header>
 <div class="tabs" id="tabs"></div>
 <main>
@@ -84,11 +84,11 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <div style="background:#0E1330;border:1px solid var(--line);border-radius:10px;padding:14px">
           <b style="font-size:15px">&#x1F6D2; Order Management System (OMS) &mdash; where orders happen</b><br>
-          <small style="color:var(--mut)">This page &mdash; <a href="/channels" style="color:#67E8F9">localhost:8902/channels</a></small>
+          <small style="color:var(--mut)">This page &mdash; <a href="/oms" style="color:#67E8F9">localhost:8902/oms</a></small>
           <div style="font-size:12.5px;color:#C9D1EA;line-height:1.8;margin-top:8px">Pick a channel tab (DTC / Amazon / Etsy / Walmart) &rarr; type a quantity &rarr; <b>Place order</b>. Order fulfillment happens on <b>IMS</b>.</div></div>
         <div style="background:#0E1330;border:1px solid var(--line);border-radius:10px;padding:14px">
           <b style="font-size:15px">&#x1F4CB; Inventory management System (IMS) &mdash; where the agent reports</b><br>
-          <small style="color:var(--mut)">The ops dashboard &mdash; <a href="/ops" style="color:#67E8F9">localhost:8902/ops</a></small>
+          <small style="color:var(--mut)">The IMS dashboard &mdash; <a href="/ims" style="color:#67E8F9">localhost:8902/ims</a></small>
           <div style="font-size:12.5px;color:#C9D1EA;line-height:1.8;margin-top:8px">The <b>Orders</b> tab is where you <b>Fulfill</b> orders. The <b>Smart Allocation</b> tab shows what the agent decided &mdash; green <b>Auto-applied</b> cards it wrote itself, amber <b>Needs approval</b> cards waiting for a human.</div></div>
       </div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
@@ -98,7 +98,7 @@
           <li>Stay on <b>OMS</b> (this page).</li>
           <li>Click the <b>Amazon</b> tab. On the <b>MUG-001</b> row, type <b>30</b> in the number box.</li>
           <li>Click <b>Place order</b>.</li>
-          <li>Open <b>IMS</b> (<a href="/ops" style="color:#67E8F9">/ops</a>) and click the <b>Orders</b> tab. Find the new MUG-001 order in <b>Open orders</b> and click <b>&#10004; Fulfill All</b>.</li>
+          <li>Open <b>IMS</b> (<a href="/ims" style="color:#67E8F9">/ims</a>) and click the <b>Orders</b> tab. Find the new MUG-001 order in <b>Open orders</b> and click <b>&#10004; Fulfill All</b>.</li>
           <li>Wait about <b>1&ndash;2 minutes</b> &mdash; the agent runs automatically after fulfillment.</li>
           <li>Click the <b>Smart Allocation</b> tab (still on IMS) &rarr; the amber <b>Needs approval</b> card would show.</li>
           <li>Click <b>&#10004; Approve</b> (green) or <b>&#10008; Deny</b> (red) on the card to finish.</li>
@@ -111,7 +111,7 @@
           <li>Stay on <b>OMS</b> (this page).</li>
           <li>Click the <b>DTC</b> tab. On <b>LAMP-002</b>, type <b>20</b> &rarr; Click <b>Place order</b>.</li>
           <li>Click the <b>Amazon</b> tab. On <b>LAMP-002</b>, type <b>20</b> &rarr; Click <b>Place order</b>.</li>
-          <li>Open <b>IMS</b> (<a href="/ops" style="color:#67E8F9">/ops</a>) and click the <b>Orders</b> tab.</li>
+          <li>Open <b>IMS</b> (<a href="/ims" style="color:#67E8F9">/ims</a>) and click the <b>Orders</b> tab.</li>
           <li>Click <b>&#10004; Fulfill All</b> on both new LAMP-002 orders.</li>
           <li>Wait about <b>1&ndash;2 minutes</b> &mdash; the agent runs automatically after fulfillment.</li>
           <li>Click the <b>Smart Allocation</b> tab &rarr; the green <b>Auto-applied</b> card shows units moved to the higher-margin channel and the dollars saved.</li>
@@ -288,7 +288,7 @@ function render(){
   $('sumView').style.display = isSum?'':'none';
   $('insView').style.display = isIns?'':'none';
   if (isIns){ $('chanName').textContent='Instructions'; $('chanName').style.color='#22C55E'; $('chanMargin').textContent='';
-    $('chanSub').textContent='OMS = this page (orders) · IMS = /ops (agent decisions)'; return; }
+    $('chanSub').textContent='OMS = this page (orders) · IMS = /ims (agent decisions)'; return; }
   if (isSum) return renderSummary();
   $('chanName').textContent = cur;
   $('chanName').style.color = S.channels.find(c=>c.name===cur).color;

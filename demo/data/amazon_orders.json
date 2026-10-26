@@ -3205,8 +3205,8 @@
       "partial_shipments": []
     },
     {
-      "id": "da6777f6",
-      "ts": "2026-10-26T22:52:28Z",
+      "id": "4cfb9239",
+      "ts": "2026-10-26T23:34:26Z",
       "sku": "MUG-001",
       "qty": 30,
       "fulfilled_qty": 30,
@@ -3214,11 +3214,11 @@
       "partial_shipments": []
     },
     {
-      "id": "0e702432",
-      "ts": "2026-10-26T22:55:34Z",
-      "sku": "LOCK-004",
-      "qty": 2,
-      "fulfilled_qty": 2,
+      "id": "6b58748d",
+      "ts": "2026-10-26T23:37:39Z",
+      "sku": "LAMP-002",
+      "qty": 20,
+      "fulfilled_qty": 20,
       "status": "fulfilled",
       "partial_shipments": []
     }

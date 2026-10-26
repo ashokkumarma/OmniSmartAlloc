@@ -16,14 +16,14 @@
     },
     {
       "sku": "LOCK-004",
-      "on_hand": 53,
+      "on_hand": 75,
       "committed": 0,
       "unputaway": 0,
       "age_hours": 0.2
     },
     {
       "sku": "LAMP-002",
-      "on_hand": 64,
+      "on_hand": 24,
       "committed": 0,
       "unputaway": 0,
       "age_hours": 0.2

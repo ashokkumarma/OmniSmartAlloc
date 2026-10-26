@@ -1,7 +1,7 @@
 """OmniSmartAlloc demo UI server (port 8902).
 
 Pages:   /channels  order creation across DTC, Amazon, Etsy, Walmart
-         /ops       centralized inventory + agent activity
+         /ims       centralized inventory + agent activity
 APIs:    /api/state /api/order /api/order/<id>/(fulfill|partial|cancel) /api/federated
          /api/agent/run /api/agent/status
 
@@ -379,9 +379,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = urlparse(self.path).path
-        if path in ("/", "/channels"):
+        if path in ("/", "/channels", "/oms"):
             return self._send(200, (WEB / "channels.html").read_bytes(), "text/html; charset=utf-8")
-        if path == "/ops":
+        if path in ("/ops", "/ims"):
             return self._send(200, (WEB / "ops.html").read_bytes(), "text/html; charset=utf-8")
         if path == "/api/state":
             return self._json(200, _state())
@@ -446,5 +446,5 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8902
-    print(f"OmniSmartAlloc demo UI on http://localhost:{port}  (/channels and /ops)")
+    print(f"OmniSmartAlloc demo UI on http://localhost:{port}  (/oms and /ims)")
     ThreadingHTTPServer(("0.0.0.0", port), Handler).serve_forever()
