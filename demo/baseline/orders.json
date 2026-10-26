@@ -12166,40 +12166,6 @@
   }
  },
  {
-  "id": "ba8e86ac",
-  "ts": "2026-10-23T13:26:07Z",
-  "sku": "MUG-001",
-  "qty": 2,
-  "fulfilled_qty": 1,
-  "status": "partial",
-  "partial_shipments": [
-   {
-    "ts": "2026-10-23T13:26:07Z",
-    "qty": 1,
-    "reason": "split shipment (generated)"
-   }
-  ],
-  "channel": "Amazon",
-  "source": {
-   "type": "REST API",
-   "location": "AMAZON_API.orders_raw (/api/amazon/orders)"
-  }
- },
- {
-  "id": "e4dd7282",
-  "ts": "2026-10-23T14:12:54Z",
-  "sku": "MUG-001",
-  "qty": 1,
-  "fulfilled_qty": 0,
-  "status": "open",
-  "partial_shipments": [],
-  "channel": "Walmart",
-  "source": {
-   "type": "Postgres (JDBC)",
-   "location": "CHANNEL_DB.walmart_orders"
-  }
- },
- {
   "id": "d6e60b06",
   "ts": "2026-10-23T15:00:00Z",
   "sku": "LAMP-002",
@@ -12374,20 +12340,6 @@
   "qty": 3,
   "fulfilled_qty": 3,
   "status": "fulfilled",
-  "partial_shipments": [],
-  "channel": "Walmart",
-  "source": {
-   "type": "Postgres (JDBC)",
-   "location": "CHANNEL_DB.walmart_orders"
-  }
- },
- {
-  "id": "cfa31277",
-  "ts": "2026-10-25T18:05:50Z",
-  "sku": "MUG-001",
-  "qty": 1,
-  "fulfilled_qty": 0,
-  "status": "open",
   "partial_shipments": [],
   "channel": "Walmart",
   "source": {

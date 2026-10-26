@@ -79,7 +79,8 @@ def approve(store: Path, approval_id: str) -> tuple[int, dict[str, Any]]:
     if a["status"] != "pending":
         return 409, {"error": f"already {a['status']}"}
     last = last_allocation(store, a["sku"])
-    if last and a.get("previous") is not None and last["allocation"] != a["previous"]:
+    base = a.get("previous_written", a.get("previous"))
+    if last and base is not None and last["allocation"] != base:
         mark(store, approval_id, "superseded")
         return 409, {"error": "the allocation changed since this proposal was made; run the allocation cycle again"}
     record = {"ts": now_iso(), "sku": a["sku"], "state": a["state"], "allocation": a["allocation"], "target": a["target"],
@@ -110,7 +111,7 @@ def _trigger(ch: str, c: dict, rec: dict, pace: float | None, is_pause: bool) ->
 def projected_net_savings(prev: dict, new: dict, ctx: dict, doc: float | None) -> float:
     """Demand-capped net margin gain of a reallocation: receiver gains minus donor losses,
     each capped at the units a channel can realistically sell (forecast/day x days of cover)."""
-    net = 0.0
+    gain = loss = 0.0
     for ch, n in new.items():
         o = prev.get(ch, 0)
         if n == o or ch not in ctx:
@@ -118,10 +119,19 @@ def projected_net_savings(prev: dict, new: dict, ctx: dict, doc: float | None) -
         c = ctx[ch]
         cap = c["forecast_per_day"] * doc if doc else None
         if n > o:
-            net += max(0.0, min(n - o, cap - o) if cap is not None else n - o) * c["unit_margin"]
+            gain += max(0.0, min(n - o, cap - o) if cap is not None else n - o) * c["unit_margin"]
         else:
-            net -= max(0.0, min(o - n, cap - n) if cap is not None else o - n) * c["unit_margin"]
-    return net
+            loss += max(0.0, min(o - n, cap - n) if cap is not None else o - n) * c["unit_margin"]
+    return gain - loss * moved_share(prev, new)
+
+
+def moved_share(prev: dict, new: dict) -> float:
+    """Share of the reduced units that were actually re-assigned to other channels. Units removed
+    because stock left (sold / committed) are a stock sync, not a margin loss."""
+    new = {**{ch: 0 for ch in prev}, **new}
+    reduced = sum(prev.get(ch, 0) - n for ch, n in new.items() if n < prev.get(ch, 0))
+    added = sum(n - prev.get(ch, 0) for ch, n in new.items() if n > prev.get(ch, 0))
+    return min(1.0, added / reduced) if reduced else 1.0
 
 
 def _why(rec: dict, channels: list, ctx: dict, donors_all: dict, receivers_all: dict,
@@ -153,8 +163,9 @@ def _why(rec: dict, channels: list, ctx: dict, donors_all: dict, receivers_all: 
         trigger = f"Stock level moved from {rec['previous_state']} to {rec['state']}."
     else:
         trigger = "Rebalancing stock across channels by demand and margin."
-    bullets.append(f"Trigger: {sellable:g} sellable units on hand vs ~{tot:g} units/day total demand — "
-                   f"the stock lasts about {doc:g} days at today's demand, and that's the window this plan covers. {trigger}")
+    bullets.append(f"Trigger: {sellable:g} units currently available to sell (on hand minus what is already "
+                   f"sold or committed) vs ~{tot:g} units/day total demand — the stock lasts about {doc:g} days "
+                   f"at today's demand, and that's the window this plan covers. {trigger}")
     for d, (o, n) in donors_all.items():
         fpd = ctx[d]["forecast_per_day"]
         need = fpd * doc if doc else 0
@@ -177,10 +188,16 @@ def _why(rec: dict, channels: list, ctx: dict, donors_all: dict, receivers_all: 
 
 def _event(rec: dict, status: str, aid: str | None = None, approved_ts: str | None = None) -> dict[str, Any] | None:
     """One event card per agent decision: all channel cap changes of a single write/proposal together."""
-    prev, new, ctx = rec.get("previous"), rec["allocation"], rec["channel_context"]
-    if not prev:
+    prev, new = rec.get("previous"), rec["allocation"]
+    if not prev or not rec.get("channel_context"):
         return None
-    changes = {ch: (prev.get(ch, 0), new[ch]) for ch in new if prev.get(ch, 0) != new[ch] and ch in ctx}
+    ctx = dict(rec["channel_context"])
+    # Channels holding stock but with no sales data for this SKU: shown as 0-demand donors, never as pauses.
+    nodata = {ch for ch in {*prev, *new} if ch not in ctx}
+    for ch in nodata:
+        ctx[ch] = {"unit_margin": 0.0, "demand_confidence": 0.0, "score": 0.0, "forecast_per_day": 0.0, "v7": 0.0, "v90": 0.0}
+    new = {**{ch: 0 for ch in prev}, **new}
+    changes = {ch: (prev.get(ch, 0), new[ch]) for ch in new if prev.get(ch, 0) != new[ch]}
     if not changes:
         return None
     held = status in ("pending", "approved", "denied")
@@ -196,23 +213,31 @@ def _event(rec: dict, status: str, aid: str | None = None, approved_ts: str | No
     donors_all = {ch: (o, n) for ch, (o, n) in changes.items() if n < o}
     receivers_all = {ch: (o, n) for ch, (o, n) in changes.items() if n > o}
     gains = {ch: realized(ch, o, n - o) * ctx[ch]["unit_margin"] for ch, (o, n) in receivers_all.items()}
-    losses = {ch: realized(ch, n, o - n) * ctx[ch]["unit_margin"] for ch, (o, n) in donors_all.items()}
+    share = moved_share(prev, new)
+    losses = {ch: realized(ch, n, o - n) * ctx[ch]["unit_margin"] * share for ch, (o, n) in donors_all.items()}
     best_rx = max(gains, key=lambda ch: ctx[ch]["unit_margin"]) if gains else None
     donors = sorted(donors_all, key=lambda c: -(donors_all[c][0] - donors_all[c][1]))
     receivers = sorted(receivers_all, key=lambda c: -(receivers_all[c][1] - receivers_all[c][0]))
     moves = {"reduce": [{"channel": d, "units": donors_all[d][0] - donors_all[d][1]} for d in donors],
              "add": [{"channel": r, "units": receivers_all[r][1] - receivers_all[r][0]} for r in receivers]}
-    pauses = [ch for ch, (o, n) in changes.items() if n == 0]
-    primary = (pauses or sorted(changes, key=lambda ch: -abs(changes[ch][1] - changes[ch][0])))[0]
+    pauses = [ch for ch, (o, n) in changes.items() if n == 0 and ch not in nodata]
     total = sum(gains.values())
+    baseline_preview = sum(losses.values())
+    stock_sync = not receivers_all and not pauses
+    if not pauses and receivers_all and round(total - baseline_preview) == 0:
+        return None  # a real reallocation that nets $0 is not worth a card
+    primary = (pauses or sorted(changes, key=lambda ch: -abs(changes[ch][1] - changes[ch][0])))[0]
     lines = rec.get("reasoning") or []
     channels = []
     for ch, (o, n) in changes.items():
         c = ctx[ch]
         pace = c["v7"] / c["v90"] if c.get("v90") else None
-        inc, is_pause = n > o, n == 0
+        inc, is_pause = n > o, n == 0 and ch not in nodata
         m = f"${c['unit_margin']:g}"
-        if is_pause:
+        if ch in nodata:
+            reason = (f"{ch} has no sales history for this product, so its {o - n} unit{'s' if o - n != 1 else ''} "
+                      f"move to channels that actually sell it.")
+        elif is_pause:
             reason = (f"Stock is projected to run out in about {doc} days and no delivery arrives in time. "
                       f"{ch} earns the least per unit ({m}), so its sales limit drops to 0 and its units go to "
                       f"channels that make more per sale. A human must approve before this takes effect.")
@@ -265,10 +290,17 @@ def _event(rec: dict, status: str, aid: str | None = None, approved_ts: str | No
     total, baseline = round(total), round(baseline)
     net = total - baseline
     with_lines = [f"{r} +{receivers_all[r][1] - receivers_all[r][0]} units \u00d7 ${ctx[r]['unit_margin']:g}/unit (demand-capped) = ${gains[r]:.0f}" for r in receivers] or ["no units moved to other channels"]
-    without_lines = [f"{d} keeps {donors_all[d][0] - donors_all[d][1]} units \u00d7 ${ctx[d]['unit_margin']:g}/unit, but only "
-                     f"{realized(d, donors_all[d][1], donors_all[d][0] - donors_all[d][1]):g} were sellable at its demand "
-                     f"({ctx[d]['forecast_per_day']:g}/day \u00d7 {doc}d) = ${losses[d]:.0f}" for d in donors] or ["nothing changes for the other channels"]
+    without_lines = [f"{d} would keep {donors_all[d][0]} units instead of {donors_all[d][1]} — of the "
+                     f"{donors_all[d][0] - donors_all[d][1]} extra units kept, only "
+                     f"{realized(d, donors_all[d][1], donors_all[d][0] - donors_all[d][1]):g} are still available to sell "
+                     f"and within its demand ({ctx[d]['forecast_per_day']:g}/day \u00d7 {doc}d) \u00d7 ${ctx[d]['unit_margin']:g}/unit "
+                     f"= ${losses[d]:.0f}" for d in donors] or ["nothing changes for the other channels"]
+    if donors and share < 1:
+        without_lines.append(f"{(1 - share) * 100:.0f}% of the reduced units left because stock was sold or committed — "
+                             "a stock sync, not a margin loss, so it is not counted")
     ev_approval = {"pending": "Needs approval", "approved": "Approved", "denied": "Denied"}.get(status, "Auto-apply")
+    if stock_sync:
+        ev_approval = "Stock sync"
     return {"id": aid or f"{rec['ts']}-{rec['sku']}", "ts": rec["ts"], "sku": rec["sku"], "status": status,
             "without_change": {"lines": without_lines, "total": round(baseline)},
             "with_change": {"lines": with_lines, "total": round(total)},
@@ -281,10 +313,14 @@ def _event(rec: dict, status: str, aid: str | None = None, approved_ts: str | No
             "why": _why(rec, channels, ctx, donors_all, receivers_all, losses, doc, status, realized),
             "total_savings": round(total), "primary_channel": primary, "approval_id": aid,
             "deny_reason": rec.get("deny_reason"), "approved_ts": approved_ts,
-            "reason": rec.get("reason") or ""}
+            "reason": rec.get("reason") or "", "stock_sync": stock_sync}
 
 
 def events(store: Path) -> list[dict[str, Any]]:
+    """The current board: one active card per SKU reflecting the latest state of its records,
+    not a historical log. A pending proposal stays until it is approved, denied or superseded by
+    newer data; once a SKU has a newer auto-applied allocation or a fresher proposal, the old
+    card is gone — it no longer describes the current state of orders and inventory."""
     out: list[dict[str, Any]] = []
     for r in read_jsonl(store / "allocations.jsonl"):
         if "channel_context" in r and not r.get("approval_id"):
@@ -294,4 +330,19 @@ def events(store: Path) -> list[dict[str, Any]]:
         if a["status"] in ("pending", "approved", "denied") and "channel_context" in a:
             if e := _event(a, a["status"], aid, a.get("decided_ts")):
                 out.append(e)
-    return sorted(out, key=lambda e: e["ts"], reverse=True)
+    latest: dict[str, dict[str, Any]] = {}
+    for e in sorted(out, key=lambda e: e["ts"]):
+        latest[e["sku"]] = e  # last write per SKU wins -> the board shows only the current state
+    return sorted(latest.values(), key=lambda e: e["ts"], reverse=True)
+
+
+def savings_summary(store: Path) -> dict[str, Any]:
+    """Projected savings represented by the current Smart Allocation board, not historical writes."""
+    by_sku: dict[str, float] = {}
+    n = 0
+    for e in events(store):
+        if e["status"] in ("auto", "approved") and e["net_savings"] > 0:
+            by_sku[e["sku"]] = e["net_savings"]
+            n += 1
+    return {"total": round(sum(by_sku.values())), "count": n,
+            "by_sku": {k: round(v) for k, v in sorted(by_sku.items())}}

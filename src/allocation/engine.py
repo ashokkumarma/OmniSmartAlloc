@@ -215,12 +215,16 @@ def allocate(inp: SkuInput) -> dict[str, Any]:
     }
 
 
-def step_toward(current: dict[str, int], target: dict[str, int], sellable: int, limit: float = 0.25) -> dict[str, int] | None:
-    """Limit each channel to +/-25% of its current value; None if sellable cannot be respected."""
+def step_toward(current: dict[str, int], target: dict[str, int], sellable: int, limit: float = 0.25,
+                floor_base: float = 0) -> dict[str, int] | None:
+    """Limit each channel to +/-25% of what it holds; a channel holding less than `floor_base` is treated
+    as holding that much for the upward limit only (so a nearly-dry channel can be refilled); an empty channel is re-funded freely.
+    None if sellable cannot be respected."""
     new = {}
     for ch, t in target.items():
         c = current.get(ch, 0)
-        new[ch] = t if c == 0 else min(max(t, _floor(c * (1 - limit))), _ceil(c * (1 + limit)))
+        base = max(c, floor_base)
+        new[ch] = t if c == 0 else min(max(t, _floor(c * (1 - limit))), _ceil(base * (1 + limit)))
     over = sum(new.values()) - sellable
     for ch in sorted((k for k in new if new[k] > current.get(k, 0)), key=lambda k: -(new[k] - current.get(k, 0))):
         if over <= 0:

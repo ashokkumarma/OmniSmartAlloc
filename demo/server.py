@@ -42,6 +42,47 @@ STATE_COLORS = {"Abundant": "#22C55E", "Balanced": "#38BDF8", "Tight": "#F59E0B"
 
 _LOCK = threading.Lock()
 _AGENT_JOB: dict = {"running": False, "tail": ""}
+_AUTO_AGENT = {"enabled": True}
+_AGENT_TIMER: threading.Timer | None = None
+_AGENT_PENDING_SKUS: set[str] = set()
+_AGENT_PENDING_ALL = False
+_AGENT_QUEUE_LOCK = threading.Lock()
+
+
+def _schedule_agent_run(scope: str = "all", delay: float = 5.0) -> None:
+    """Debounce changes; SKU-specific updates only run that SKU, while full-cycle triggers run all."""
+    global _AGENT_TIMER, _AGENT_PENDING_ALL
+    if not _AUTO_AGENT["enabled"]:
+        return
+    with _AGENT_QUEUE_LOCK:
+        if scope == "all":
+            _AGENT_PENDING_ALL = True
+            _AGENT_PENDING_SKUS.clear()
+        elif not _AGENT_PENDING_ALL:
+            _AGENT_PENDING_SKUS.add(scope)
+        if _AGENT_TIMER and _AGENT_TIMER.is_alive():
+            _AGENT_TIMER.cancel()
+        _AGENT_TIMER = threading.Timer(delay, _kick_scheduled_agent)
+        _AGENT_TIMER.daemon = True
+        _AGENT_TIMER.start()
+
+
+def _kick_scheduled_agent() -> None:
+    global _AGENT_TIMER, _AGENT_PENDING_ALL
+    with _AGENT_QUEUE_LOCK:
+        if not _AUTO_AGENT["enabled"]:
+            return
+        if _AGENT_JOB["running"]:
+            _AGENT_TIMER = threading.Timer(5.0, _kick_scheduled_agent)
+            _AGENT_TIMER.daemon = True
+            _AGENT_TIMER.start()
+            return
+        scopes = ["all"] if _AGENT_PENDING_ALL else sorted(_AGENT_PENDING_SKUS)
+        if not scopes:
+            return
+        _AGENT_PENDING_ALL = False
+        _AGENT_PENDING_SKUS.clear()
+    threading.Thread(target=_run_agent, args=(scopes,), daemon=True).start()
 
 
 def _load(name: str) -> dict:
@@ -120,9 +161,15 @@ def _state() -> dict:
     decisions = _jsonl(OUTBOX / "decisions.jsonl")
     latest_decision = {r["sku"]: r["record"] for r in decisions}
     open_by_channel: dict[tuple[str, str], int] = {}
+    used_by_channel: dict[tuple[str, str], int] = {}
     for o in orders:
         if o["status"] in OPEN_STATUSES:
             open_by_channel[(o["sku"], o["channel"])] = open_by_channel.get((o["sku"], o["channel"]), 0) + o["remaining"]
+        # Units ordered after the channel's current allocation was set draw down its allowance --
+        # fulfilled or still open, they consumed stock either way. Only cancelled orders give it back.
+        alloc_ts = (latest_alloc.get(o["sku"]) or {}).get("ts", "")
+        if o["status"] != "cancelled" and o["ts"] >= alloc_ts:
+            used_by_channel[(o["sku"], o["channel"])] = used_by_channel.get((o["sku"], o["channel"]), 0) + o["qty"]
     skus = []
     for row in inv:
         sku = row["sku"]
@@ -135,6 +182,7 @@ def _state() -> dict:
             "days_of_cover": rec.get("days_of_cover"),
             "allocation": (latest_alloc.get(sku) or {}).get("allocation"),
             "open_by_channel": {ch: open_by_channel.get((sku, ch), 0) for ch in CHANNELS},
+            "used_by_channel": {ch: used_by_channel.get((sku, ch), 0) for ch in CHANNELS},
             "locked": next((r["locked"] for r in rules if r["sku"] == sku), False),
         })
     suppliers = {s["supplier"]: s for s in _load("supplier_reliability.json")["suppliers"]}
@@ -150,7 +198,9 @@ def _state() -> dict:
             "economics": econ, "inbound": inbound, "orders": list(reversed(orders))[:200],
             "alerts": list(reversed(_jsonl(OUTBOX / "alerts.jsonl")))[:100],
             "decisions": list(reversed(decisions[-50:])),
-            "agent": _AGENT_JOB}
+            "alloc_log": [{"ts": r["ts"], "sku": r["sku"], "allocation": r["allocation"], "reason": r.get("reason", "")}
+                          for r in allocs[-200:]],
+            "agent": _AGENT_JOB, "agent_auto": _AUTO_AGENT["enabled"]}
 
 
 def _create_order(body: dict) -> tuple[int, dict]:
@@ -169,9 +219,12 @@ def _create_order(body: dict) -> tuple[int, dict]:
             return 409, {"error": f"only {available} units available (committed orders protect the rest)"}
         allocs = _jsonl(OUTBOX / "allocations.jsonl")
         latest = next((r for r in reversed(allocs) if r["sku"] == sku), None)
-        open_ch = sum(o["remaining"] for o in _orders() if o["sku"] == sku and o["channel"] == channel and o["status"] in OPEN_STATUSES)
-        if latest and (open_ch + qty) > latest["allocation"].get(channel, 0):
-            return 409, {"error": f"exceeds the agent's {channel} allocation ({latest['allocation'].get(channel, 0)} units; {open_ch} already open). Run the allocation cycle again."}
+        alloc_ts = latest["ts"] if latest else ""
+        used_ch = sum(o["qty"] for o in _orders()
+                      if o["sku"] == sku and o["channel"] == channel and o["status"] != "cancelled" and o["ts"] >= alloc_ts)
+        if latest and (used_ch + qty) > latest["allocation"].get(channel, 0):
+            return 409, {"error": f"exceeds the agent's {channel} allocation ({latest['allocation'].get(channel, 0)} units; "
+                                  f"{used_ch} already used). Run the allocation cycle again."}
         order = {"id": uuid.uuid4().hex[:8], "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                  "channel": channel, "sku": sku, "qty": qty, "fulfilled_qty": 0, "status": "open"}
         order_stores.save(order)
@@ -292,16 +345,22 @@ def _scenario1() -> dict:
             "passed": sum(1 for c in checks if c["ok"] is True), "failed": sum(1 for c in checks if c["ok"] is False)}
 
 
-def _run_agent(scope: str) -> None:
-    q = ("Run the allocation cycle for every SKU in the catalog: MUG-001, LAMP-002, RUG-003 and LOCK-004."
-         if scope == "all" else f"Run the allocation cycle for SKU {scope}.")
-    _AGENT_JOB.update(running=True, tail="")
+def _run_agent(scope: str | list[str]) -> None:
+    scopes = [scope] if isinstance(scope, str) else scope
+    _AGENT_JOB.update(running=True, scope=", ".join(scopes), tail="")
+    output: list[str] = []
     try:
-        res = subprocess.run([str(VENV_PY), "-m", "src.main", q, "--max-steps", "25"],
-                             cwd=ROOT, capture_output=True, text=True, timeout=600)
-        _AGENT_JOB["tail"] = (res.stdout + res.stderr)[-4000:]
-    except subprocess.TimeoutExpired:
-        _AGENT_JOB["tail"] = "agent timed out after 600 s"
+        for item in scopes:
+            q = ("Run the allocation cycle for every SKU in the catalog: MUG-001, LAMP-002, RUG-003 and LOCK-004."
+                 if item == "all" else f"Run the allocation cycle for SKU {item}.")
+            try:
+                res = subprocess.run([str(VENV_PY), "-m", "src.main", q, "--max-steps", "25"],
+                                     cwd=ROOT, capture_output=True, text=True, timeout=600)
+                output.append(res.stdout + res.stderr)
+            except subprocess.TimeoutExpired:
+                output.append(f"Agent timed out for {item} after 600 s")
+                break
+        _AGENT_JOB["tail"] = "".join(output)[-4000:]
     finally:
         _AGENT_JOB["running"] = False
 
@@ -331,7 +390,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/federated":
             return self._json(200, _federated())
         if path == "/api/agent-log":
-            return self._json(200, {"events": agent_log.events(OUTBOX)})
+            return self._json(200, {"events": agent_log.events(OUTBOX), "savings": agent_log.savings_summary(OUTBOX)})
         self._json(404, {"error": "not found"})
 
     def do_POST(self) -> None:
@@ -341,19 +400,36 @@ class Handler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             return self._json(400, {"error": "invalid json"})
         if path == "/api/order":
-            return self._json(*_create_order(body))
+            code, out = _create_order(body)
+            return self._json(code, out)
         if m := re.match(r"^/api/order/([0-9a-f]+)/(fulfill|partial|cancel)$", path):
-            return self._json(*_settle_order(m.group(1), m.group(2), body.get("qty"), str(body.get("reason") or "").strip()))
+            code, out = _settle_order(m.group(1), m.group(2), body.get("qty"), str(body.get("reason") or "").strip())
+            if code in (200, 201) and m.group(2) in ("fulfill", "partial"):
+                _schedule_agent_run(out["order"]["sku"])
+            return self._json(code, out)
         if m := re.match(r"^/api/approvals/([0-9a-f]+)/approve$", path):
             with _LOCK:
-                return self._json(*agent_log.approve(OUTBOX, m.group(1)))
+                code, out = agent_log.approve(OUTBOX, m.group(1))
+            if code == 200:
+                _schedule_agent_run()
+            return self._json(code, out)
         if m := re.match(r"^/api/approvals/([0-9a-f]+)/deny$", path):
             with _LOCK:
-                return self._json(*agent_log.deny(OUTBOX, m.group(1), str(body.get("reason", "")).strip()))
+                code, out = agent_log.deny(OUTBOX, m.group(1), str(body.get("reason") or "").strip())
+            if code == 200:
+                _schedule_agent_run()
+            return self._json(code, out)
         if path == "/api/scenario/1":
-            return self._json(200, _scenario1())
+            out = _scenario1()
+            _schedule_agent_run()
+            return self._json(200, out)
         if path == "/api/history":
-            return self._json(200, _gen_history(int(body.get("days") or 90)))
+            out = _gen_history(int(body.get("days") or 90))
+            _schedule_agent_run()
+            return self._json(200, out)
+        if path == "/api/agent/auto":
+            _AUTO_AGENT["enabled"] = bool(body.get("enabled", True))
+            return self._json(200, {"agent_auto": _AUTO_AGENT["enabled"]})
         if path == "/api/reset":
             return self._json(200, _reset())
         if path == "/api/agent/run":

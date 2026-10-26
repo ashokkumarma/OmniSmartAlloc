@@ -50,7 +50,7 @@ def test_changes_are_classified_auto_apply_log_and_notify(tmp_path):
 
 
 def test_channel_pause_is_staged_not_written_until_approved(tmp_path):
-    _seed(tmp_path, "RUG-003", "Balanced", {"DTC": 16, "Amazon": 7, "Etsy": 1, "Walmart": 6})
+    _seed(tmp_path, "RUG-003", "Balanced", {"DTC": 5, "Amazon": 10, "Etsy": 3, "Walmart": 12})
     reg = tools(_db("RUG-003", RUG), tmp_path)
     assert call(reg, "compute_allocation", {"sku": "RUG-003"})[1]["allocation"]["Walmart"] == 0
     ok, w = call(reg, "set_channel_allocation", {"sku": "RUG-003"})
@@ -61,28 +61,31 @@ def test_channel_pause_is_staged_not_written_until_approved(tmp_path):
     assert len(ev) == 1
     e = ev[0]
     assert e["status"] == "pending" and e["approval"] == "Needs approval" and e["approval_id"]
-    assert e["moves"]["reduce"] == [{"channel": "Walmart", "units": 6}, {"channel": "Amazon", "units": 2}]
+    assert e["moves"]["reduce"] == [{"channel": "Walmart", "units": 9}, {"channel": "Amazon", "units": 4}, {"channel": "Etsy", "units": 1}]
     chans = _chans(e)
     pause = chans["Walmart"]
-    assert (pause["cap_from"], pause["cap_to"]) == (6, 0) and pause["kind"] == "pause" and pause["primary"]
+    assert (pause["cap_from"], pause["cap_to"]) == (9, 0) and pause["kind"] == "pause" and pause["primary"]
     assert pause["savings"].startswith("up to $") and pause["savings"].endswith("if approved")
     assert e["net_savings"] == e["total_savings"] - e["baseline_savings"] and e["baseline_savings"] > 0
-    assert e["with_change"]["total"] == 60 and e["without_change"]["total"] == 265 and e["net_savings"] == -205
-    assert chans["Amazon"]["savings"] == "frees 2 units" and chans["Etsy"]["savings"].startswith("$")
+    assert e["with_change"]["total"] == 603 and e["without_change"]["total"] == 450 and e["net_savings"] == 153
+    assert chans["Amazon"]["savings"] == "frees 4 units" and chans["DTC"]["savings"].startswith("$")
     assert sum(c["primary"] for c in e["channels"]) == 1
 
     code, out = agent_log.approve(tmp_path, e["approval_id"])
     assert code == 200 and out["allocation"]["Walmart"] == 0
     last = json.loads((tmp_path / "allocations.jsonl").read_text().splitlines()[-1])
-    assert last["allocation"]["Walmart"] == 0 and last["approval_id"] == e["approval_id"] and last["previous"]["Walmart"] == 6
+    assert last["allocation"]["Walmart"] == 0 and last["approval_id"] == e["approval_id"] and last["previous"]["Walmart"] == 9
     after = agent_log.events(tmp_path)
     assert len(after) == 1 and after[0]["status"] == "approved" and after[0]["approval"] == "Approved"
+    savings = agent_log.savings_summary(tmp_path)
+    assert savings == {"total": after[0]["net_savings"], "count": 1,
+                       "by_sku": {"RUG-003": after[0]["net_savings"]}}
     assert agent_log.approve(tmp_path, e["approval_id"])[0] == 409
     assert agent_log.approve(tmp_path, "nope")[0] == 404
 
 
 def test_stale_proposal_is_refused_and_new_proposal_supersedes_old(tmp_path):
-    _seed(tmp_path, "RUG-003", "Balanced", {"DTC": 16, "Amazon": 7, "Etsy": 1, "Walmart": 6})
+    _seed(tmp_path, "RUG-003", "Balanced", {"DTC": 5, "Amazon": 10, "Etsy": 3, "Walmart": 12})
     reg = tools(_db("RUG-003", RUG), tmp_path)
     call(reg, "compute_allocation", {"sku": "RUG-003"})
     first = call(reg, "set_channel_allocation", {"sku": "RUG-003"})[1]["approval_id"]
@@ -98,7 +101,7 @@ def test_stale_proposal_is_refused_and_new_proposal_supersedes_old(tmp_path):
 
 
 def test_denial_needs_a_reason_and_reaches_the_agent(tmp_path):
-    _seed(tmp_path, "RUG-003", "Balanced", {"DTC": 16, "Amazon": 7, "Etsy": 1, "Walmart": 6})
+    _seed(tmp_path, "RUG-003", "Balanced", {"DTC": 5, "Amazon": 10, "Etsy": 3, "Walmart": 12})
     reg = tools(_db("RUG-003", RUG), tmp_path)
     call(reg, "compute_allocation", {"sku": "RUG-003"})
     aid = call(reg, "set_channel_allocation", {"sku": "RUG-003"})[1]["approval_id"]
@@ -111,3 +114,55 @@ def test_denial_needs_a_reason_and_reaches_the_agent(tmp_path):
     ok, r = call(reg, "compute_allocation", {"sku": "RUG-003"})
     assert ok and r["recent_denied_proposals"][-1]["deny_reason"].startswith("keep Walmart")
     assert agent_log.deny(tmp_path, aid, "again")[0] == 409 and agent_log.approve(tmp_path, aid)[0] == 409
+
+
+def _tools_used(db, tmp_path, used):
+    from src.tools.allocation_tools import build_allocation_tools
+    from src.tools.discovery import build_discovery_tools
+    from src.tools.registry import ToolRegistry
+    return ToolRegistry(build_discovery_tools(db, extra=build_allocation_tools(db, tmp_path, lambda sku, ts: used)))
+
+
+def test_drained_channel_refill_over_25pct_is_staged_not_written(tmp_path):
+    """Amazon sold 30 of its 33 -> holds 3. Refilling it is a >25% move, so it stages for approval."""
+    _seed(tmp_path, "MUG-001", "Tight", {"DTC": 44, "Amazon": 33, "Etsy": 7, "Walmart": 16})
+    from tests.test_allocation_tools import BASE_ECON
+    po = [{"po": "PO-9001", "sku": "MUG-001", "qty": 200, "eta_days": 5, "status": "in_transit", "supplier": "ACME-EAST"}]
+    db = DemoConnector(patch={"channel_economics": BASE_ECON, "wms_inbound": po, "wms_inventory": [{"sku": "MUG-001", "on_hand": 70, "committed": 0}]})
+    reg = _tools_used(db, tmp_path, {"Amazon": 30})
+    res = call(reg, "compute_allocation", {"sku": "MUG-001"})[1]
+    ok, w = call(reg, "set_channel_allocation", {"sku": "MUG-001"})
+    assert ok and w["written"] is False and w["pending_approval"] and any("25%" in r for r in w["reasons"])
+    e = agent_log.events(tmp_path)[0]
+    assert e["status"] == "pending" and e["approval"] == "Needs approval"
+    assert next(c for c in e["channels"] if c["channel"] == "Amazon")["cap_from"] == 3
+    assert sum(w["would_have_allocated"].values()) <= res["sellable_units"]
+
+
+def test_consumption_alone_never_writes(tmp_path):
+    """Stock sold, every channel still holds exactly its best split -> nothing to rebalance, nothing written."""
+    db = DemoConnector(patch={"channel_economics": MUG, "wms_inbound": [], "wms_inventory": [{"sku": "MUG-001", "on_hand": 70, "committed": 0}]})
+    reg = _tools_used(db, tmp_path, {})
+    res = call(reg, "compute_allocation", {"sku": "MUG-001"})[1]
+    _seed(tmp_path, "MUG-001", res["state"], res["allocation"])
+    reg = _tools_used(db, tmp_path, {})
+    call(reg, "compute_allocation", {"sku": "MUG-001"})
+    ok, w = call(reg, "set_channel_allocation", {"sku": "MUG-001"})
+    assert ok and w["written"] is False and not w.get("pending_approval")
+    assert len((tmp_path / "allocations.jsonl").read_text().splitlines()) == 1
+    assert not agent_log.events(tmp_path)
+
+
+def test_card_shows_stock_moved_off_channels_without_sales_data(tmp_path):
+    """Reduce and add must balance: channels holding stock but with no economics (e.g. Walmart/Etsy on a
+    two-channel SKU) appear as donors instead of silently disappearing from the card."""
+    rec = {"ts": "2026-10-26T22:25:21Z", "sku": "LOCK-004", "state": "Abundant", "sellable_units": 74, "days_of_cover": 72.7, "reason": "x",
+           "allocation": {"DTC": 24, "Amazon": 50}, "previous": {"DTC": 38, "Amazon": 18, "Walmart": 15, "Etsy": 3},
+           "channel_context": {"DTC": {"unit_margin": 30.0, "demand_confidence": 0.9, "score": 27.0, "forecast_per_day": 1.0, "v7": 1.0, "v90": 1.0},
+                               "Amazon": {"unit_margin": 20.0, "demand_confidence": 1.0, "score": 20.0, "forecast_per_day": 2.0, "v7": 2.0, "v90": 2.0}}}
+    e = agent_log._event(rec, "auto")
+    red = {m["channel"]: m["units"] for m in e["moves"]["reduce"]}
+    add = {m["channel"]: m["units"] for m in e["moves"]["add"]}
+    assert red == {"DTC": 14, "Walmart": 15, "Etsy": 3} and add == {"Amazon": 32}
+    assert sum(red.values()) == sum(add.values())
+    assert e["approval"] != "Needs approval" and not any(c["kind"] == "pause" for c in e["channels"])

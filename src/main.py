@@ -12,6 +12,7 @@ from src.data_connectors.zetaris_jdbc import ZetarisJdbcConnector
 from src.llm import build_llm
 from src.prompts import OMNISMARTALLOC_SYSTEM_PROMPT, TRACK1_SYSTEM_PROMPT
 from src.tools import ToolRegistry, build_discovery_tools
+from src.allocation.held import used_since
 from src.tools.allocation_tools import build_allocation_tools
 
 PROMPTS = {"generic": TRACK1_SYSTEM_PROMPT, "omnismartalloc": OMNISMARTALLOC_SYSTEM_PROMPT}
@@ -35,7 +36,7 @@ def main() -> int:
         return 2
     try:
         agent = ReActAgent(llm.client, llm.model,
-                           ToolRegistry(build_discovery_tools(db, s.agent_max_rows, build_allocation_tools(db, OUTBOX_DIR))),
+                           ToolRegistry(build_discovery_tools(db, s.agent_max_rows, build_allocation_tools(db, OUTBOX_DIR, used_since))),
                            PROMPTS[args.prompt], args.max_steps or s.agent_max_steps,
                            chat_extra_headers=llm.chat_extra_headers)
         result = agent.run(args.question)

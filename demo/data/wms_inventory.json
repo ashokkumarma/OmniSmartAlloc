@@ -2,8 +2,8 @@
   "inventory": [
     {
       "sku": "MUG-001",
-      "on_hand": 100,
-      "committed": 3,
+      "on_hand": 70,
+      "committed": 0,
       "unputaway": 0,
       "age_hours": 0.2
     },
@@ -16,7 +16,7 @@
     },
     {
       "sku": "LOCK-004",
-      "on_hand": 75,
+      "on_hand": 53,
       "committed": 0,
       "unputaway": 0,
       "age_hours": 0.2

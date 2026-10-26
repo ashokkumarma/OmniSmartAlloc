@@ -16,7 +16,7 @@
     },
     {
       "sku": "LOCK-004",
-      "locked": true,
+      "locked": false,
       "manual_override": false,
       "clearance": false,
       "promo_multiplier": 1.0

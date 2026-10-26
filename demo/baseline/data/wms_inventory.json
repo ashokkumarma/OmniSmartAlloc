@@ -3,7 +3,7 @@
     {
       "sku": "MUG-001",
       "on_hand": 100,
-      "committed": 3,
+      "committed": 0,
       "unputaway": 0,
       "age_hours": 0.2
     },

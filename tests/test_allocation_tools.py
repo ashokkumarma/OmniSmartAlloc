@@ -83,14 +83,14 @@ def test_demo_data_reproduces_the_baseline_example(tmp_path):
     assert r["allocation"] == {"DTC": 65, "Amazon": 20, "Etsy": 5, "Walmart": 10}
 
 
-def test_demo_skus_cover_critical_and_locked(tmp_path):
+def test_demo_skus_cover_critical_and_all_demo_skus_are_unlocked(tmp_path):
     reg = tools(DemoConnector(patch={"wms_inbound": []}), tmp_path)
     assert call(reg, "compute_allocation", {"sku": "RUG-003"})[1]["state"] == "Critical"
-    locked = call(reg, "compute_allocation", {"sku": "LOCK-004"})[1]
-    assert not locked["write_allowed"]
+    unlocked = call(reg, "compute_allocation", {"sku": "LOCK-004"})[1]
+    assert unlocked["write_allowed"]
     ok, w = call(reg, "set_channel_allocation", {"sku": "LOCK-004"})
-    assert ok and w["written"] is False and "would_have_allocated" in w
-    assert not (tmp_path / "allocations.jsonl").exists()
+    assert ok and w["written"] is True
+    assert (tmp_path / "allocations.jsonl").exists()
 
 
 def test_set_requires_compute_first(tmp_path):
@@ -115,7 +115,7 @@ def test_missing_committed_is_low_confidence(tmp_path):
     assert ok and r["confidence"] == "low"
 
 
-def test_25_percent_limit_steps_toward_target_when_state_unchanged(tmp_path):
+def test_move_over_25_percent_of_held_stock_stages_approval(tmp_path):
     reg = tools(DemoConnector(), tmp_path)
     call(reg, "compute_allocation", {"sku": "MUG-001"})
     first = call(reg, "set_channel_allocation", {"sku": "MUG-001"})[1]
@@ -126,23 +126,53 @@ def test_25_percent_limit_steps_toward_target_when_state_unchanged(tmp_path):
     store.write_text(json.dumps(seed) + "\n")
     call(reg, "compute_allocation", {"sku": "MUG-001"})
     second = call(reg, "set_channel_allocation", {"sku": "MUG-001"})[1]
-    assert second["stepped_by_25pct_limit"] and second["applied"]["DTC"] == 65
-    assert sum(second["applied"].values()) <= 340
+    assert second["written"] is False and second["pending_approval"]
+    assert any("25%" in r for r in second["reasons"])
+    # Caps are untouched until a human approves
+    last = json.loads((tmp_path / "allocations.jsonl").read_text().splitlines()[-1])
+    assert last["allocation"] == {"DTC": 60, "Amazon": 114, "Etsy": 65, "Walmart": 19}
 
 
-def test_negative_savings_proposal_is_staged_not_written(tmp_path):
-    """A change with negative projected savings is never applied or offered — it is auto-declined."""
+def test_negative_savings_proposal_is_never_applied_or_offered(tmp_path, monkeypatch):
+    """Negative projected savings: not written, not staged for approval, no card - on every path."""
     reg = tools(DemoConnector(), tmp_path)
     call(reg, "compute_allocation", {"sku": "MUG-001"})
     call(reg, "set_channel_allocation", {"sku": "MUG-001"})
+    monkeypatch.setattr(agent_log, "projected_net_savings", lambda *a, **k: -50.0)
     reg2 = tools(DemoConnector(patch={"wms_inventory": [{"sku": "MUG-001", "on_hand": 300, "committed": 0}]}), tmp_path)
-    ok, r = call(reg2, "compute_allocation", {"sku": "MUG-001"})
+    call(reg2, "compute_allocation", {"sku": "MUG-001"})
     ok, w = call(reg2, "set_channel_allocation", {"sku": "MUG-001"})
     assert ok and w["written"] is False and w["declined"] and not w.get("pending_approval")
     assert "negative" in w["reasons"][0]
     assert len((tmp_path / "allocations.jsonl").read_text().splitlines()) == 1  # nothing applied
-    assert not agent_log.events(tmp_path)  # never rendered as a card — it is not an option
-    assert agent_log.denied(tmp_path, "MUG-001")  # still fed back so the agent won't re-propose it
+    assert not agent_log.events(tmp_path)  # never rendered as a card
+    assert not agent_log.pending(tmp_path, "MUG-001")  # never offered for approval
+    assert agent_log.denied(tmp_path, "MUG-001")  # fed back so the agent won't re-propose it
+
+
+def test_zero_savings_change_is_never_written(tmp_path, monkeypatch):
+    """A no-benefit change (net savings = 0) is not written, not staged, and shows no card."""
+    reg = tools(DemoConnector(), tmp_path)
+    call(reg, "compute_allocation", {"sku": "MUG-001"})
+    call(reg, "set_channel_allocation", {"sku": "MUG-001"})
+    monkeypatch.setattr(agent_log, "projected_net_savings", lambda *a, **k: 0.0)
+    reg2 = tools(DemoConnector(patch={"wms_inventory": [{"sku": "MUG-001", "on_hand": 300, "committed": 0}]}), tmp_path)
+    call(reg2, "compute_allocation", {"sku": "MUG-001"})
+    ok, w = call(reg2, "set_channel_allocation", {"sku": "MUG-001"})
+    assert ok and w["written"] is False and w["declined"] and not w.get("pending_approval")
+    assert "no projected savings" in w["reasons"][0].lower()
+    assert len((tmp_path / "allocations.jsonl").read_text().splitlines()) == 1  # caps untouched
+    assert not agent_log.events(tmp_path)
+    assert not agent_log.pending(tmp_path, "MUG-001")
+
+
+def test_stock_sync_is_not_counted_as_margin_loss():
+    """Caps shrinking because stock was sold is a stock sync, not a loss."""
+    ctx = {ch: {"unit_margin": m, "forecast_per_day": f} for ch, m, f in
+           [("DTC", 24, 6), ("Amazon", 16, 14), ("Etsy", 13, 3), ("Walmart", 10, 7)]}
+    prev = {"DTC": 44, "Amazon": 33, "Etsy": 7, "Walmart": 16}
+    shrink = {"DTC": 36, "Amazon": 19, "Etsy": 5, "Walmart": 10}
+    assert agent_log.projected_net_savings(prev, shrink, ctx, 2.3) == 0
 
 
 def test_alert_and_log_are_persisted(tmp_path):

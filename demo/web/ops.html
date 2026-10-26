@@ -20,6 +20,8 @@
   .tabs { display:flex; gap:8px; padding:14px 28px 0 }
   .tab { padding:10px 24px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
     background:#10152A; color:var(--mut); cursor:pointer; font-weight:700; font-size:14px }
+  .tab { position:relative }
+  .tab-dot { position:absolute; top:-9px; right:-7px; min-width:22px; height:22px; padding:0 6px; border-radius:99px; background:#EF4444; color:#fff; font-size:12px; font-weight:800; display:none; align-items:center; justify-content:center; box-shadow:0 0 0 2px var(--bg) }
   .tab.active { background:#38BDF8; border-color:#38BDF8; color:#E4E9F7 }
   main { padding:22px 28px; display:flex; flex-direction:column; gap:18px }
   .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px }
@@ -43,14 +45,14 @@
   .mono { font-family:Consolas,monospace; font-size:11px; white-space:pre-wrap; color:#9FB0D8 }
   canvas { max-height:230px }
   .late { color:#F87171; font-weight:700 }
-  #alBadge { background:#F59E0B; color:#E4E9F7; border-radius:99px; padding:1px 8px; font-size:11px; margin-left:6px }
   .alchips { display:flex; gap:8px; flex-wrap:wrap }
   .chip { border:1px solid var(--line); background:#10152A; color:var(--mut); border-radius:99px; padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer }
   .chip b { color:#fff; margin-left:6px }
   .chip.on { background:#1E2A4A; color:#fff; border-color:#38BDF8 }
   .evgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(540px,1fr)); gap:16px }
   .ev { --c:#22C55E; background:linear-gradient(180deg,#171E36,#131A2F); border:1px solid var(--line); border-left:4px solid var(--c); border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; gap:12px }
-  .ev.notify { --c:#38BDF8 } .ev.need { --c:#F59E0B } .ev.done { --c:#10B981 } .ev.deny { --c:#EF4444 }
+  .ev { --c:#86EFAC }
+  .ev.notify { --c:#38BDF8 } .ev.need { --c:#F59E0B } .ev.done { --c:#166534 } .ev.deny { --c:#F97316 } .ev.sync { --c:#64748B }
   .moves { display:flex; flex-direction:column; gap:6px; background:#0E1330; border-radius:8px; padding:8px 12px; font-size:13px; font-weight:700; color:#E4E9F7 }
   .moves .mv { display:flex; align-items:center; gap:10px }
   .mv-tag { font-size:10px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; border-radius:99px; padding:2px 10px; width:64px; text-align:center }
@@ -77,9 +79,9 @@
   .ev-why { font-size:13px; color:#C9D1EA; line-height:1.5; background:#10152A; border-radius:8px; padding:10px 14px }
   .ev-why small.l { margin-bottom:4px }
   .ev-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap }
-  .ev-time { color:var(--mut); font-size:12px; margin-right:auto }
-  .pill { font-size:11px; font-weight:800; padding:3px 10px; border-radius:99px; border:1px solid var(--line); background:#0E1330 }
-  .badge2 { font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; color:#E4E9F7; background:var(--c) }
+  .ev-time { color:var(--mut); font-size:14px; margin-right:auto }
+  .pill { font-size:13.5px; font-weight:800; padding:5px 14px; border-radius:99px; border:1px solid var(--line); background:#0E1330 }
+  .badge2 { font-size:13.5px; font-weight:800; padding:7px 16px; border-radius:99px; color:var(--fc,#E4E9F7); background:var(--bc,var(--c)) }
   .ev-main { display:grid; grid-template-columns:1.3fr 1fr 1.2fr .7fr 1fr; gap:12px; align-items:end }
   .ev small.l { display:block; color:var(--mut); font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:3px }
   .cap { font-size:24px; font-weight:800; white-space:nowrap } .cap i { color:var(--mut); font-style:normal; font-weight:400; margin:0 6px }
@@ -109,17 +111,18 @@
   <span class="pill">centralized stock via Zetaris</span>
   <span class="pill">decisions by Nemotron agent</span>
   <div class="grow"></div>
-  <button id="scn1Btn" style="background:linear-gradient(90deg,#C4B5FD,#8B5CF6);color:#0B1020;margin-right:10px" onclick="scenario1()">Scenario 1: Auto Apply</button>
-  <button id="histBtn" style="background:linear-gradient(90deg,#67E8F9,#38BDF8);color:#0B1020;margin-right:10px" onclick="genHistory()">⟳ Generate history orders</button>
-  <button id="resetBtn" style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:10px" onclick="resetDemo()">↺ Reset demo</button>
+  <button id="resetBtn" style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:10px" onclick="resetDemo()">↺ Reset demo data</button>
+  <button id="simBtn" style="display:none" onclick="simOrder()">⚡ Simulate order</button>
   <button id="runBtn" onclick="runAgent()">▶ Run allocation cycle</button>
+  <label id="autoRunLbl" style="display:flex;align-items:center;gap:5px;margin-left:10px;font-size:11px;color:var(--mut);cursor:pointer">
+    <input type="checkbox" id="autoRunChk" onchange="toggleAuto(this.checked)"> auto-run</label>
   <nav style="margin-left:14px"><a href="/channels">← Channel storefronts</a></nav>
 </header>
 <div class="tabs">
+  <div class="tab" id="tabAgentLog" onclick="show('agentlog')">Smart Allocation <span id="alBadge" class="tab-dot"></span></div>
   <div class="tab" id="tabDashboard" onclick="show('dashboard')">Dashboard</div>
-  <div class="tab" id="tabOrders" onclick="show('orders')">Orders</div>
+  <div class="tab" id="tabOrders" onclick="show('orders')">Orders<span id="ordDot" class="tab-dot"></span></div>
   <div class="tab" id="tabInventory" onclick="show('inventory')">Inventory</div>
-  <div class="tab" id="tabAgentLog" onclick="show('agentlog')">Agent log <span id="alBadge" style="display:none"></span></div>
 </div>
 <main>
   <div id="pgDashboard" style="display:flex;flex-direction:column;gap:18px">
@@ -142,9 +145,16 @@
   </div>
 
   <div id="pgAgentLog" style="display:flex;flex-direction:column;gap:18px">
-    <div class="card"><h3>How the agent ranks channels — margin-adjusted demand score</h3>
-      <div id="scoreGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
-      <small style="color:var(--mut)">Score = Unit margin × Demand confidence — the agent allocates to channels in order of higher score. Higher the score, better the savings.</small>
+    <div style="display:flex;gap:18px;align-items:stretch">
+      <div class="card" style="flex:2;min-width:0"><h3>How the agent ranks channels — margin-adjusted demand score</h3>
+        <div id="scoreGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+      </div>
+      <div class="card" style="flex:.5;min-width:210px"><h3>Overall savings from smart allocation</h3>
+        <div id="savingsCard"></div>
+      </div>
+      <div class="card" style="flex:.5;min-width:210px"><h3>How the score is calculated</h3>
+        <div id="scoreExplain" style="font-size:12px;line-height:1.6;color:#C9D1EA"></div>
+      </div>
     </div>
     <div class="alchips" id="alChips"></div>
     <div class="evgrid" id="evCards"></div>
@@ -199,7 +209,7 @@ const valueLabels={id:'valueLabels',afterDatasetsDraw(chart){
     });
   }); ctx.restore(); }};
 Chart.register(valueLabels);
-let S=null, charts={}, page='orders', ofilter='all';
+let S=null, charts={}, page='orders', ofilter='open';
 const $=id=>document.getElementById(id);
 const COL={DTC:'#7C3AED',Amazon:'#FF9900',Etsy:'#F1641E',Walmart:'#0071CE'};
 const chanColor=c=>COL[c]||'#8B93AD';
@@ -212,12 +222,14 @@ function show(p){ page=p;
     $('pg'+t).style.display=p===t.toLowerCase()?'flex':'none';
   render();
 }
-let AL=[], alFilter='all';
+let AL=[], SAV={total:0,count:0,by_sku:{}}, alFilter='all';
 async function state(){
   const [s,l]=await Promise.all([fetch('/api/state'),fetch('/api/agent-log')]);
-  S=await s.json(); AL=(await l.json()).events; render();
+  S=await s.json(); const lj=await l.json(); AL=lj.events; SAV=lj.savings||SAV; render();
   const n=new Set(AL.filter(e=>e.status==='pending').map(e=>e.approval_id)).size, b=$('alBadge');
-  b.style.display=n?'inline':'none'; b.textContent=n;
+  b.style.display=n?'flex':'none'; b.textContent=n;
+  const oo=S.orders.filter(o=>o.status==='open'||o.status==='partial').length, d=$('ordDot');
+  d.style.display=oo?'flex':'none'; d.textContent=oo;
 }
 function kpi(l,v){return `<div class="kpi"><b>${v}</b><small>${l}</small></div>`;}
 function kpiF(l,v,f){return `<div class="kpi${ofilter===f?' sel':''}" data-f="${f}" onclick="pickFilter('${f}')"><b>${v}</b><small>${l}</small></div>`;}
@@ -326,11 +338,21 @@ function renderInventory(){
     S.decisions.slice(0,6).map(d=>{const r=d.record||{};return `<div style="border-color:#38BDF8"><b>${d.sku}</b> ${r.state||''} · allocated ${JSON.stringify(r.allocation||{})}</div>`;}).join('')
     || '<small style="color:var(--mut)">Agent has not run yet.</small>';
   $('agenttail').textContent = S.agent.running?'Agent is running…':'';
+  if($('autoRunChk')) $('autoRunChk').checked = S.agent_auto !== false;
 }
 
 const fmtTs=ts=>new Date(ts).toLocaleString('en-US',{timeZone:'UTC',month:'2-digit',day:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}).replace(', ',' ')+' UTC';
 let scoreCharts=[];
+function renderSavings(){
+  const pend=AL.filter(e=>e.status==='pending').reduce((a,e)=>a+(e.net_savings||0),0);
+  const rows=Object.entries(SAV.by_sku).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px solid #232B45"><span>${esc(k)}</span><b style="color:#86EFAC">+$${v}</b></div>`).join('');
+  $('savingsCard').innerHTML=`<div style="font-size:34px;font-weight:900;color:#86EFAC;line-height:1.1">+$${SAV.total}</div>
+    <div style="font-size:12px;color:var(--mut);margin:4px 0 10px">from ${SAV.count} active card${SAV.count===1?'':'s'}</div>
+    ${rows||'<div style="font-size:12px;color:var(--mut)">No profitable reallocation applied yet.</div>'}
+    ${pend?`<div style="margin-top:10px;font-size:12px;color:#FBBF24">+$${pend} more awaiting approval</div>`:''}`;
+}
 function renderScoreCard(){
+  renderSavings();
   const grid=$('scoreGrid');
   const skus=(S.skus||[]).map(p=>p.sku);
   grid.innerHTML=skus.map(sku=>{
@@ -339,9 +361,9 @@ function renderScoreCard(){
       :S.economics.filter(r=>r.sku===sku).map(r=>({channel:r.channel,conf:r.demand_confidence,margin:r.unit_margin,score:+(r.unit_margin*r.demand_confidence).toFixed(1)})))
       .sort((a,b)=>b.score-a.score);
     const order=chans.map((c,i)=>`<b style="color:${chanColor(c.channel)}">${i+1}. ${esc(c.channel)}</b>`).join(' → ');
-    return `<div><div style="font-size:15px;font-weight:800;color:#E4E9F7;text-align:center;margin-bottom:2px">${esc(sku)}</div>
-      <div style="font-size:12px;text-align:center;margin-bottom:4px">${order}</div>
-      <div style="height:150px"><canvas id="sc-${sku}"></canvas></div></div>`;}).join('');
+    return `<div><div style="font-size:16px;font-weight:800;color:#E4E9F7;text-align:center;margin-bottom:4px">${esc(sku)}</div>
+      <div style="font-size:13px;text-align:center;margin-bottom:6px">${order}</div>
+      <div style="height:200px"><canvas id="sc-${sku}"></canvas></div></div>`;}).join('');
   scoreCharts.forEach(c=>c.destroy()); scoreCharts=[];
   skus.forEach(sku=>{
     const ev=AL.find(e=>e.sku===sku);
@@ -352,31 +374,51 @@ function renderScoreCard(){
     const xmin=Math.max(0,Math.floor(Math.min(...xs)*10-1)/10);
     const xmax=Math.ceil(Math.max(...xs)*10+2)/10;
     scoreCharts.push(new Chart($('sc-'+sku),{type:'scatter',
-      data:{datasets:[{data:chans.map(c=>({x:c.conf,y:c.margin,c:c.channel,s:c.score,rank:chans.indexOf(c)+1})),pointRadius:7,pointHoverRadius:9,
+      data:{datasets:[{data:chans.map(c=>({x:c.conf,y:c.margin,c:c.channel,s:c.score,rank:chans.indexOf(c)+1})),pointRadius:8,pointHoverRadius:10,
         backgroundColor:chans.map(c=>chanColor(c.channel)),borderColor:'#fff',borderWidth:1}]},
       options:{maintainAspectRatio:false,layout:{padding:{right:4}},
         plugins:{legend:{display:false},tooltip:{callbacks:{label:p=>`#${p.raw.rank} ${p.raw.c}: margin $${p.raw.y}, confidence ${p.raw.x} → score ${p.raw.s}`}}},
-        scales:{x:{min:xmin,max:xmax,title:{display:true,text:'demand confidence',color:'#8B93AD',font:{size:12}},ticks:{color:'#8B93AD',font:{size:10}},grid:{color:'#232B45'}},
-                y:{title:{display:true,text:'margin $/unit',color:'#8B93AD',font:{size:12}},ticks:{color:'#8B93AD',font:{size:10},callback:v=>'$'+v},grid:{color:'#232B45'}}}},
+        scales:{x:{min:xmin,max:xmax,title:{display:true,text:'demand confidence',color:'#8B93AD',font:{size:13}},ticks:{color:'#8B93AD',font:{size:11}},grid:{color:'#232B45'}},
+                y:{title:{display:true,text:'margin $/unit',color:'#8B93AD',font:{size:13}},ticks:{color:'#8B93AD',font:{size:11},callback:v=>'$'+v},grid:{color:'#232B45'}}}},
       plugins:[{id:'ptLabels',afterDatasetsDraw(ch){
         const meta=ch.getDatasetMeta(0);
         meta.data.forEach((el,i)=>{const p=ch.data.datasets[0].data[i];
           const label=`#${p.rank} ${p.c}`;
-          ch.ctx.fillStyle='#E8ECF7';ch.ctx.font='700 9px Inter,system-ui';
+          ch.ctx.fillStyle='#E8ECF7';ch.ctx.font='700 10px Inter,system-ui';
           const w=ch.ctx.measureText(label).width;
           const x=el.x+9+w>ch.width-4?el.x-w-9:el.x+9;
           ch.ctx.fillText(label,x,el.y+3);});}}]}));
   });
+  const ex=$('scoreExplain'), sku=(S.skus||[])[0];
+  if(!sku){ ex.textContent=''; return; }
+  const rows=S.economics.filter(r=>r.sku===sku.sku)
+    .map(r=>({ch:r.channel,m:r.unit_margin,c:r.demand_confidence,s:+(r.unit_margin*r.demand_confidence).toFixed(1)}))
+    .sort((a,b)=>b.s-a.s);
+  ex.innerHTML=`<b>score = unit margin × demand confidence</b><br><br>`
+    +`<div style="color:var(--mut);font-size:12px;margin-bottom:8px">${esc(sku.sku)} example:</div>`
+    +rows.map((r,i)=>`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:baseline;margin-bottom:6px">
+        <b style="color:${chanColor(r.ch)};min-width:56px">${esc(r.ch)}</b>
+        <span>$${r.m} × ${r.c} = <b>${r.s}</b></span>
+        <b style="color:${chanColor(r.ch)}">#${i+1}</b></div>`).join('')
+    +`<br><span style="color:var(--mut)">Each channel's score is its profit per unit multiplied by how reliably it sells.
+      A channel with high margin but weak demand scores low, and vice versa — the product of both decides who gets stock first.</span>`;
 }
-const evClass=e=>({approved:'done',pending:'need',denied:'deny'})[e.status]||(e.channels.some(c=>c.row_approval==='Auto-apply and notify')?'notify':'');
-const evGroup=e=>({pending:'Needs approval',approved:'Approved',denied:'Denied'})[e.status]||'Auto-apply';
+const evClass=e=>({approved:'done',pending:'need',denied:'deny'})[e.status]||(e.stock_sync?'sync':e.channels.some(c=>c.row_approval==='Auto-apply and notify')?'notify':'');
+const evGroup=e=>({pending:'Needs approval',approved:'Approved',denied:'Denied'})[e.status]
+  ||(e.stock_sync?'Stock sync':'Auto-applied');
+const GROUP_COLOR={'Auto-applied':'#86EFAC','Needs approval':'#FBBF24','Approved':'#166534','Denied':'#F97316','Stock sync':'#64748B'};
+const GROUP_DARK={'Approved':1,'Denied':1,'Stock sync':1};
+const badgeStyle=e=>`--bc:${GROUP_COLOR[evGroup(e)]||'#94A3B8'};--fc:${GROUP_DARK[evGroup(e)]?'#fff':'#0B1020'}`;
 const savTotal=e=>({pending:`up to $${e.net_savings} if approved`,approved:`$${e.net_savings}`,denied:`$${e.net_savings} declined`})[e.status]||(e.net_savings?`+$${e.net_savings}`:'—');
 function renderAgentLog(){
   renderScoreCard();
-  const groups=['Auto-apply','Needs approval','Approved','Denied'];
+  const groups=['Auto-applied','Needs approval','Approved','Denied','Stock sync'];
   const count=g=>AL.filter(e=>evGroup(e)===g).length;
-  $('alChips').innerHTML=[['all','All',AL.length],...groups.map(g=>[g,g,count(g)])].map(([k,l,n])=>
-    `<span class="chip${alFilter===k?' on':''}" onclick="alFilter='${k}';renderAgentLog()">${l}<b>${n}</b></span>`).join('');
+  $('alChips').innerHTML=[['all','All',AL.length],...groups.map(g=>[g,g,count(g)])].map(([k,l,n])=>{
+    const c=GROUP_COLOR[k], on=alFilter===k;
+    const st = c ? ` style="border-color:${c};${on?`background:${c};`:'background:#10152A;'}color:${on?(GROUP_DARK[k]?'#fff':'#0B1020'):c}"` : '';
+    return `<span class="chip"${st} onclick="alFilter='${k}';renderAgentLog()">${l}<b style="color:${c&&on?(GROUP_DARK[k]?'#fff':'#0B1020'):c||'#fff'}">${n}</b></span>`;
+  }).join('');
   const rows=AL.filter(e=>alFilter==='all'||evGroup(e)===alFilter);
   $('evCards').innerHTML=rows.map(e=>{
     const cls=evClass(e);
@@ -394,9 +436,11 @@ function renderAgentLog(){
       : e.status==='denied'?`<div class="ev-foot"><span style="color:#FCA5A5;font-weight:700">✖ Denied${e.approved_ts?' '+fmtTs(e.approved_ts):''}${e.deny_reason?` — ${esc(e.deny_reason)}`:''}. The agent sees this reason on its next run.</span></div>`:'';
     return `<div class="ev ${cls}">
       <div class="ev-top"><span class="ev-time">${fmtTs(e.ts)}</span><span class="pill">${esc(e.sku)}</span>
-        ${e.channels.map(c=>`<span class="pill" style="color:${chanColor(c.channel)};border-color:${chanColor(c.channel)};font-size:10px">${esc(c.channel)}</span>`).join('')}
-        <span class="badge2">${esc(e.approval)}</span></div>
-      <div class="savewrap">
+        ${e.channels.map(c=>`<span class="pill" style="color:${chanColor(c.channel)};border-color:${chanColor(c.channel)}">${esc(c.channel)}</span>`).join('')}
+        <span class="badge2" style="${badgeStyle(e)}">${esc(evGroup(e))}</span></div>
+      ${e.stock_sync ? `<div class="savewrap"><div class="savebox">Stock sync — no reallocation decision</div>
+        <div class="savenet" style="text-align:left">Stock was sold or committed, so channel limits were trimmed to match what is actually available. Nothing was moved between channels — the removed units no longer exist to sell.</div></div>`
+      : `<div class="savewrap">
         <div class="savebox">Projected saving calculation</div>
         <div class="savegrid">
           <div class="savecard without"><h4>Without this change</h4>${e.without_change.lines.map(l=>esc(l)).join('<br>')}<div class="tot">$${e.without_change.total}</div></div>
@@ -404,9 +448,12 @@ function renderAgentLog(){
         </div>
         <div class="savenet">Projected savings from this change <span class="amt ${e.net_savings>=0?'pos':'neg'}">${e.net_savings>=0?'+':''}$${e.net_savings}</span>
           <div style="font-size:11px;color:var(--mut);margin-top:2px">assumes the units sell on whichever channel gets them</div></div>
-      </div>
+      </div>`}
       <div class="ev-why"><small class="l">Why this change</small>${(Array.isArray(e.why)?e.why:[e.why]).map(b=>`<div style="margin-top:3px">• ${esc(b)}</div>`).join('')}</div>
-      <div class="moves">${(e.moves.reduce||[]).length?`<div class="mv"><span class="mv-tag red">Reduce</span>${e.moves.reduce.map(m=>`<span style="color:${chanColor(m.channel)}">${m.channel}</span> −${m.units}`).join(' · ')}</div>`:''}${(e.moves.add||[]).length?`<div class="mv"><span class="mv-tag grn">Add</span>${e.moves.add.map(m=>`<span style="color:${chanColor(m.channel)}">${m.channel}</span> +${m.units}`).join(' · ')}</div>`:''}</div>
+      <div class="moves">${(e.moves.reduce||[]).length?`<div class="mv"><span class="mv-tag red">Reduce</span>${e.moves.reduce.map(m=>`<span style="color:${chanColor(m.channel)}">${m.channel}</span> −${m.units}`).join(' · ')}</div>`:''}${(e.moves.add||[]).length?`<div class="mv"><span class="mv-tag grn">Add</span>${e.moves.add.map(m=>`<span style="color:${chanColor(m.channel)}">${m.channel}</span> +${m.units}`).join(' · ')}</div>`:''}${(()=>{
+        const rt=(e.moves.reduce||[]).reduce((a,m)=>a+m.units,0), at=(e.moves.add||[]).reduce((a,m)=>a+m.units,0);
+        return rt>at ? `<div class="mv"><span class="mv-tag gry">Why less added</span>${rt-at} of the reduced units are not reassigned anywhere — that stock was already sold or committed, so it is simply no longer offered for sale on any channel.</div>` : '';
+      })()}</div>
       <div style="display:flex;flex-direction:column;gap:10px">${chanRows}</div>
       ${foot}</div>`;}).join('')
     || '<small style="color:var(--mut)">No agent events yet. Click “Run allocation cycle” — every change the agent proposes or applies shows up here.</small>';
@@ -467,11 +514,29 @@ async function genHistory(){
   b.disabled=false; b.textContent='⟳ Generate history orders';
   alert(`Generated ${r.generated} orders: `+Object.entries(r.by_channel).map(([c,n])=>`${c} ${n}`).join(', ')); state();
 }
+async function toggleAuto(on){
+  await fetch('/api/agent/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:on})});
+  toast && null;
+}
+async function simOrder(){
+  const b=$('simBtn'); b.disabled=true; b.textContent='Simulating…';
+  try{
+    const sku=(S.skus||[])[0]?.sku||'MUG-001';
+    const rows=S.economics.filter(r=>r.sku===sku);
+    const best=rows.sort((a,b)=>(b.v7||0)-(a.v7||0))[0];
+    const qty=Math.max(5,Math.round((best?.v7||10)*2));
+    const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({channel:best.channel,sku,qty})}).then(x=>x.json());
+    if(r.error) alert('Order rejected: '+r.error);
+    else alert(`Simulated order placed: ${qty}× ${sku} on ${best.channel} (its fastest channel, ~${best.v7}/day).\nCommitted stock rose — run the allocation cycle to see the agent react.`);
+    await state();
+  }finally{ b.disabled=false; b.textContent='⚡ Simulate order'; }
+}
 async function resetDemo(){
   if(!confirm('Reset the demo? This wipes ALL orders and restores the baseline stock, allocation split and channel margins.')) return;
   const b=$('resetBtn'); b.disabled=true; b.textContent='Resetting…';
   await fetch('/api/reset',{method:'POST'});
-  b.disabled=false; b.textContent='↺ Reset demo'; state();
+  b.disabled=false; b.textContent='↺ Reset demo data'; state();
 }
 async function runAgent(){
   const b=$('runBtn'); b.disabled=true; b.textContent='Agent running…';
@@ -479,7 +544,8 @@ async function runAgent(){
   const t=setInterval(async()=>{const j=await (await fetch('/api/agent/status')).json();
     if(!j.running){clearInterval(t);b.disabled=false;b.textContent='▶ Run allocation cycle';state();}},2000);
 }
-show('dashboard'); state();
+show('agentlog'); state();
+setInterval(state, 8000); // keep caps/stock/agent log fresh even if a change happened outside this tab
 </script>
 </body>
 </html>

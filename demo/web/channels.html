@@ -24,7 +24,11 @@
   .card h3 { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--mut); margin-bottom:12px }
   .prod { display:flex; align-items:center; gap:14px; padding:12px; border:1px solid var(--line);
     border-radius:12px; margin-bottom:10px; background:#0E1330 }
-  .prod .t { flex:1 } .prod .t b { font-size:14px } .prod .t small { color:var(--mut); display:block }
+  .prod .t { flex:1; min-width:0 }
+  .prod .sku-price { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap }
+  .prod .sku-label { font-size:16px; font-weight:850; letter-spacing:.2px; color:#F3F6FF }
+  .prod .price { font-size:16px; font-weight:850; letter-spacing:.1px }
+  .prod .name { display:block; margin-top:2px; color:var(--mut); font-size:12px; font-weight:500 }
   .stock { font-size:12px; color:var(--mut); text-align:right }
   .stock b { color:#fff; font-size:15px }
   button { border:none; border-radius:9px; padding:8px 14px; font-weight:700; cursor:pointer; color:#fff }
@@ -52,14 +56,20 @@
 <header>
   <div class="logo">Omni<b>SmartAlloc</b></div>
   <span class="pill">4 sales channels → one shared stock pool</span>
-  <nav style="display:flex;align-items:center"><button id="scn1Btn" style="background:linear-gradient(90deg,#C4B5FD,#8B5CF6);color:#0B1020;margin-right:10px;padding:8px 16px" onclick="scenario1()">Scenario 1: Auto Apply</button><button style="background:linear-gradient(90deg,#67E8F9,#38BDF8);color:#0B1020;margin-right:10px;padding:8px 16px" onclick="genHistory()">⟳ Generate history</button><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:14px;padding:8px 16px" onclick="resetDemo()">↺ Reset demo</button><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
+  <nav style="display:flex;align-items:center"><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:14px;padding:8px 16px" onclick="resetDemo()">↺ Reset demo data</button><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
 </header>
 <div class="tabs" id="tabs"></div>
 <main>
   <div class="chan-head"><div><h2 id="chanName"></h2><span id="chanMargin" style="font-size:18px;font-weight:800"></span></div><small id="chanSub"></small></div>
   <div id="chanView">
     <div class="grid">
-      <div class="card"><h3>Place an order</h3><div id="products"></div></div>
+      <div>
+        <div class="card"><h3>Place an order</h3><div id="products"></div>
+          <div style="margin-top:12px;text-align:right"><button id="buyBtn" onclick="orderAll()" style="padding:10px 28px;font-size:14px">Place order</button></div></div>
+        <div class="card" style="margin-top:14px"><h3 id="invTitle">Inventory log</h3>
+          <div id="invTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+          <div class="feed" id="invFeed" style="max-height:300px;overflow-y:auto"></div></div>
+      </div>
       <div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
           <div class="card"><h3>Open Orders</h3><canvas id="chart"></canvas></div>
@@ -69,12 +79,60 @@
       </div>
     </div>
   </div>
+  <div id="insView" style="display:none">
+    <div class="card" style="margin-bottom:18px"><h3>Two screens to know</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="background:#0E1330;border:1px solid var(--line);border-radius:10px;padding:14px">
+          <b style="font-size:15px">&#x1F6D2; Order Management System (OMS) &mdash; where orders happen</b><br>
+          <small style="color:var(--mut)">This page &mdash; <a href="/channels" style="color:#67E8F9">localhost:8902/channels</a></small>
+          <div style="font-size:12.5px;color:#C9D1EA;line-height:1.8;margin-top:8px">Pick a channel tab (DTC / Amazon / Etsy / Walmart) &rarr; type a quantity &rarr; <b>Place order</b>. Order fulfillment happens on <b>IMS</b>.</div></div>
+        <div style="background:#0E1330;border:1px solid var(--line);border-radius:10px;padding:14px">
+          <b style="font-size:15px">&#x1F4CB; Inventory management System (IMS) &mdash; where the agent reports</b><br>
+          <small style="color:var(--mut)">The ops dashboard &mdash; <a href="/ops" style="color:#67E8F9">localhost:8902/ops</a></small>
+          <div style="font-size:12.5px;color:#C9D1EA;line-height:1.8;margin-top:8px">The <b>Orders</b> tab is where you <b>Fulfill</b> orders. The <b>Smart Allocation</b> tab shows what the agent decided &mdash; green <b>Auto-applied</b> cards it wrote itself, amber <b>Needs approval</b> cards waiting for a human.</div></div>
+      </div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="card" style="border-left:4px solid #F59E0B">
+        <h3 style="color:#FBBF24">Scenario A &mdash; Needs approval</h3>
+        <ol style="margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:#C9D1EA">
+          <li>Stay on <b>OMS</b> (this page).</li>
+          <li>Click the <b>Amazon</b> tab. On the <b>MUG-001</b> row, type <b>30</b> in the number box.</li>
+          <li>Click <b>Place order</b>.</li>
+          <li>Open <b>IMS</b> (<a href="/ops" style="color:#67E8F9">/ops</a>) and click the <b>Orders</b> tab. Find the new MUG-001 order in <b>Open orders</b> and click <b>&#10004; Fulfill All</b>.</li>
+          <li>Wait about <b>1&ndash;2 minutes</b> &mdash; the agent runs automatically after fulfillment.</li>
+          <li>Click the <b>Smart Allocation</b> tab (still on IMS) &rarr; the amber <b>Needs approval</b> card would show.</li>
+          <li>Click <b>&#10004; Approve</b> (green) or <b>&#10008; Deny</b> (red) on the card to finish.</li>
+        </ol>
+        <div style="font-size:11.5px;color:var(--mut);margin-top:10px;line-height:1.6">Why it asks: the order drains most of MUG-001&rsquo;s stock, so the agent&rsquo;s fix moves more than 25% of a channel&rsquo;s units (or empties a channel) &mdash; big moves always need a human yes/no.</div>
+      </div>
+      <div class="card" style="border-left:4px solid #86EFAC">
+        <h3 style="color:#86EFAC">Scenario B &mdash; Auto-applied</h3>
+        <ol style="margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:#C9D1EA">
+          <li>Stay on <b>OMS</b> (this page).</li>
+          <li>Click the <b>DTC</b> tab. On <b>LAMP-002</b>, type <b>20</b> &rarr; Click <b>Place order</b>.</li>
+          <li>Click the <b>Amazon</b> tab. On <b>LAMP-002</b>, type <b>20</b> &rarr; Click <b>Place order</b>.</li>
+          <li>Open <b>IMS</b> (<a href="/ops" style="color:#67E8F9">/ops</a>) and click the <b>Orders</b> tab.</li>
+          <li>Click <b>&#10004; Fulfill All</b> on both new LAMP-002 orders.</li>
+          <li>Wait about <b>1&ndash;2 minutes</b> &mdash; the agent runs automatically after fulfillment.</li>
+          <li>Click the <b>Smart Allocation</b> tab &rarr; the green <b>Auto-applied</b> card shows units moved to the higher-margin channel and the dollars saved.</li>
+        </ol>
+        <div style="font-size:11.5px;color:var(--mut);margin-top:10px;line-height:1.6">Why it just acts: DTC earns the most per LAMP-002 sale, so refilling it from slower channels is a clear win. No channel emptied and no move over 25% &rarr; the agent applies it without asking.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>Good to know</h3>
+      <div style="font-size:12.5px;color:#C9D1EA;line-height:1.8">
+        &bull; The agent only wakes up <b>after a fulfillment</b>, not when an order is placed &mdash; don&rsquo;t skip <b>Fulfill</b>.<br>
+        &bull; On IMS, the <b>Orders</b> tab shows a <b>red dot</b> with the open-order count; <b>Smart Allocation</b> shows one with pending approvals.<br>
+        &bull; No card after ~2 minutes? Open <b>IMS</b> and press <b>&#9654; Run allocation cycle</b> once.<br>
+        &bull; Want a clean slate? <b>&orarr; Reset demo data</b> (top right, this page) restores stock, orders and allocations.
+      </div></div>
+  </div>
   <div id="sumView" style="display:none">
     <div class="grid" style="grid-template-columns:1.1fr 0.8fr 1.1fr 0.9fr">
       <div class="card"><h3>Open orders — remaining units, every channel</h3>
         <div id="sumLegend" style="display:flex;gap:14px;margin-bottom:10px"></div><canvas id="sumChart"></canvas></div>
       <div class="card"><h3>Open order feed</h3><div class="feed" id="sumFeed"></div></div>
-      <div class="card"><h3>Warehouse inventory — allocated units per channel</h3>
+      <div class="card"><h3>On hand per channel</h3>
         <div id="allocLegend" style="display:flex;gap:14px;margin-bottom:10px"></div><canvas id="allocChart"></canvas></div>
       <div class="card"><h3>Profit margin % by channel</h3><canvas id="marginChart"></canvas></div>
     </div>
@@ -86,7 +144,8 @@
       <div class="grid" style="grid-template-columns:1fr 1.2fr">
         <pre id="fedSql" style="font-family:Consolas,monospace;font-size:11px;color:#9FB0D8;background:#10152A;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;margin:0"></pre>
         <div><table style="width:100%;border-collapse:collapse;font-size:12.5px" id="fedTable"></table>
-          <canvas id="fedChart" style="margin-top:12px"></canvas></div>
+          <h4 style="margin:14px 0 4px;font-size:13px;color:var(--mut);font-weight:700">Shipped Orders</h4>
+          <canvas id="fedChart" style="margin-top:4px"></canvas></div>
       </div>
     </div>
   </div>
@@ -118,7 +177,7 @@ const valueLabels={id:'valueLabels',afterDatasetsDraw(chart){
   }
   ctx.restore(); }};
 Chart.register(valueLabels);
-let S = null, cur = "Summary", chart = null, chartClosed = null, sumChart = null, feedExp = {}; fedChart = null, fedAt = 0, qtys = {}, allocChart = null, marginChart = null;
+let S = null, cur = "Summary", chart = null, chartClosed = null, sumChart = null, feedExp = {}; fedChart = null, fedAt = 0, qtys = {}, allocChart = null, marginChart = null, invSku = 'ALL';
 const $ = id => document.getElementById(id);
 const sub = {DTC:"Our own storefront", Amazon:"Marketplace — Buy Box & ranking at stake", Etsy:"Handmade / enthusiast marketplace", Walmart:"Big-box marketplace"};
 
@@ -128,6 +187,8 @@ function tabs(){
   $('tabs').innerHTML =
     `<div class="tab ${cur==='Summary'?'active':''}" style="${cur==='Summary'?'background:#38BDF8;border-color:#38BDF8;color:#0B1020':''}"
       onclick="cur='Summary';render()">Summary</div>` +
+    `<div class="tab ${cur==='Instructions'?'active':''}" style="${cur==='Instructions'?'background:#22C55E;border-color:#22C55E;color:#0B1020':''}"
+      onclick="cur='Instructions';render()">Instructions</div>` +
     S.channels.map(c =>
     `<div class="tab ${c.name===cur?'active':''}" style="${c.name===cur?`background:${c.color};border-color:${c.color}`:''}"
       onclick="cur='${c.name}';render()">${c.name}</div>`).join('');
@@ -162,11 +223,11 @@ function renderSummary(){
   allocChart = new Chart($('allocChart'), {type:'bar', data:{
     labels:S.skus.map(p=>p.sku),
     datasets:S.channels.map(c=>({label:c.name,
-      data:S.skus.map(p=>p.allocation?(p.allocation[c.name]||0):0),
+      data:S.skus.map(p=>p.allocation?Math.max(0,(p.allocation[c.name]||0)-((p.used_by_channel||{})[c.name]||0)):0),
       backgroundColor:c.color, barPercentage:0.9, categoryPercentage:0.6}))},
     options:{layout:{padding:{top:20}},plugins:{legend:{display:false}},scales:{
       x:{ticks:{color:'#8B93AD'},grid:{display:false}},
-      y:{title:{display:true,text:'allocated units',color:'#8B93AD'},ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}}}});
+      y:{title:{display:true,text:'on hand units',color:'#8B93AD'},ticks:{color:'#8B93AD'},grid:{color:'#232B45'}}}}});
   if (marginChart) marginChart.destroy();
   const mpcts = S.channels.map(c=>{
     const rows = S.economics.filter(e=>e.channel===c.name);
@@ -216,16 +277,18 @@ async function loadFederated(){
       <td style="padding:6px">${r.units_ordered??0}</td><td style="padding:6px">${r.units_shipped??0}</td><td style="padding:6px"><b>${r.units_open??0}</b></td></tr>`).join('');
   if (fedChart) fedChart.destroy();
   fedChart = new Chart($('fedChart'), {type:'bar', data:{labels:rows.map(r=>r.channel),
-    datasets:[{label:'open',data:rows.map(r=>+r.units_open||0),backgroundColor:rows.map(r=>col(r.channel))},
-              {label:'shipped',data:rows.map(r=>+r.units_shipped||0),backgroundColor:rows.map(r=>col(r.channel)+'66')}]},
-    options:{plugins:{legend:{labels:{color:'#C9D1EA'}}},scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}}});
+    datasets:[{label:'shipped',data:rows.map(r=>+r.units_shipped||0),backgroundColor:rows.map(r=>col(r.channel))}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}}});
 }
 
 function render(){
   tabs();
-  const isSum = cur==='Summary';
-  $('chanView').style.display = isSum?'none':'';
+  const isSum = cur==='Summary', isIns = cur==='Instructions';
+  $('chanView').style.display = isSum||isIns?'none':'';
   $('sumView').style.display = isSum?'':'none';
+  $('insView').style.display = isIns?'':'none';
+  if (isIns){ $('chanName').textContent='Instructions'; $('chanName').style.color='#22C55E'; $('chanMargin').textContent='';
+    $('chanSub').textContent='OMS = this page (orders) · IMS = /ops (agent decisions)'; return; }
   if (isSum) return renderSummary();
   $('chanName').textContent = cur;
   $('chanName').style.color = S.channels.find(c=>c.name===cur).color;
@@ -236,15 +299,20 @@ function render(){
   $('chanSub').textContent = `${sub[cur]} · orders stored in ${src.type}: ${src.location}`;
   $('products').innerHTML = S.skus.map(p => {
     const free = p.on_hand - p.committed;
-    const cap = p.allocation ? p.allocation[cur] : null;
+    const cap = p.allocation ? (p.allocation[cur] ?? 0) : null;
     const open = p.open_by_channel[cur] || 0;
+    const used = p.used_by_channel ? (p.used_by_channel[cur] || 0) : open;
+    const left = cap===null ? null : Math.max(0, cap - used);
+    const theme=S.channels.find(c=>c.name===cur).color;
     return `<div class="prod">
-      <div class="t"><b>${p.title}</b><small>${p.sku} · $${p.price ?? '—'}</small></div>
-      <div class="stock">${cap===null?'':`Allocated <b>${cap}</b> (${open} open)`}</div>
-      <input type="number" id="q_${p.sku}" value="${qtys[cur+'_'+p.sku]||1}" min="1" max="${free}" oninput="qtys['${cur}_${p.sku}']=+this.value">
-      <button style="background:${S.channels.find(c=>c.name===cur).color}" onclick="order('${p.sku}')">Buy</button>
+      <div class="t"><div class="sku-price"><b class="sku-label">${p.sku}</b><b class="price" style="color:${theme}">$${p.price ?? '—'}</b></div>
+        <small class="name">${p.title}</small></div>
+      <div class="stock">${cap===null?'':`Allocated <b>${cap}</b> · On Hand <b>${left}</b>${used?` (${used} used${open?`, ${open} open`:''})`:''}`}</div>
+      <input type="number" id="q_${p.sku}" value="${qtys[cur+'_'+p.sku]||0}" min="0" max="${free}" oninput="qtys['${cur}_${p.sku}']=+this.value">
     </div>`;
   }).join('');
+  const bb=$('buyBtn'); if(bb) bb.style.background=S.channels.find(c=>c.name===cur).color;
+  renderInvLog();
   const orders = S.orders.filter(o => o.channel===cur);
   const fexp = !!feedExp[cur], fshown = fexp ? orders : orders.slice(0,4);
   $('feed').innerHTML = (fshown.length ? fshown.map(o =>
@@ -279,17 +347,63 @@ async function resetDemo(){
   if(!confirm('Reset the demo? This wipes ALL orders and restores the baseline stock, allocations and margins.')) return;
   await fetch('/api/reset',{method:'POST'}); state();
 }
-async function order(sku){
-  const qty = +$('q_'+sku).value;
-  const r = await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({channel:cur,sku,qty})});
-  const j = await r.json();
-  toast(r.ok ? `Order placed: ${qty}× ${sku} on ${cur} → saved to ${j.stored_in.type} ${j.stored_in.location}` : j.error, r.ok);
+async function orderAll(){
+  const picks = S.skus.map(p=>({sku:p.sku,qty:+($('q_'+p.sku)?.value||0)})).filter(x=>x.qty>0);
+  if(!picks.length){ toast('Enter a quantity for at least one product', false); return; }
+  const results=[];
+  for(const x of picks){
+    const r = await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({channel:cur,sku:x.sku,qty:x.qty})});
+    const j = await r.json();
+    results.push(r.ok ? `${x.qty}× ${x.sku}` : `${x.sku}: ${j.error}`);
+    if(r.ok){ qtys[cur+'_'+x.sku]=0; const inp=$('q_'+x.sku); if(inp) inp.value=0; }
+  }
+  const ok = results.every(s=>s.includes('×'));
+  toast(ok ? `Orders placed on ${cur}: ${results.join(', ')}` : results.join(' · '), ok);
   state();
 }
 function toast(msg, ok){ const t=$('toast'); t.textContent=msg; t.className='toast '+(ok?'ok':'err');
   t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4200); }
 state();
+function invLedger(sku, ch){
+  const log=(S.alloc_log||[]).filter(r=>r.sku===sku).sort((x,y)=>x.ts<y.ts?-1:1);
+  if(!log.length) return [];
+  const orders=S.orders.filter(o=>o.sku===sku&&o.status!=='cancelled'&&o.ts>=log[0].ts);
+  const steps=[...log.map(r=>({ts:r.ts,kind:'w',r})),...orders.map(o=>({ts:o.ts,kind:'o',o}))]
+    .sort((x,y)=>x.ts<y.ts?-1:x.ts>y.ts?1:(x.kind==='w'?-1:1));
+  const cnt={}, rows=[];
+  const fmt=list=>list.map(([c,d])=>`${c} (${d>0?'+':''}${d})`).join(', ');
+  for(const st of steps){
+    if(st.kind==='o'){
+      const o=st.o, before=cnt[o.channel]??0;
+      cnt[o.channel]=before-o.qty;
+      if(o.channel===ch) rows.push({ts:o.ts,sku,type:'Order',from:`Order #${o.id}`,q:-o.qty,start:before,final:before-o.qty});
+      continue;
+    }
+    const a=st.r.allocation, first=Object.keys(cnt).length===0;
+    const deltas=Object.keys(a).map(c=>[c,a[c]-(cnt[c]??0)]);
+    const mine=deltas.find(([c])=>c===ch);
+    if(mine&&mine[1]!==0&&!first){
+      const d=mine[1], others=deltas.filter(([c,x])=>c!==ch&&(d>0?x<0:x>0));
+      rows.push({ts:st.r.ts,sku,type:'Smart Allocation',from:others.length?fmt(others):(d>0?'Unallocated stock':'Returned to pool'),q:d,start:cnt[ch]??0,final:a[ch]});
+    } else if(first&&mine) rows.push({ts:st.r.ts,sku,type:'Baseline',from:'Baseline / initial split',q:a[ch],start:0,final:a[ch]});
+    for(const [c] of deltas) cnt[c]=a[c];
+  }
+  return rows;
+}
+function renderInvLog(){
+  if(!$('invTabs')) return;
+  const tabs=['ALL',...S.skus.map(p=>p.sku)];
+  $('invTabs').innerHTML=tabs.map(k=>`<button onclick="invSku='${k}';renderInvLog()" style="padding:4px 12px;font-size:11px;border-radius:99px;background:${invSku===k?'#38BDF8':'transparent'};color:${invSku===k?'#0B1020':'var(--mut)'};border:1px solid ${invSku===k?'#38BDF8':'var(--line)'}">${k==='ALL'?'All SKUs':k}</button>`).join('');
+  const rows=(invSku==='ALL'?S.skus.map(p=>p.sku):[invSku]).flatMap(k=>invLedger(k,cur)).sort((x,y)=>y.ts<x.ts?-1:y.ts>x.ts?1:0).slice(0,40);
+  const th='text-align:left;color:var(--mut);padding:5px 6px;border-bottom:1px solid var(--line);font-size:11px';
+  const td='padding:6px;border-bottom:1px solid #1B2340;font-size:12.5px';
+  $('invFeed').innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse"><tr>${['Type','From Channel','SKU','Qty Added/Removed','Start Count','Final Count'].map(h=>`<th style="${th}">${h}</th>`).join('')}</tr>`+
+    rows.map(r=>`<tr><td style="${td}"><span style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px;white-space:nowrap;background:${r.type==='Smart Allocation'?'#86EFAC':r.type==='Order'?'#FBBF24':'#64748B'};color:${r.type==='Baseline'?'#fff':'#0B1020'}">${r.type}</span></td><td style="${td}">${r.from}<br><small style="color:var(--mut)">${r.ts.replace('T',' ').slice(0,19)}Z</small></td><td style="${td}">${r.sku}</td>
+      <td style="${td};font-weight:800;color:${r.q>0?'#4ADE80':'#F87171'}">${r.q>0?'+':''}${r.q}</td><td style="${td}">${r.start}</td><td style="${td}"><b>${r.final}</b></td></tr>`).join('')+'</table>'
+    :`<small style="color:var(--mut)">No movements for ${cur} yet.</small>`;
+}
+setInterval(state, 8000); // keep caps/stock fresh even if a change happened outside this tab
 </script>
 </body>
 </html>
