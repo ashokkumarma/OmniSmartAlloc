@@ -8,5 +8,19 @@ __pycache__/
 zetaris-platform/
 zetaris-platform.zip
 demo/outbox/
-demo/server.log
+demo/*.log
 demo/data/orders.jsonl.migrated
+
+# local QA artifacts
+baseline-screenshots/
+after-screenshots/
+test-results/
+playwright-report/
+
+# React UI (demo/app): dependencies and build output
+demo/app/node_modules/
+demo/app/dist/
+demo/app/*.tsbuildinfo
+
+before-revamp-screenshots/
+revamp-screenshots/

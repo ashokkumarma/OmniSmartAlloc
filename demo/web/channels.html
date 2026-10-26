@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OmniSmartAlloc — Sales Channels</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart.umd.js"></script>
 <style>
   :root { --bg:#0B1020; --card:#141A2E; --line:#232B45; --txt:#E8ECF7; --mut:#8B93AD; }
   * { box-sizing:border-box; margin:0 }
@@ -13,7 +13,18 @@
   .logo { font-weight:800; font-size:20px; letter-spacing:.4px }
   .logo b { background:linear-gradient(90deg,#38BDF8,#A78BFA); -webkit-background-clip:text; background-clip:text; color:transparent }
   .pill { font-size:11px; color:var(--mut); border:1px solid var(--line); border-radius:99px; padding:3px 10px }
-  nav a { color:#67E8F9; font-size:13px; margin-left:auto }
+  nav a { color:#67E8F9; font-size:13px }
+  /* header buttons: one primary action per page, demo controls stay quiet */
+  .hbtn { background:transparent; color:#C9D1EA; border:1px solid #334155; font-weight:600; font-size:13px; padding:8px 14px; border-radius:9px; cursor:pointer }
+  .hbtn:hover { border-color:#64748B; color:#fff }
+  .hbtn.primary { background:#38BDF8; border-color:#38BDF8; color:#0B1020; font-weight:700 }
+  .hbtn.primary:hover { background:#7DD3FC; border-color:#7DD3FC }
+  .hbtn:disabled { opacity:.55; cursor:progress }
+  .hbtn:focus-visible, .tab:focus-visible, nav a:focus-visible { outline:2px solid #7DD3FC; outline-offset:2px }
+  .hgroup { display:flex; gap:8px; align-items:center; flex-shrink:0 }
+  .hbtn, .pill, nav a { white-space:nowrap }
+  header { flex-wrap:wrap }
+  .hlabel { font-size:12px; color:var(--mut) }
   .tabs { display:flex; gap:8px; padding:16px 28px 0 }
   .tab { padding:10px 22px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
     background:#10152A; color:var(--mut); cursor:pointer; font-weight:700; font-size:14px }
@@ -35,7 +46,7 @@
   .feed small { color:var(--mut) }
   .badge { font-size:10px; padding:2px 7px; border-radius:99px; font-weight:800 }
   .toast { position:fixed; bottom:24px; right:24px; padding:13px 18px; border-radius:10px; font-weight:600;
-    opacity:0; transition:.3s; max-width:420px }
+    opacity:0; transition:.3s; max-width:420px; white-space:pre-line; pointer-events:none }
   .toast.ok { background:#065F46 } .toast.err { background:#7F1D1D }
   canvas { max-height:210px }
   .srcrow { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap }
@@ -52,7 +63,13 @@
 <header>
   <div class="logo">Omni<b>SmartAlloc</b></div>
   <span class="pill">4 sales channels → one shared stock pool</span>
-  <nav style="display:flex;align-items:center"><button id="scn1Btn" style="background:linear-gradient(90deg,#C4B5FD,#8B5CF6);color:#0B1020;margin-right:10px;padding:8px 16px" onclick="scenario1()">Scenario 1: Auto Apply</button><button style="background:linear-gradient(90deg,#67E8F9,#38BDF8);color:#0B1020;margin-right:10px;padding:8px 16px" onclick="genHistory()">⟳ Generate history</button><button style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:14px;padding:8px 16px" onclick="resetDemo()">↺ Reset demo</button><a href="/ops">Inventory &amp; Agent Ops →</a></nav>
+  <nav class="hgroup" style="margin-left:auto">
+    <span class="hlabel">Demo data</span>
+    <button class="hbtn" id="histBtn" onclick="genHistory()">Generate history</button>
+    <button class="hbtn" id="resetBtn" onclick="resetDemo()">Reset demo</button>
+    <button class="hbtn primary" id="scn1Btn" onclick="scenario1()">Scenario 1: Auto Apply</button>
+    <a href="/classic/ops" style="margin-left:8px">Inventory &amp; Agent Ops →</a>
+  </nav>
 </header>
 <div class="tabs" id="tabs"></div>
 <main>
@@ -205,7 +222,14 @@ async function loadFederated(){
   $('fedMeta').textContent = 'querying Zetaris…';
   const f = await (await fetch('/api/federated')).json();
   $('fedSql').textContent = f.sql;
-  if (!f.ok) { $('fedMeta').textContent = ''; $('fedTable').innerHTML = `<tr><td style="color:#F87171">${f.error}</td></tr>`; return; }
+  if (!f.ok) {
+    $('fedMeta').textContent = '';
+    const td = document.createElement('td'); td.style.color = 'var(--mut)'; td.title = f.error;
+    td.append('Zetaris is not connected, so this live query cannot run. Start Zetaris, then ');
+    const retry = document.createElement('button'); retry.textContent = 'Retry'; retry.onclick = loadFederated;
+    retry.style.cssText = 'padding:3px 10px;font-size:12px;background:#1E293B;color:#E2E8F0;border:1px solid #334155;border-radius:6px';
+    td.append(retry); const tr = document.createElement('tr'); tr.append(td); $('fedTable').replaceChildren(tr); return;
+  }
   $('fedMeta').textContent = `${f.rows.length} source rows · ${f.ms} ms · via Zetaris JDBC`;
   const col = ch => (S.channels.find(c=>c.name===ch)||{}).color || '#8B93AD';
   const rows = S.channels.map(c => f.rows.find(r=>r.channel===c.name) ||
@@ -254,8 +278,7 @@ function render(){
     : '<small style="color:var(--mut)">No orders yet on this channel.</small>') +
     (orders.length>4 ? `<div style="text-align:center;margin-top:8px"><a href="javascript:void 0" style="color:#67E8F9;font-size:12px" onclick="feedExp['${cur}']=${!fexp};render()">${fexp?'▴ Show less':'▾ '+(orders.length-4)+' more'}</a></div>` : '');
   const labels = S.skus.map(p=>p.sku), data = S.skus.map(p=>p.open_by_channel[cur]||0);
-  const closedData = S.skus.map(p=>S.orders.filter(o=>o.channel===cur&&o.sku===p.sku&&o.status!=='open'&&o.status!=='partial')
-    .reduce((a,o)=>a+(o.status==='fulfilled'?o.qty:o.fulfilled_qty),0));
+  const closedData = S.skus.map(p=>(S.totals.closed_units[cur]||{})[p.sku]||0);  // over every order
   const chColor = S.channels.find(c=>c.name===cur).color;
   const chOpts = {plugins:{legend:{display:false}}, scales:{y:{ticks:{color:'#8B93AD'},grid:{color:'#232B45'}},x:{ticks:{color:'#8B93AD'},grid:{display:false}}}};
   if (chart) chart.destroy();
@@ -264,20 +287,31 @@ function render(){
   chartClosed = new Chart($('chartClosed'), {type:'bar', data:{labels, datasets:[{data:closedData, backgroundColor:chColor+'99'}]}, options:chOpts});
 }
 
+// Disable the button and show progress while an action runs; a network failure becomes a toast.
+async function busy(btn, label, fn){
+  const text=btn.textContent; btn.disabled=true; btn.textContent=label;
+  try { await fn(); } catch(e) { toast('Could not reach the demo server: '+e.message, false); }
+  finally { btn.disabled=false; btn.textContent=text; }
+}
 async function scenario1(){
   if(!confirm('Load Scenario 1 (LAMP-002: DTC selling ahead of forecast while Amazon lags)? This replaces all LAMP-002 orders, stock, inbound, margins and allocation; other SKUs are untouched.')) return;
-  const b=$('scn1Btn'); b.disabled=true; b.textContent='Loading scenario…';
-  const r=await (await fetch('/api/scenario/1',{method:'POST'})).json();
-  b.disabled=false; b.textContent='Scenario 1: Auto Apply';
-  toast(`Scenario 1 loaded for LAMP-002: ${r.summary.orders_total} orders, sellable ${r.summary.sellable}. Checks: ${r.passed} passed, ${r.failed} failed`, r.failed===0); state();
+  await busy($('scn1Btn'), 'Loading scenario…', async()=>{
+    const r=await (await fetch('/api/scenario/1',{method:'POST'})).json();
+    toast(`Scenario 1 loaded for LAMP-002: ${r.summary.orders_total} orders, sellable ${r.summary.sellable}. Checks: ${r.passed} passed, ${r.failed} failed`, r.failed===0); await state();
+  });
 }
 async function genHistory(){
-  const r=await (await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"days":90}'})).json();
-  toast(`Generated ${r.generated} history orders`, true); state();
+  await busy($('histBtn'), 'Generating…', async()=>{
+    const r=await (await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"days":90}'})).json();
+    toast(`Generated ${r.generated} history orders`, true); await state();
+  });
 }
 async function resetDemo(){
   if(!confirm('Reset the demo? This wipes ALL orders and restores the baseline stock, allocations and margins.')) return;
-  await fetch('/api/reset',{method:'POST'}); state();
+  await busy($('resetBtn'), 'Resetting…', async()=>{
+    const r=await (await fetch('/api/reset',{method:'POST'})).json();
+    toast(r.reset ? `Demo reset: ${r.orders_restored} orders restored` : (r.error || 'Reset failed'), !!r.reset); await state();
+  });
 }
 async function order(sku){
   const qty = +$('q_'+sku).value;
