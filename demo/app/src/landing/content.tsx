@@ -32,6 +32,7 @@ function CapsPreview({ caps }: { caps: number[] }) {
 
 export const content: LandingContent = {
   product: "OmniSmartAlloc",
+  tagline: "Inventory allocation agent",
   headline: <>Share <em>one</em> stock pool across every sales channel.</>,
   lede: "The agent reads warehouse, supplier, channel and rules data through Zetaris, then sets how many units DTC, Amazon, Etsy and Walmart may each sell. Big moves wait for your approval.",
   preview: (data) => <CapsPreview caps={data?.length === 4 ? data : DEMO_CAPS} />,
