@@ -10,7 +10,7 @@ export const content: LandingContent = {
   statement: "The agent reads warehouse, supplier, channel and rules systems through Zetaris, then sets how many units each sales channel may sell. Big moves wait for your approval.",
   facts: [
     { title: "Reads through Zetaris", body: "Warehouse, supplier portal, channel analytics, business rules and four channel order systems, in one federated query." },
-    { title: "Nemotron on Meterless", body: "The agent reasons with NVIDIA Nemotron, served by Meterless Nightshift." },
+    { title: "Reasoning by NVIDIA Nemotron", body: "The agent reasons with NVIDIA Nemotron, through NVIDIA NIM or the Meterless runtime." },
     { title: "You approve the big moves", body: "Changes above the guardrails wait for approval before anything is written." },
   ],
   capsEyebrow: "What it does",
@@ -56,8 +56,8 @@ export const content: LandingContent = {
       preview: (
         <>
           <div className="pv-head"><span className="pv-title">Federated read</span><span className="pv-dot" style={{ "--c": "var(--ds-success)" } as React.CSSProperties}>Read only</span></div>
-          <pre className="pv-code">{"SELECT channel, SUM(qty) AS units_open\nFROM channel_db.dtc_orders\nUNION ALL ... amazon_api.orders\nUNION ALL ... etsy_orders, walmart_orders\nGROUP BY channel;"}</pre>
-          <div className="pv-row"><span>Sources</span><span className="muted">WMS, supplier portal, analytics, rules</span><span className="pv-n">8</span></div>
+          <pre className="pv-code">{"SELECT channel, SUM(qty) AS units\nFROM CHANNEL_DB.dtc_orders\nUNION ALL ... omnismart.amazon_orders\nUNION ALL ... etsy_orders, walmart_orders\nGROUP BY channel;"}</pre>
+          <div className="pv-row"><span>Sources</span><span className="muted">orders DB, Amazon API, WMS, suppliers, analytics, rules</span><span className="pv-n">6</span></div>
         </>
       ),
     },
