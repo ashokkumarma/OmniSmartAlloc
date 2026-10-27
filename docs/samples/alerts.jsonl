@@ -1,0 +1,2 @@
+{"ts": "2026-10-27T00:26:15Z", "sku": "MUG-001", "problem": "Tight supply state: projected gap of about 7 days (~200 units)", "recommended_action": "Expedite inbound PO", "risk_of_inaction": "Stock-out in about 2.3 days; lost sales on underfunded channels", "deadline": "within 2 days"}
+{"ts": "2026-10-27T00:26:15Z", "sku": "RUG-003", "problem": "Tight supply state: projected gap of about 3 days (~15 units)", "recommended_action": "Expedite inbound PO", "risk_of_inaction": "Stock-out in about 6.0 days; lost sales on underfunded channels", "deadline": "within 6 days"}

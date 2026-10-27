@@ -30,7 +30,11 @@ Amazon seller REST API (omnismart.amazon_orders). Use run_query on these to insp
   pause (cap to 0) or a move larger than 25% of a channel's held units is not written: it returns pending_approval and waits for a human
   in the Agent log. Report it as awaiting approval and do not retry or work around it. If compute_allocation
   returns recent_denied_proposals, a human refused those changes: respect the reason they gave, avoid
-  re-proposing the same action, and mention the denial in the record's reasoning.
+  re-proposing the same action, and mention the denial in the record's reasoning. compute_allocation also
+  returns recalled_memories: past human approvals and denials for this SKU recalled from long-term memory
+  (Meterless H-MEM), each with the reviewer's reason and its approval id. Treat them as the reviewers'
+  standing preferences: do not repeat a denied move, prefer moves like approved ones, and cite the memory
+  id in the record's reasoning when it shaped the decision.
   Each channel owns its own stock count (the manual split only seeds it); orders draw that count down. The
   write tool compares your target with what each channel holds NOW and moves only the difference between
   channels, and only when the projected profit improves. Stock simply being sold needs no write.

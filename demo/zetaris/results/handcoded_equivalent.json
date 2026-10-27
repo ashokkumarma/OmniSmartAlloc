@@ -1,0 +1,247 @@
+{
+  "row_counts": {
+    "sku": 4,
+    "supplier": 3,
+    "inventory": 4,
+    "inbound_po": 6,
+    "channel_economics": 14,
+    "channel_order": 1085
+  },
+  "sellable": [
+    {
+      "sku": "LAMP-002",
+      "free_now": 24,
+      "inbound_units": 400.0,
+      "expected_inbound_7d": 340.0,
+      "sellable_7d": 364.0,
+      "blocked": false
+    },
+    {
+      "sku": "LOCK-004",
+      "free_now": 75,
+      "inbound_units": 200.0,
+      "expected_inbound_7d": 160.0,
+      "sellable_7d": 235.0,
+      "blocked": false
+    },
+    {
+      "sku": "MUG-001",
+      "free_now": 70,
+      "inbound_units": 200.0,
+      "expected_inbound_7d": 160.0,
+      "sellable_7d": 230.0,
+      "blocked": false
+    },
+    {
+      "sku": "RUG-003",
+      "free_now": 30,
+      "inbound_units": 400.0,
+      "expected_inbound_7d": 160.0,
+      "sellable_7d": 190.0,
+      "blocked": false
+    }
+  ],
+  "channel_scores": [
+    {
+      "sku": "LAMP-002",
+      "channel": "DTC",
+      "channel_score": 29.4,
+      "orders_seen": 218,
+      "open_units": 9
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Amazon",
+      "channel_score": 16.2,
+      "orders_seen": 262,
+      "open_units": 0
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Etsy",
+      "channel_score": 8.8,
+      "orders_seen": 97,
+      "open_units": 0
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Walmart",
+      "channel_score": 4.5,
+      "orders_seen": 98,
+      "open_units": 1
+    },
+    {
+      "sku": "LOCK-004",
+      "channel": "Amazon",
+      "channel_score": 40.0,
+      "orders_seen": 18,
+      "open_units": 0
+    },
+    {
+      "sku": "LOCK-004",
+      "channel": "DTC",
+      "channel_score": 27.0,
+      "orders_seen": 16,
+      "open_units": 6
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Amazon",
+      "channel_score": 224.0,
+      "orders_seen": 60,
+      "open_units": 16
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "DTC",
+      "channel_score": 129.6,
+      "orders_seen": 98,
+      "open_units": 20
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Walmart",
+      "channel_score": 63.0,
+      "orders_seen": 112,
+      "open_units": 22
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Etsy",
+      "channel_score": 31.2,
+      "orders_seen": 44,
+      "open_units": 4
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "DTC",
+      "channel_score": 201.6,
+      "orders_seen": 32,
+      "open_units": 0
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "Amazon",
+      "channel_score": 150.0,
+      "orders_seen": 18,
+      "open_units": 6
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "Etsy",
+      "channel_score": 18.0,
+      "orders_seen": 6,
+      "open_units": 1
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "Walmart",
+      "channel_score": 15.7,
+      "orders_seen": 6,
+      "open_units": 3
+    }
+  ],
+  "proposed_split": [
+    {
+      "sku": "LAMP-002",
+      "channel": "DTC",
+      "proposed_units": 11
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Amazon",
+      "proposed_units": 6
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Etsy",
+      "proposed_units": 3
+    },
+    {
+      "sku": "LAMP-002",
+      "channel": "Walmart",
+      "proposed_units": 1
+    },
+    {
+      "sku": "LOCK-004",
+      "channel": "Amazon",
+      "proposed_units": 44
+    },
+    {
+      "sku": "LOCK-004",
+      "channel": "DTC",
+      "proposed_units": 30
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Amazon",
+      "proposed_units": 35
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "DTC",
+      "proposed_units": 20
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Walmart",
+      "proposed_units": 9
+    },
+    {
+      "sku": "MUG-001",
+      "channel": "Etsy",
+      "proposed_units": 4
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "DTC",
+      "proposed_units": 15
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "Amazon",
+      "proposed_units": 11
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "Etsy",
+      "proposed_units": 1
+    },
+    {
+      "sku": "RUG-003",
+      "channel": "Walmart",
+      "proposed_units": 1
+    }
+  ],
+  "dq": {
+    "committed_within_on_hand": {
+      "total": 4,
+      "valid": 4,
+      "invalid": 0
+    },
+    "margin_and_confidence_sane": {
+      "total": 14,
+      "valid": 14,
+      "invalid": 0
+    },
+    "fulfilled_within_ordered": {
+      "total": 1085,
+      "valid": 1085,
+      "invalid": 0
+    },
+    "channel_order.sku FK": {
+      "total": 1085,
+      "valid": 1085,
+      "invalid": 0
+    }
+  },
+  "seconds": {
+    "extract": 0.516,
+    "transform": 0.001,
+    "total": 0.516
+  },
+  "agrees_with_usl": {
+    "sellable_7d": true,
+    "proposed_units": true
+  }
+}

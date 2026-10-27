@@ -481,13 +481,14 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(code, out)
         if m := re.match(r"^/api/approvals/([0-9a-f]+)/approve$", path):
             with _LOCK:
-                code, out = agent_log.approve(OUTBOX, m.group(1))
+                code, out = agent_log.approve(OUTBOX, m.group(1), str(body.get("reviewer") or "").strip() or None)
             if code == 200:
                 _schedule_agent_run()
             return self._json(code, out)
         if m := re.match(r"^/api/approvals/([0-9a-f]+)/deny$", path):
             with _LOCK:
-                code, out = agent_log.deny(OUTBOX, m.group(1), str(body.get("reason") or "").strip())
+                code, out = agent_log.deny(OUTBOX, m.group(1), str(body.get("reason") or "").strip(),
+                                       str(body.get("reviewer") or "").strip() or None)
             if code == 200:
                 _schedule_agent_run()
             return self._json(code, out)

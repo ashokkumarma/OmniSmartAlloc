@@ -48,6 +48,13 @@ export interface AgentEvent {
   why: string[] | string; approval_id: string | null; deny_reason: string | null; approved_ts: string | null;
   /** Stock was sold or committed and caps were trimmed to match; nothing moved between channels. */
   stock_sync?: boolean;
+  /** Past human approvals/denials for this SKU recalled from the H-MEM engine when the proposal was made. */
+  recalled_memories?: RecalledMemory[];
+}
+
+export interface RecalledMemory {
+  memory_id: string; decision: "approved" | "denied" | null; content: string; approval_id: string | null;
+  relevance: number; confidence: number; learned_at: number;
 }
 
 /** Projected savings of the allocations now in force (auto-applied or approved), per SKU. */

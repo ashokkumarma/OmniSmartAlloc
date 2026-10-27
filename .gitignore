@@ -24,3 +24,4 @@ demo/app/*.tsbuildinfo
 
 before-revamp-screenshots/
 revamp-screenshots/
+.pytest_tmp/

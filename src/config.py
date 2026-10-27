@@ -23,7 +23,7 @@ class Settings(BaseModel):
     meterless_api_key: str = ""
     meterless_base_url: str = "http://127.0.0.1:8088/v1"
     meterless_app_id: str = "open-agent-hackathon"
-    meterless_model: str = "meterless/auto"
+    meterless_model: str = "meterless/deep"
     zetaris_jdbc_url: str = ""
     zetaris_jdbc_jar: str = ""
     zetaris_username: str = ""

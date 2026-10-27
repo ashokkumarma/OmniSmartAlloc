@@ -15,6 +15,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from src.memory import hmem
+
 PACE_HIGH, PACE_LOW = 1.25, 0.75
 
 
@@ -49,7 +51,7 @@ def mark(store: Path, approval_id: str, status: str, deny_reason: str | None = N
         f.write(json.dumps(rec) + "\n")
 
 
-def deny(store: Path, approval_id: str, reason: str) -> tuple[int, dict[str, Any]]:
+def deny(store: Path, approval_id: str, reason: str, reviewer: str | None = None) -> tuple[int, dict[str, Any]]:
     a = approvals(store).get(approval_id)
     if a is None:
         return 404, {"error": "approval not found"}
@@ -58,7 +60,8 @@ def deny(store: Path, approval_id: str, reason: str) -> tuple[int, dict[str, Any
     if not reason:
         return 400, {"error": "a reason is required so the agent can learn from the denial"}
     mark(store, approval_id, "denied", reason)
-    return 200, {"denied": approval_id, "sku": a["sku"], "reason": reason}
+    mem = hmem.remember_review(store, a, approval_id, "denied", reason, reviewer)
+    return 200, {"denied": approval_id, "sku": a["sku"], "reason": reason, "memory_id": mem["id"] if mem else None}
 
 
 def denied(store: Path, sku: str, limit: int = 3) -> list[dict[str, Any]]:
@@ -72,7 +75,7 @@ def last_allocation(store: Path, sku: str) -> dict[str, Any] | None:
     return next((r for r in reversed(read_jsonl(store / "allocations.jsonl")) if r.get("sku") == sku), None)
 
 
-def approve(store: Path, approval_id: str) -> tuple[int, dict[str, Any]]:
+def approve(store: Path, approval_id: str, reviewer: str | None = None) -> tuple[int, dict[str, Any]]:
     a = approvals(store).get(approval_id)
     if a is None:
         return 404, {"error": "approval not found"}
@@ -90,7 +93,10 @@ def approve(store: Path, approval_id: str) -> tuple[int, dict[str, Any]]:
     with (store / "allocations.jsonl").open("a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
     mark(store, approval_id, "approved")
-    return 200, {"approved": approval_id, "sku": a["sku"], "allocation": a["allocation"]}
+    mem = hmem.remember_review(store, a, approval_id, "approved", a.get("reason"), reviewer)
+    # Memories recalled when this proposal was made led to a plan a human accepted: H-MEM "helpful".
+    hmem.feedback(store, [m["memory_id"] for m in a.get("recalled_memories") or []], "helpful")
+    return 200, {"approved": approval_id, "sku": a["sku"], "allocation": a["allocation"], "memory_id": mem["id"] if mem else None}
 
 
 def _trigger(ch: str, c: dict, rec: dict, pace: float | None, is_pause: bool) -> str:
@@ -313,7 +319,8 @@ def _event(rec: dict, status: str, aid: str | None = None, approved_ts: str | No
             "why": _why(rec, channels, ctx, donors_all, receivers_all, losses, doc, status, realized),
             "total_savings": round(total), "primary_channel": primary, "approval_id": aid,
             "deny_reason": rec.get("deny_reason"), "approved_ts": approved_ts,
-            "reason": rec.get("reason") or "", "stock_sync": stock_sync}
+            "reason": rec.get("reason") or "", "stock_sync": stock_sync,
+            "recalled_memories": rec.get("recalled_memories") or []}
 
 
 def events(store: Path) -> list[dict[str, Any]]:

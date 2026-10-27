@@ -72,7 +72,8 @@ def main() -> int:
         return 2
     try:
         agent = ReActAgent(llm.client, llm.model,
-                           ToolRegistry(build_discovery_tools(db, s.agent_max_rows, build_allocation_tools(db, OUTBOX_DIR, used_since))),
+                           ToolRegistry(build_discovery_tools(db, s.agent_max_rows, build_allocation_tools(db, OUTBOX_DIR, used_since,
+                                                                                         {"llm_provider": llm.provider, "llm_model": llm.model}))),
                            PROMPTS[args.prompt], args.max_steps or s.agent_max_steps,
                            chat_extra_headers=llm.chat_extra_headers)
         steps = 0
