@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { Check, ChevronDown, Sparkles, X, TrendingDown, TrendingUp } from "lucide-react";
+import { Button } from "../ui/Button";
+import { Check, ChevronDown, SlidersHorizontal, X, TrendingDown, TrendingUp } from "lucide-react";
 import type { AgentEvent } from "../api";
 import { chanColor, money, when } from "../format";
 import { useStore } from "../store";
@@ -80,7 +81,7 @@ export function Agent() {
       <div className="stack reveal" style={{ gap: 16 }}>
         {rows.map((e) => <EventCard key={e.id} e={e} />)}
         {!rows.length && (
-          <Card><Empty icon={Sparkles} title={events.length ? "No decisions in this group" : "No agent decisions yet"}>
+          <Card><Empty icon={SlidersHorizontal} title={events.length ? "No decisions in this group" : "No agent decisions yet"}>
             {events.length ? "Choose another filter." : "Run an allocation cycle. Every change the agent proposes or applies shows up here."}
           </Empty></Card>
         )}
@@ -100,7 +101,7 @@ function EventCard({ e }: { e: AgentEvent }) {
     <Card style={g === "Needs approval" ? { borderColor: "var(--warn)", boxShadow: "0 0 0 3px var(--warn-bg)" } : undefined}>
       <div className="card-head" style={{ flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <h2 style={{ fontSize: 17 }}>{e.sku}</h2>
+          <h2 style={{ fontSize: "var(--ds-t-heading)" }}>{e.sku}</h2>
           <Pill tone={tone}>{e.approval}</Pill>
           {e.channels.map((c) => <ChanTag key={c.channel} name={c.channel} />)}
         </div>
@@ -117,16 +118,16 @@ function EventCard({ e }: { e: AgentEvent }) {
           <div className="card-pad" style={{ background: "var(--fill)", borderRadius: 12, padding: 14 }}>
             <div className="tiny muted" style={{ fontWeight: 600 }}>Without this change</div>
             <div className="small" style={{ margin: "6px 0" }}>{e.without_change.lines.map((l) => <div key={l}>{l}</div>)}</div>
-            <div className="num" style={{ fontSize: 20, fontWeight: 600 }}>{money(e.without_change.total)}</div>
+            <div className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{money(e.without_change.total)}</div>
           </div>
           <div className="card-pad" style={{ background: "var(--fill)", borderRadius: 12, padding: 14 }}>
             <div className="tiny muted" style={{ fontWeight: 600 }}>With this change</div>
             <div className="small" style={{ margin: "6px 0" }}>{e.with_change.lines.map((l) => <div key={l}>{l}</div>)}</div>
-            <div className="num" style={{ fontSize: 20, fontWeight: 600 }}>{money(e.with_change.total)}</div>
+            <div className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{money(e.with_change.total)}</div>
           </div>
           <div className="card-pad" style={{ background: e.net_savings >= 0 ? "var(--ok-bg)" : "var(--bad-bg)", borderRadius: 12, padding: 14 }}>
             <div className="tiny muted" style={{ fontWeight: 600 }}>Projected savings</div>
-            <div className="num" style={{ fontSize: 28, fontWeight: 700, color: e.net_savings >= 0 ? "var(--ok)" : "var(--bad)", marginTop: 6 }}>
+            <div className="num" style={{ fontSize: "var(--ds-t-metric)", fontWeight: 700, color: e.net_savings >= 0 ? "var(--ok)" : "var(--bad)", marginTop: 6 }}>
               {e.net_savings >= 0 ? "+" : "−"}{money(Math.abs(e.net_savings))}
             </div>
             <div className="tiny muted">assumes the units sell on whichever channel gets them</div>
@@ -153,14 +154,14 @@ function EventCard({ e }: { e: AgentEvent }) {
               <div key={c.channel} style={{ borderTop: i ? "1px solid var(--separator)" : 0 }}>
                 <div className="row" style={{ borderTop: 0 }}>
                   <div style={{ width: 96 }}><ChanTag name={c.channel} /></div>
-                  <div className="grow num" style={{ fontSize: 17, fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                  <div className="grow num" style={{ fontSize: "var(--ds-t-heading)", fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
                     {c.cap_from} <span className="muted">to</span> {c.cap_to}
                     <span className={`pill ${d > 0 ? "ok" : "bad"}`}>{d > 0 ? "+" : ""}{d}</span>
                   </div>
                   <span className="small muted">{c.savings}</span>
-                  <button className="btn sm plain" aria-expanded={!!open[k]} aria-controls={`calc-${k}`} onClick={() => setOpen((o) => ({ ...o, [k]: !o[k] }))}>
+                  <Button variant="tertiary" aria-expanded={!!open[k]} aria-controls={`calc-${k}`} onClick={() => setOpen((o) => ({ ...o, [k]: !o[k] }))}>
                     How it's calculated<ChevronDown size={14} style={{ transform: open[k] ? "rotate(180deg)" : undefined, transition: "transform .2s" }} aria-hidden />
-                  </button>
+                  </Button>
                 </div>
                 {open[k] && <div id={`calc-${k}`} className="small muted" style={{ padding: "0 20px 12px 128px" }}>{c.calc.map((l) => <div key={l}>{l}</div>)}</div>}
               </div>
@@ -170,8 +171,8 @@ function EventCard({ e }: { e: AgentEvent }) {
 
         {e.status === "pending" && e.approval_id && (
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <button className="btn primary" disabled={working} onClick={async () => { setWorking(true); await approve(e.approval_id!); setWorking(false); }}>{working ? <Spinner /> : <Check size={15} aria-hidden />}Approve</button>
-            <button className="btn danger" disabled={working} onClick={() => deny(e.approval_id!)}><X size={15} aria-hidden />Deny</button>
+            <Button variant="secondary" disabled={working} onClick={async () => { setWorking(true); await approve(e.approval_id!); setWorking(false); }}>{working ? <Spinner /> : <Check size={15} aria-hidden />}Approve</Button>
+            <Button variant="secondary" disabled={working} onClick={() => deny(e.approval_id!)}><X size={15} aria-hidden />Deny</Button>
             <span className="small muted">Nothing is written until you approve. Your decision applies the whole {e.sku} proposal.</span>
           </div>
         )}
@@ -190,7 +191,7 @@ function SavingsCard({ total, count, bySku, pending }: { total: number; count: n
       <CardHead title="Overall savings from smart allocation" sub={`From ${count} applied change${count === 1 ? "" : "s"} now in force`} />
       <div className="card-body" style={{ display: "flex", gap: 32, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div>
-          <div className="num" style={{ fontSize: 34, fontWeight: 700, color: "var(--ok)", lineHeight: 1.1 }}>+{money(total)}</div>
+          <div className="num" style={{ fontSize: "var(--ds-t-metric)", fontWeight: 700, color: "var(--ok)", lineHeight: 1.1 }}>+{money(total)}</div>
           {pending > 0 && <div className="small" style={{ color: "var(--warn)", marginTop: 6 }}>+{money(pending)} more awaiting approval</div>}
         </div>
         <div className="grow" style={{ minWidth: 220 }}>

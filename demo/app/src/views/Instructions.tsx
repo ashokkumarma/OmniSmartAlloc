@@ -1,4 +1,5 @@
 import { useRef, type ReactNode } from "react";
+import { Button } from "../ui/Button";
 import { ArrowRight, ShoppingCart, Warehouse } from "lucide-react";
 import type { Route } from "../App";
 import { Card, CardHead } from "../ui/kit";
@@ -9,7 +10,7 @@ function Step({ children, to, go, label }: { children: ReactNode; to?: Route; go
   return (
     <li style={{ margin: "8px 0", lineHeight: 1.55 }}>
       {children}
-      {to && <button className="btn sm plain" style={{ marginInlineStart: 8 }} onClick={() => go(to)}>{label ?? "Open"}<ArrowRight size={13} aria-hidden /></button>}
+      {to && <Button variant="tertiary" style={{ marginInlineStart: 8 }} onClick={() => go(to)}>{label ?? "Open"}<ArrowRight size={13} aria-hidden /></Button>}
     </li>
   );
 }
@@ -32,7 +33,7 @@ export function Instructions({ go }: { go: (r: Route) => void }) {
           <CardHead title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><ShoppingCart size={17} aria-hidden />Order Management System (OMS)</span>} sub="Where orders happen" />
           <div className="card-body small" style={{ lineHeight: 1.6 }}>
             Open <b>Storefronts</b>, pick a channel (DTC, Amazon, Etsy, Walmart), set a quantity and click <b>Place order</b>. Each channel writes to its own system. Fulfilment happens in the IMS.
-            <div style={{ marginTop: 10 }}><button className="btn sm" onClick={() => go("storefronts")}>Open Storefronts<ArrowRight size={13} aria-hidden /></button></div>
+            <div style={{ marginTop: 10 }}><Button variant="secondary" onClick={() => go("storefronts")}>Open Storefronts<ArrowRight size={13} aria-hidden /></Button></div>
           </div>
         </Card>
         <Card>
@@ -40,8 +41,8 @@ export function Instructions({ go }: { go: (r: Route) => void }) {
           <div className="card-body small" style={{ lineHeight: 1.6 }}>
             <b>Orders</b> is where you fulfil orders. <b>Smart Allocation</b> shows what the agent decided: green <b>Auto-applied</b> cards it wrote itself, amber <b>Needs approval</b> cards waiting for a human.
             <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <button className="btn sm" onClick={() => go("orders")}>Open Orders<ArrowRight size={13} aria-hidden /></button>
-              <button className="btn sm" onClick={() => go("agent")}>Open Smart Allocation<ArrowRight size={13} aria-hidden /></button>
+              <Button variant="secondary" onClick={() => go("orders")}>Open Orders<ArrowRight size={13} aria-hidden /></Button>
+              <Button variant="secondary" onClick={() => go("agent")}>Open Smart Allocation<ArrowRight size={13} aria-hidden /></Button>
             </div>
           </div>
         </Card>

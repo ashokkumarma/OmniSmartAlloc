@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Button } from "../ui/Button";
 import type { Route } from "../App";
 import { Warehouse, Lock, PackageCheck, Truck, Layers, Gauge, AlertTriangle, ClipboardList } from "lucide-react";
 import { CHANNELS, chanColor, chanVar, num, plural, STATE_TONE, stateColor, when, usedUnits } from "../format";
@@ -46,7 +47,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
                 return (
                   <tr key={p.sku}>
                     <td>
-                      <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}><button className="link" onClick={() => go("inventory", p.sku)}>{p.title}</button>{p.locked && <Lock size={13} aria-label="Locked by business rules" style={{ color: "var(--label-2)" }} />}</div>
+                      <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}><Button variant="tertiary" onClick={() => go("inventory", p.sku)}>{p.title}</Button>{p.locked && <Lock size={13} aria-label="Locked by business rules" style={{ color: "var(--label-2)" }} />}</div>
                       <div className="tiny muted mono">{p.sku}</div>
                     </td>
                     <td>{p.state ? <Pill tone={STATE_TONE[p.state]}>{p.state}</Pill> : <span className="muted">—</span>}</td>

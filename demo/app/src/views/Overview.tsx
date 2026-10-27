@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { AlertTriangle, CheckCircle2, Clock, PackageCheck, PackageOpen, ShoppingBag, Truck, Warehouse, Sparkles, DatabaseZap, Lock } from "lucide-react";
+import { Button } from "../ui/Button";
+import { AlertTriangle, CheckCircle2, Clock, PackageCheck, PackageOpen, ShoppingBag, Truck, Warehouse, SlidersHorizontal, DatabaseZap, Lock } from "lucide-react";
 import type { Route } from "../App";
 import { CHANNELS, chanColor, chanVar, money, num, plural, STATE_TONE, stateColor, stateVar, when, usedUnits } from "../format";
 import { useStore } from "../store";
@@ -22,7 +23,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
 
   const attention: Attention[] = [];
   const late = s.inbound.filter((x) => x.projected_date > x.arrival_date);
-  if (pending.length) attention.push({ id: "approvals", tone: "warn", icon: Sparkles, title: `${plural(pending.length, "allocation change")} ${pending.length === 1 ? "needs" : "need"} your approval`, detail: pending.map((e) => e.sku).join(", "), action: "Review", to: "agent" });
+  if (pending.length) attention.push({ id: "approvals", tone: "warn", icon: SlidersHorizontal, title: `${plural(pending.length, "allocation change")} ${pending.length === 1 ? "needs" : "need"} your approval`, detail: pending.map((e) => e.sku).join(", "), action: "Review", to: "agent" });
   for (const p of [...s.skus].filter((p) => p.state === "Critical" || p.state === "Tight").sort((a, b) => (a.state === "Critical" ? -1 : 1) - (b.state === "Critical" ? -1 : 1)))
     attention.push({ id: `sku-${p.sku}`, tone: p.state === "Critical" ? "bad" : "warn", icon: AlertTriangle, title: `${p.title} is ${p.state?.toLowerCase()}`, detail: `${p.sku}, ${num(p.sellable_units)} sellable, ${p.days_of_cover ?? "—"} days of cover`, action: "View stock", to: "inventory", sku: p.sku });
   if (fed && !fed.ok)
@@ -57,7 +58,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
         <Card className="reveal">
           <Empty icon={ShoppingBag} title="No orders yet">
             Load the demo data to see four channels sharing one stock pool.
-            <div style={{ marginTop: 12 }}><button className="btn primary" onClick={reset} disabled={busy.reset}>{busy.reset ? "Loading..." : "Load demo data"}</button></div>
+            <div style={{ marginTop: 12 }}><Button variant="secondary" onClick={reset} disabled={busy.reset}>{busy.reset ? "Loading..." : "Load demo data"}</Button></div>
           </Empty>
         </Card>
       )}
@@ -82,7 +83,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
                     <div style={{ fontWeight: 500 }}>{a.title}</div>
                     {a.detail && <div className="meta">{a.detail}</div>}
                   </div>
-                  <button className="btn sm plain" onClick={() => go(a.to, a.sku)}>{a.action}</button>
+                  <Button variant="tertiary" onClick={() => go(a.to, a.sku)}>{a.action}</Button>
                 </div>
               ))}
             </div>
@@ -125,9 +126,9 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
                 {p.state ? <Pill tone={STATE_TONE[p.state]}>{p.state}</Pill> : <Pill>no run yet</Pill>}
               </div>
               <div style={{ display: "flex", gap: 20, margin: "14px 0 12px" }}>
-                <div><div className="tiny muted">Sellable</div><div className="num" style={{ fontSize: 22, fontWeight: 600 }}>{num(p.sellable_units)}</div></div>
-                <div><div className="tiny muted">On hand</div><div className="num" style={{ fontSize: 22, fontWeight: 600 }}>{num(p.on_hand)}</div></div>
-                <div><div className="tiny muted">Cover</div><div className="num" style={{ fontSize: 22, fontWeight: 600, color: stateVar(p.state) }}>{p.days_of_cover ?? "—"}<span className="tiny muted"> d</span></div></div>
+                <div><div className="tiny muted">Sellable</div><div className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{num(p.sellable_units)}</div></div>
+                <div><div className="tiny muted">On hand</div><div className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{num(p.on_hand)}</div></div>
+                <div><div className="tiny muted">Cover</div><div className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600, color: stateVar(p.state) }}>{p.days_of_cover ?? "—"}<span className="tiny muted"> d</span></div></div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {p.allocation ? CHANNELS.map((c) => {
@@ -174,7 +175,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
 
       <Card className="reveal">
         <CardHead title="Recent orders" sub={`Latest 10 of ${num(T.orders)}`}>
-          <button className="btn sm plain" onClick={() => go("orders")}>All orders</button>
+          <Button variant="tertiary" onClick={() => go("orders")}>All orders</Button>
         </CardHead>
         <div className="list" style={{ paddingTop: 8 }}>
           {s.orders.slice(0, 10).map((o) => <OrderRow key={o.id} o={o} />)}

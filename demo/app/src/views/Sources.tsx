@@ -1,9 +1,10 @@
 import { useRef } from "react";
-import { Database, Globe, Server, Sparkles, Workflow, RefreshCw, DatabaseZap, ArrowRight } from "lucide-react";
+import { Button } from "../ui/Button";
+import { Database, Globe, Server, SlidersHorizontal, Workflow, RefreshCw, DatabaseZap, ArrowRight } from "lucide-react";
 import { CHANNELS, chanColor, chanVar, num } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, ChanTag, Empty, Pill, Spinner } from "../ui/kit";
-import { enter, gsap, reducedMotion, useGSAP } from "../motion";
+import { enter, useGSAP } from "../motion";
 
 const BACK_OFFICE = [
   { name: "WMS", holds: "Stock on hand, inbound POs" },
@@ -17,20 +18,7 @@ export function Sources() {
   const root = useRef<HTMLDivElement>(null);
   const live = !!fed?.ok;
 
-  useGSAP(() => {
-    enter(".reveal");
-    if (reducedMotion() || !live) return;
-    // data flowing left to right along each connector while Zetaris is connected
-    gsap.utils.toArray<HTMLElement>(".flow-dot").forEach((dot, i) => {
-      const link = dot.parentElement!;
-      const vertical = link.clientHeight > link.clientWidth; // the diagram stacks on narrow screens
-      const travel = (vertical ? link.clientHeight : link.clientWidth) - dot.offsetWidth;
-      gsap.timeline({ repeat: -1, delay: i * 0.35, repeatDelay: 0.4 })
-        .fromTo(dot, { [vertical ? "y" : "x"]: 0, autoAlpha: 0 }, { [vertical ? "y" : "x"]: travel, duration: 1.6, ease: "none" })
-        .to(dot, { autoAlpha: 1, duration: 0.25 }, 0)
-        .to(dot, { autoAlpha: 0, duration: 0.25 }, 1.35);
-    });
-  }, { scope: root, dependencies: [live], revertOnUpdate: true });
+  useGSAP(() => enter(".reveal"), { scope: root });
 
   if (!s) return null;
   const openOrders = (c: string) => s.orders.filter((o) => o.channel === c && (o.status === "open" || o.status === "partial")).length;
@@ -103,7 +91,7 @@ export function Sources() {
           <div className="flow-col center">
             <div className="flow-label">Decision</div>
             <div className="node hero">
-              <div className="node-title"><Sparkles size={16} style={{ color: "var(--accent)" }} aria-hidden />Nemotron agent</div>
+              <div className="node-title"><SlidersHorizontal size={16} style={{ color: "var(--accent)" }} aria-hidden />Nemotron agent</div>
               <ul className="node-list">
                 <li>compute_allocation per SKU</li>
                 <li>Guardrailed set_channel_allocation</li>
@@ -133,7 +121,7 @@ export function Sources() {
         <CardHead title="Live federated query" sub="One Lightning SQL statement that unions three Postgres tables with a REST API">
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {fed?.ok && <span className="tiny muted">{fed.rows?.length ?? 0} source rows, {fed.ms} ms, via Zetaris JDBC</span>}
-            <button className="btn sm" onClick={loadFederated} disabled={fedLoading}>{fedLoading ? <Spinner /> : <RefreshCw size={14} aria-hidden />}{fed?.ok ? "Refresh" : "Retry"}</button>
+            <Button variant="secondary" onClick={loadFederated} disabled={fedLoading}>{fedLoading ? <Spinner /> : <RefreshCw size={14} aria-hidden />}{fed?.ok ? "Refresh" : "Retry"}</Button>
           </div>
         </CardHead>
         <div className="card-body grid g-2" style={{ gap: 20 }}>
@@ -182,7 +170,6 @@ function Connector() {
   return (
     <div className="flow-link" aria-hidden>
       <span className="flow-line" />
-      <span className="flow-dot" />
       <ArrowRight size={16} className="flow-arrow" />
     </div>
   );

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { Button } from "./Button";
 import { CheckCircle2, AlertCircle, X } from "lucide-react";
 import { gsap, reducedMotion, useGSAP } from "../motion";
 
@@ -46,7 +47,7 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
 function ToastItem({ t, onClose }: { t: Toast; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useGSAP(() => {
-    if (!reducedMotion()) gsap.from(ref.current, { y: 16, autoAlpha: 0, scale: 0.98, duration: 0.32 });
+    if (!reducedMotion()) gsap.from(ref.current, { opacity: 0, duration: 0.2 });
   });
   return (
     <div ref={ref} className={`toast ${t.ok ? "ok" : "err"}`}>
@@ -64,8 +65,7 @@ export function Sheet({ title, children, onClose, labelledBy, className = "" }: 
   useGSAP(() => {
     if (reducedMotion()) return;
     // opacity, not autoAlpha: a visibility:hidden panel cannot receive focus while it animates in
-    gsap.from(scrim.current, { opacity: 0, duration: 0.2, ease: "power1.out" });
-    gsap.from(panel.current, { y: 14, scale: 0.97, opacity: 0, duration: 0.3 });
+    gsap.from([scrim.current, panel.current], { opacity: 0, duration: 0.2 });
   });
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -120,10 +120,10 @@ function DialogSheet({ dialog, close }: { dialog: Dialog; close: () => void }) {
         </div>
       )}
       <div className="acts">
-        <button className="btn" onClick={cancel}>Cancel</button>
-        <button className={`btn primary`} style={dialog.destructive ? { background: "var(--bad)" } : undefined} onClick={accept} autoFocus={dialog.kind === "confirm"}>
+        <Button variant="secondary" onClick={cancel}>Cancel</Button>
+        <Button variant="primary" onClick={accept} autoFocus={dialog.kind === "confirm"}>
           {dialog.confirmLabel ?? "OK"}
-        </button>
+        </Button>
       </div>
     </Sheet>
   );

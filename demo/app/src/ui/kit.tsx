@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Minus, Plus, Loader2, type LucideIcon } from "lucide-react";
 import { Chart, registerables, type ChartConfiguration } from "chart.js";
 import { chanVar, cssColor } from "../format";
-import { countTo, gsap, reducedMotion, useGSAP } from "../motion";
+import { reducedMotion } from "../motion";
 
 Chart.register(...registerables);
 
@@ -37,26 +37,14 @@ export function ChanTag({ name, plain }: { name: string; plain?: boolean }) {
 
 const groupDigits = (n: number) => n.toLocaleString("en-US");
 
-/** A KPI whose number counts up to each new value. */
+/** A KPI: a label, a number and an optional hint. */
 export function Kpi({ label, value, format = groupDigits, hint, icon: Icon, onClick, pressed }: {
   label: string; value: number; format?: (n: number) => string; hint?: ReactNode; icon?: LucideIcon; onClick?: () => void; pressed?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prev = useRef(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const tween = countTo(el, prev.current, value, format);
-    prev.current = value;
-    return () => {
-      tween?.kill();
-      el.textContent = format(value);
-    };
-  }, [value, format]);
   const body = (
     <>
       <div className="label">{Icon && <Icon size={14} aria-hidden />}{label}</div>
-      <div className="value" ref={ref} aria-label={`${label}: ${format(value)}`}>{format(value)}</div>
+      <div className="value" aria-label={`${label}: ${format(value)}`}>{format(value)}</div>
       {hint && <div className="hint">{hint}</div>}
     </>
   );
@@ -96,16 +84,12 @@ export function Empty({ icon: Icon, title, children }: { icon: LucideIcon; title
   );
 }
 
-/** A thin progress bar that grows in from the left once (transform only). */
+/** A thin progress bar. */
 export function Meter({ pct, color, label }: { pct: number; color: string; label?: string }) {
-  const bar = useRef<HTMLElement>(null);
-  useGSAP(() => {
-    if (!reducedMotion()) gsap.from(bar.current, { scaleX: 0, duration: 0.7, ease: "power2.out" });
-  }, []);
   const p = Math.max(0, Math.min(100, pct));
   return (
     <div className="meter" role="img" aria-label={label ?? `${Math.round(p)}%`}>
-      <i ref={bar} style={{ width: `${p}%`, background: color }} />
+      <i style={{ width: `${p}%`, background: color }} />
     </div>
   );
 }
@@ -144,13 +128,13 @@ export function ChartBox({ make, deps, size = "", label }: { make: () => ChartCo
   useEffect(() => {
     const text = cssColor("--chart-text"), grid = cssColor("--chart-grid");
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-    Chart.defaults.font.size = 12;
+    Chart.defaults.font.size = parseFloat(cssColor("--ds-t-micro"));
     Chart.defaults.color = text;
     Chart.defaults.borderColor = grid;
     const cfg = make();
     cfg.options = {
       responsive: true, maintainAspectRatio: false,
-      animation: reducedMotion() ? false : { duration: 600, easing: "easeOutQuart" },
+      animation: reducedMotion() ? false : { duration: 200, easing: "easeOutQuad" },
       ...cfg.options,
       plugins: { legend: { display: false }, ...cfg.options?.plugins,
         tooltip: { backgroundColor: cssColor("--surface"), titleColor: cssColor("--label"), bodyColor: cssColor("--label"), borderColor: grid, borderWidth: 1, padding: 10, cornerRadius: 8, boxPadding: 4, ...cfg.options?.plugins?.tooltip } },

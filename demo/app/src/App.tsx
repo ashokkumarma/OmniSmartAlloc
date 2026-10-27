@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  LayoutGrid, Package, Boxes, Sparkles, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, BookOpen, type LucideIcon,
+  LayoutGrid, Package, Boxes, SlidersHorizontal, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, BookOpen, type LucideIcon,
   ExternalLink,
 } from "lucide-react";
 import { useStore } from "./store";
@@ -8,6 +8,8 @@ import { CHANNELS } from "./format";
 import { Landing } from "./landing/Landing";
 import { content as landingContent } from "./landing/content";
 import { ThemeButton } from "./theme";
+import { Button } from "./ui/Button";
+import { MenuSheet } from "./ui/MenuSheet";
 import { Sheet } from "./ui/overlays";
 import { PageSkeleton, Spinner } from "./ui/kit";
 import { Overview } from "./views/Overview";
@@ -28,7 +30,7 @@ const GROUPS: { id: Group; label: string }[] = [{ id: "oms", label: "Order manag
 const NAV: { route: Route; label: string; icon: LucideIcon; group: Group }[] = [
   { route: "instructions", label: "Instructions", icon: BookOpen, group: "oms" },
   { route: "storefronts", label: "Storefronts", icon: Store, group: "oms" },
-  { route: "agent", label: "Smart Allocation", icon: Sparkles, group: "ims" },
+  { route: "agent", label: "Smart Allocation", icon: SlidersHorizontal, group: "ims" },
   { route: "overview", label: "Dashboard", icon: LayoutGrid, group: "ims" },
   { route: "orders", label: "Orders", icon: Package, group: "ims" },
   { route: "inventory", label: "Inventory", icon: Boxes, group: "ims" },
@@ -49,7 +51,7 @@ export default function App() {
   const [loc, setLoc] = useState(() => parsePath(location.pathname));
   const { route, sku } = loc;
   const [palette, setPalette] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [menu, setMenu] = useState(false);
 
   const go = useCallback((r: Route, to?: string) => {
     const path = r === "inventory" && to ? `/inventory/${to}` : PATHS[r];
@@ -60,7 +62,6 @@ export default function App() {
 
   useEffect(() => {
     const onPop = () => setLoc(parsePath(location.pathname));
-    const onScroll = () => setScrolled(window.scrollY > 8);
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -68,11 +69,9 @@ export default function App() {
       }
     };
     window.addEventListener("popstate", onPop);
-    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("popstate", onPop);
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("keydown", onKey);
     };
   }, []);
@@ -85,7 +84,6 @@ export default function App() {
   const pending = new Set(events.filter((e) => e.status === "pending").map((e) => e.approval_id)).size;
   const openOrders = s ? s.totals.status_counts.open + s.totals.status_counts.partial : 0;
   const counts: Partial<Record<Route, { n: number; alert?: boolean }>> = { orders: { n: openOrders }, agent: { n: pending, alert: pending > 0 } };
-  const title = NAV.find((n) => n.route === route)!.label;
 
   const navItems = (onPick?: () => void, group?: Group) => NAV.filter((n) => !group || n.group === group).map(({ route: r, label, icon: Icon }) => {
     const c = counts[r];
@@ -108,6 +106,13 @@ export default function App() {
   else if (route === "storefronts") view = <Storefronts />;
   else view = <Sources />;
 
+  const autoRun = (
+    <label className="auto-run" title="Re-run the agent automatically after orders ship, approvals change or a scenario loads">
+      <input type="checkbox" checked={store.s?.agent_auto !== false} onChange={(e) => store.setAutoRun(e.target.checked)} />
+      Auto-run
+    </label>
+  );
+
   const openPath = (to: string) => { history.pushState(null, "", to); setLoc(parsePath(to)); window.scrollTo({ top: 0 }); };
   if (loc.landing) {
     // the orbit in the hero is drawn from the first SKU that has caps
@@ -118,12 +123,12 @@ export default function App() {
   return (
     <div className="shell">
       <aside className="sidebar" aria-label="Main">
-        <a className="brand" href="/" onClick={(e) => { e.preventDefault(); openPath("/"); }}>
-          <span className="brand-mark" aria-hidden><Boxes size={16} /></span>
-          <span>OmniSmartAlloc<small>Inventory allocation</small></span>
-        </a>
-        <button className="btn sm" style={{ justifyContent: "flex-start", color: "var(--label-2)", margin: "0 4px 4px" }} onClick={() => setPalette(true)}>
-          <Search size={14} aria-hidden /> Search <span style={{ marginInlineStart: "auto" }} className="kbd">⌘K</span>
+        <div className="brand">
+          <a className="wordmark" href="/" onClick={(e) => { e.preventDefault(); openPath("/"); }}>OmniSmartAlloc</a>
+          <small>Inventory allocation</small>
+        </div>
+        <button className="nav-item search-item" onClick={() => setPalette(true)}>
+          <Search size={17} aria-hidden /><span>Search</span><span className="kbd">⌘K</span>
         </button>
         {GROUPS.map((g) => (
           <div key={g.id}>
@@ -148,27 +153,34 @@ export default function App() {
       </aside>
 
       <div className="main">
-        <header className={`toolbar ${scrolled ? "scrolled" : ""}`}>
-          <span className="toolbar-title">{title}</span>
-          <span className="spacer" />
-          <ThemeButton />
-          <label className="auto-run" title="Re-run the agent automatically after orders ship, approvals change or a scenario loads">
-            <input type="checkbox" checked={store.s?.agent_auto !== false} onChange={(e) => store.setAutoRun(e.target.checked)} />
-            Auto-run
-          </label>
-          <button className="btn primary" onClick={store.runAgent} disabled={busy.agent}>
-            {busy.agent ? <Spinner /> : <Play size={14} aria-hidden fill="currentColor" />}
-            {busy.agent ? "Agent running…" : "Run allocation cycle"}
-          </button>
+        <header className="appbar">
+          <div className="appbar-in">
+            <a className="wordmark" href="/" onClick={(e) => { e.preventDefault(); openPath("/"); }}>OmniSmartAlloc</a>
+            <span className="spacer" />
+            <div className="appbar-end">
+              {autoRun}
+              <ThemeButton className="theme-switch" />
+              <button type="button" className="menu-toggle" aria-expanded={menu} onClick={() => setMenu(true)}>Menu</button>
+              <Button variant="primary" onClick={store.runAgent} disabled={busy.agent}>
+                {busy.agent && <Spinner />}
+                {busy.agent ? "Agent running…" : <span>Run <span className="hide-sm">allocation </span>cycle</span>}
+              </Button>
+            </div>
+          </div>
         </header>
-        <nav className="mobile-nav" aria-label="Main">
-          {navItems()}
-          <span className="mobile-sep" aria-hidden />
-          <button className="nav-item" onClick={() => setPalette(true)}><Search size={17} aria-hidden /><span>Search</span></button>
-          <button className="nav-item" onClick={store.scenario1} disabled={busy.scenario}><FlaskConical size={17} aria-hidden /><span>Scenario 1</span></button>
-          <button className="nav-item" onClick={store.history} disabled={busy.history}><History size={17} aria-hidden /><span>Generate history</span></button>
-          <button className="nav-item" onClick={store.reset} disabled={busy.reset}><RotateCcw size={17} aria-hidden /><span>Reset demo</span></button>
-        </nav>
+        {menu && (
+          <MenuSheet title="OmniSmartAlloc" onClose={() => setMenu(false)}
+            links={NAV.map((n) => ({ label: n.label, href: PATHS[n.route], current: route === n.route, onSelect: () => go(n.route) }))}>
+            <Button onClick={() => { setMenu(false); setPalette(true); }}>Search</Button>
+            <Button onClick={store.scenario1} disabled={busy.scenario}>{busy.scenario ? "Loading scenario…" : "Load Scenario 1"}</Button>
+            <Button onClick={store.history} disabled={busy.history}>{busy.history ? "Generating…" : "Generate history"}</Button>
+            <Button onClick={store.reset} disabled={busy.reset}>{busy.reset ? "Resetting…" : "Reset demo"}</Button>
+            {autoRun}
+            <ThemeButton />
+            <a className="btn btn-tertiary" href="/oms">OMS (classic)</a>
+            <a className="btn btn-tertiary" href="/ims">IMS (classic)</a>
+          </MenuSheet>
+        )}
         <main className="content" key={`${route}/${sku ?? ""}`}>{view}</main>
       </div>
 

@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { Button } from "../ui/Button";
 import { Search, Inbox, Check, X } from "lucide-react";
 import type { OrderStatus } from "../api";
 import { num } from "../format";
@@ -65,8 +66,8 @@ export function Orders() {
         <Card className="reveal">
           <CardHead title="Open orders" sub={`${num(open.length)} shown`}>
             <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn sm" onClick={() => settleAllOpen("fulfill")} disabled={busy.bulk || !c.open}>{busy.bulk ? <Spinner /> : <Check size={14} aria-hidden />}Fulfill all open</button>
-              <button className="btn sm danger" onClick={() => settleAllOpen("cancel")} disabled={busy.bulk || !c.open}><X size={14} aria-hidden />Cancel all open</button>
+              <Button variant="secondary" onClick={() => settleAllOpen("fulfill")} disabled={busy.bulk || !c.open}>{busy.bulk ? <Spinner /> : <Check size={14} aria-hidden />}Fulfill all open</Button>
+              <Button variant="secondary" onClick={() => settleAllOpen("cancel")} disabled={busy.bulk || !c.open}><X size={14} aria-hidden />Cancel all open</Button>
             </div>
           </CardHead>
           <div className="list" style={{ paddingTop: 8 }}>

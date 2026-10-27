@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
+import { Button } from "../ui/Button";
 import { ShoppingCart, Database, Globe, ShoppingBag, ChevronDown } from "lucide-react";
 import type { AppState, Channel } from "../api";
 import { CHANNELS, CHANNEL_BLURB, chanColor, chanVar, money, num, STATUS_TONE, when } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Empty, Pill, Segmented, Spinner, Stepper } from "../ui/kit";
-import { enter, gsap, reducedMotion, useGSAP } from "../motion";
+import { enter, useGSAP } from "../motion";
 
 export function Storefronts() {
   const { s, placeOrder } = useStore();
@@ -24,12 +25,11 @@ export function Storefronts() {
   const shown = expanded ? orders : orders.slice(0, 6);
   const isPg = info.source.type.startsWith("Postgres");
 
-  const buy = async (sku: string, btn: HTMLButtonElement) => {
+  const buy = async (sku: string) => {
     const n = qty[`${ch}_${sku}`] ?? 1;
     setBuying(sku);
-    const ok = await placeOrder(ch, sku, n);
+    await placeOrder(ch, sku, n);
     setBuying(null);
-    if (ok && !reducedMotion()) gsap.fromTo(btn, { scale: 0.94 }, { scale: 1, duration: 0.5, ease: "back.out(3)" });
   };
 
   return (
@@ -48,11 +48,11 @@ export function Storefronts() {
           <ShoppingBag size={22} />
         </div>
         <div style={{ flex: 1, minWidth: 220 }}>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{ch}</div>
+          <div style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{ch}</div>
           <div className="muted">{CHANNEL_BLURB[ch]}</div>
         </div>
         <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
-          <div><div className="tiny muted">Margin</div><div className="num" style={{ fontSize: 20, fontWeight: 600 }}>{marginPct != null ? `${marginPct}%` : "—"}</div></div>
+          <div><div className="tiny muted">Margin</div><div className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{marginPct != null ? `${marginPct}%` : "—"}</div></div>
           <div><div className="tiny muted">Orders stored in</div><div style={{ display: "flex", gap: 6, alignItems: "center", fontWeight: 500 }}>{isPg ? <Database size={15} aria-hidden /> : <Globe size={15} aria-hidden />}{info.source.type}</div><div className="tiny muted mono">{info.source.location}</div></div>
         </div>
       </Card>
@@ -74,14 +74,14 @@ export function Storefronts() {
                   <div className="tiny muted mono">{p.sku}</div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                  <span className="num" style={{ fontSize: 22, fontWeight: 600 }}>{money(p.price)}</span>
+                  <span className="num" style={{ fontSize: "var(--ds-t-figure)", fontWeight: 600 }}>{money(p.price)}</span>
                   {cap !== null && <span className="small muted">{left} of {cap} left{used ? ` (${used} used${open ? `, ${open} open` : ""})` : ""}</span>}
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: "auto" }}>
                   <Stepper label={`Quantity of ${p.title}`} value={qty[key] ?? 1} min={1} max={Math.max(1, free)} onChange={(n) => setQty((q) => ({ ...q, [key]: n }))} />
-                  <button className="btn primary" style={{ flex: 1 }} disabled={buying === p.sku} onClick={(e) => buy(p.sku, e.currentTarget)}>
+                  <Button variant="secondary" style={{ flex: 1 }} disabled={buying === p.sku} onClick={() => buy(p.sku)}>
                     {buying === p.sku ? <Spinner /> : <ShoppingCart size={15} aria-hidden />}Place order
-                  </button>
+                  </Button>
                 </div>
               </Card>
             );
@@ -108,9 +108,9 @@ export function Storefronts() {
           </div>
           {orders.length > 6 && (
             <div style={{ padding: "0 20px 14px" }}>
-              <button className="btn sm plain" onClick={() => setExpanded((x) => !x)} aria-expanded={expanded}>
+              <Button variant="tertiary" onClick={() => setExpanded((x) => !x)} aria-expanded={expanded}>
                 {expanded ? "Show less" : `Show ${orders.length - 6} more`}<ChevronDown size={14} style={{ transform: expanded ? "rotate(180deg)" : undefined }} aria-hidden />
-              </button>
+              </Button>
             </div>
           )}
         </Card>

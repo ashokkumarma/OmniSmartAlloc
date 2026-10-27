@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Button } from "../ui/Button";
 import { Lock, PackageCheck, Truck, Warehouse, Gauge, Boxes } from "lucide-react";
 import type { Route } from "../App";
 import { CHANNELS, chanVar, money, num, plural, STATE_TONE, when } from "../format";
@@ -26,7 +27,7 @@ export function SkuDetail({ sku, go }: { sku: string; go: (r: Route, sku?: strin
     return (
       <div className="stack">
         {crumbs}
-        <Card><Empty icon={Boxes} title={`No product with the SKU ${sku}`}><button className="btn" style={{ marginTop: 12 }} onClick={() => go("inventory")}>Back to inventory</button></Empty></Card>
+        <Card><Empty icon={Boxes} title={`No product with the SKU ${sku}`}><Button variant="secondary" style={{ marginTop: 12 }} onClick={() => go("inventory")}>Back to inventory</Button></Empty></Card>
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, X, SplitSquareHorizontal, CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { Button } from "../ui/Button";
+import { Check, X, SplitSquareHorizontal, CheckCircle2, XCircle, SlidersHorizontal } from "lucide-react";
 import type { AgentJob, Order } from "../api";
 import { STATUS_TONE, when } from "../format";
 import { useStore } from "../store";
@@ -33,9 +34,9 @@ export function OrderRow({ o, actions = true }: { o: Order; actions?: boolean })
       <Pill tone={STATUS_TONE[o.status]}>{o.status}</Pill>
       {canAct && (
         <div className="acts">
-          <button className="btn sm" onClick={() => run("fulfill")} disabled={!!working}>{working === "fulfill" ? <Spinner /> : <Check size={14} aria-hidden />}Fulfill all</button>
-          {o.remaining > 1 && <button className="btn sm" onClick={() => setPartial(true)} disabled={!!working}><SplitSquareHorizontal size={14} aria-hidden />Partial</button>}
-          <button className="btn sm danger" onClick={() => run("cancel")} disabled={!!working}>{working === "cancel" ? <Spinner /> : <X size={14} aria-hidden />}Cancel</button>
+          <Button variant="secondary" onClick={() => run("fulfill")} disabled={!!working}>{working === "fulfill" ? <Spinner /> : <Check size={14} aria-hidden />}Fulfill all</Button>
+          {o.remaining > 1 && <Button variant="secondary" onClick={() => setPartial(true)} disabled={!!working}><SplitSquareHorizontal size={14} aria-hidden />Partial</Button>}
+          <Button variant="secondary" onClick={() => run("cancel")} disabled={!!working}>{working === "cancel" ? <Spinner /> : <X size={14} aria-hidden />}Cancel</Button>
         </div>
       )}
       {partial && <PartialSheet o={o} close={() => setPartial(false)} />}
@@ -78,8 +79,8 @@ function PartialSheet({ o, close }: { o: Order; close: () => void }) {
             placeholder="e.g. damaged units in bin, customer asked to split the shipment" />
         </div>
         <div className="acts" style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <button type="button" className="btn" onClick={close}>Cancel</button>
-          <button type="submit" className="btn primary" disabled={!ok}>Ship {ok ? q : ""} {q === 1 ? "unit" : "units"}</button>
+          <Button onClick={close}>Cancel</Button>
+          <Button type="submit" variant="primary" disabled={!ok}>Ship {ok ? q : ""} {q === 1 ? "unit" : "units"}</Button>
         </div>
       </form>
     </Sheet>
@@ -100,7 +101,7 @@ export function AgentRunCard({ job, pending = 0, onRetry }: { job: AgentJob | nu
     const rows = list.current?.querySelectorAll("li") ?? [];
     const fresh = Array.from(rows).slice(seen.current);
     seen.current = rows.length;
-    if (fresh.length && !reducedMotion()) gsap.from(fresh, { x: -10, opacity: 0, duration: 0.35, stagger: 0.06, clearProps: "transform,opacity" });
+    if (fresh.length && !reducedMotion()) gsap.from(fresh, { opacity: 0, duration: 0.2, clearProps: "opacity" });
     if (job?.running && list.current) list.current.scrollTop = list.current.scrollHeight;
   }, { dependencies: [steps.length] });
   const running = !!job?.running;
@@ -119,7 +120,7 @@ export function AgentRunCard({ job, pending = 0, onRetry }: { job: AgentJob | nu
   return (
     <Card aria-live="polite" className="reveal">
       <CardHead
-        title={<span style={{ display: "inline-flex", gap: 10, alignItems: "center" }}><Sparkles size={16} style={{ color: "var(--accent-text)" }} aria-hidden />Agent run<span className={`run-status ${state}`} role="status"><i aria-hidden />{RUN_LABEL[state]}</span></span>}
+        title={<span style={{ display: "inline-flex", gap: 10, alignItems: "center" }}><SlidersHorizontal size={16} style={{ color: "var(--accent-text)" }} aria-hidden />Agent run<span className={`run-status ${state}`} role="status"><i aria-hidden />{RUN_LABEL[state]}</span></span>}
         sub={`${steps.length} ${steps.length === 1 ? "step" : "steps"}${secs > 0 || job.running ? `, ${secs} s` : ""}${state === "waiting" ? `, ${pending} ${pending === 1 ? "change waits" : "changes wait"} for your approval` : ""}`}>
         {job.running && <Spinner size={16} />}
       </CardHead>
@@ -127,7 +128,7 @@ export function AgentRunCard({ job, pending = 0, onRetry }: { job: AgentJob | nu
         {state === "failed" && (
           <div className="inline-error" role="alert">
             <div><b>The run did not finish.</b>{reason && <span className="small"> {reason.slice(0, 300)}</span>}</div>
-            {onRetry && <button className="btn sm" onClick={onRetry}>Run again</button>}
+            {onRetry && <Button variant="secondary" onClick={onRetry}>Run again</Button>}
           </div>
         )}
         {steps.length ? (
