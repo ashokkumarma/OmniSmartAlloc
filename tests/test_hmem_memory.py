@@ -6,6 +6,7 @@ Node is not installed, except the fallback test which needs no Node.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -100,7 +101,9 @@ def test_engine_can_be_disabled(tmp_path, monkeypatch):
 
 @needs_node
 def test_official_hmem_conformance_suite_passes():
-    p = subprocess.run(["node", str(ROOT / "engines" / "hmem" / "scripts" / "conformance.ts")],
+    hm = ROOT / "engines" / "hmem"
+    p = subprocess.run(["node", str(hm / "conformance" / "runner.ts")], cwd=str(hm / "conformance"),
+                       env={**os.environ, "HMEM_IMPL": str(hm / "src" / "index.ts")},
                        capture_output=True, text=True, encoding="utf-8", timeout=120)
     assert p.returncode == 0, p.stdout + p.stderr
     assert "13/13 checks passed" in p.stdout
