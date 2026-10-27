@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  LayoutGrid, Package, Boxes, Sparkles, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, BookOpen, type LucideIcon,
-  ExternalLink,
+  LayoutGrid, Package, Boxes, Sparkles, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, BookOpen, Lightbulb, type LucideIcon,
 } from "lucide-react";
 import { useStore } from "./store";
 import { CHANNELS } from "./format";
@@ -18,14 +17,16 @@ import { Agent } from "./views/Agent";
 import { Storefronts } from "./views/Storefronts";
 import { Sources } from "./views/Sources";
 import { Instructions } from "./views/Instructions";
+import { HackathonContext } from "./views/HackathonContext";
 
-export type Route = "instructions" | "overview" | "orders" | "inventory" | "agent" | "storefronts" | "sources";
-const PATHS: Record<Route, string> = { instructions: "/instructions", overview: "/app", orders: "/orders", inventory: "/inventory", agent: "/agent", storefronts: "/storefronts", sources: "/sources" };
+export type Route = "context" | "instructions" | "overview" | "orders" | "inventory" | "agent" | "storefronts" | "sources";
+const PATHS: Record<Route, string> = { context: "/context", instructions: "/instructions", overview: "/app", orders: "/orders", inventory: "/inventory", agent: "/agent", storefronts: "/storefronts", sources: "/sources" };
 const ALIASES: Record<string, Route> = { "/ops": "overview", "/dashboard": "overview", "/channels": "storefronts", "/smart-allocation": "agent" };
 // Two systems, as in the guided demo: the OMS takes orders, the IMS fulfils them and shows the agent's decisions.
-type Group = "oms" | "ims";
-const GROUPS: { id: Group; label: string }[] = [{ id: "oms", label: "Order management (OMS)" }, { id: "ims", label: "Inventory management (IMS)" }];
+type Group = "about" | "oms" | "ims";
+const GROUPS: { id: Group; label: string }[] = [{ id: "about", label: "Hackathon" }, { id: "oms", label: "Order management (OMS)" }, { id: "ims", label: "Inventory management (IMS)" }];
 const NAV: { route: Route; label: string; icon: LucideIcon; group: Group }[] = [
+  { route: "context", label: "Hackathon Context", icon: Lightbulb, group: "about" },
   { route: "instructions", label: "Instructions", icon: BookOpen, group: "oms" },
   { route: "storefronts", label: "Storefronts", icon: Store, group: "oms" },
   { route: "agent", label: "Smart Allocation", icon: Sparkles, group: "ims" },
@@ -100,6 +101,7 @@ export default function App() {
 
   let view: ReactNode;
   if (!s) view = <div className={offline ? "empty" : undefined} style={{ marginTop: offline ? 80 : 0 }}>{offline ? <><b>Cannot reach the demo server</b>Start it with <span className="mono">scripts/start_demo.py</span>.</> : <PageSkeleton />}</div>;
+  else if (route === "context") view = <HackathonContext go={go} />;
   else if (route === "instructions") view = <Instructions go={go} />;
   else if (route === "overview") view = <Overview go={go} />;
   else if (route === "orders") view = <Orders />;
@@ -133,12 +135,7 @@ export default function App() {
         ))}
         <div className="nav-label">Demo data</div>
         <div className="nav">
-          <button className="nav-item" onClick={store.scenario1} disabled={busy.scenario}>{busy.scenario ? <Spinner size={17} /> : <FlaskConical size={17} aria-hidden />}<span>{busy.scenario ? "Loading scenario…" : "Scenario 1"}</span></button>
-          <button className="nav-item" onClick={store.history} disabled={busy.history}>{busy.history ? <Spinner size={17} /> : <History size={17} aria-hidden />}<span>{busy.history ? "Generating…" : "Generate history"}</span></button>
           <button className="nav-item" onClick={store.reset} disabled={busy.reset}>{busy.reset ? <Spinner size={17} /> : <RotateCcw size={17} aria-hidden />}<span>{busy.reset ? "Resetting…" : "Reset demo"}</span></button>
-          {/* The original OMS and IMS pages: the guided demo walkthrough runs there. */}
-          <a className="nav-item" href="/oms"><ExternalLink size={17} aria-hidden /><span>OMS (classic)</span></a>
-          <a className="nav-item" href="/ims"><ExternalLink size={17} aria-hidden /><span>IMS (classic)</span></a>
         </div>
         <div className="sidebar-foot" aria-label="System status">
           <div className="status-row"><span className={`dot ${offline ? "bad" : "ok"}`} />Channel stores {offline ? "unreachable" : "connected"}</div>
@@ -165,8 +162,6 @@ export default function App() {
           {navItems()}
           <span className="mobile-sep" aria-hidden />
           <button className="nav-item" onClick={() => setPalette(true)}><Search size={17} aria-hidden /><span>Search</span></button>
-          <button className="nav-item" onClick={store.scenario1} disabled={busy.scenario}><FlaskConical size={17} aria-hidden /><span>Scenario 1</span></button>
-          <button className="nav-item" onClick={store.history} disabled={busy.history}><History size={17} aria-hidden /><span>Generate history</span></button>
           <button className="nav-item" onClick={store.reset} disabled={busy.reset}><RotateCcw size={17} aria-hidden /><span>Reset demo</span></button>
         </nav>
         <main className="content" key={`${route}/${sku ?? ""}`}>{view}</main>

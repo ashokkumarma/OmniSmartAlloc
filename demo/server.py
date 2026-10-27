@@ -41,7 +41,7 @@ OUTBOX = ROOT / "demo" / "outbox"
 WEB = ROOT / "demo" / "web"
 APP_DIST = ROOT / "demo" / "app" / "dist"  # built by `npm run build` in demo/app (scripts/start_demo.py does it)
 APP_ROUTES = {"/", "/app", "/channels", "/ops", "/orders", "/inventory", "/agent", "/storefronts", "/sources",
-              "/instructions", "/dashboard", "/smart-allocation"}
+              "/instructions", "/context", "/dashboard", "/smart-allocation"}
 APP_TYPES = {".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml",
              ".woff2": "font/woff2", ".png": "image/png", ".json": "application/json"}
 VENV_PY = ROOT / ".venv" / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
