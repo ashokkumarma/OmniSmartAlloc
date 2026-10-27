@@ -202,8 +202,6 @@ function tabs(){
   $('tabs').innerHTML =
     `<div class="tab ${cur==='Summary'?'active':''}" style="${cur==='Summary'?'background:#38BDF8;border-color:#38BDF8;color:#0B1020':''}"
       onclick="cur='Summary';render()">Summary</div>` +
-    `<div class="tab ${cur==='Instructions'?'active':''}" style="${cur==='Instructions'?'background:#22C55E;border-color:#22C55E;color:#0B1020':''}"
-      onclick="cur='Instructions';render()">Instructions</div>` +
     S.channels.map(c =>
     `<div class="tab ${c.name===cur?'active':''}" style="${c.name===cur?`background:${c.color};border-color:${c.color}`:''}"
       onclick="cur='${c.name}';render()">${c.name}</div>`).join('');
