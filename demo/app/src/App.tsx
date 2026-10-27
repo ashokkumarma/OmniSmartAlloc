@@ -3,7 +3,9 @@ import {
   LayoutGrid, Package, Boxes, SlidersHorizontal, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, BookOpen, type LucideIcon,
   ExternalLink,
 } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import { useStore } from "./store";
+import { PAGE, SPRING } from "./motion";
 import { CHANNELS } from "./format";
 import { Landing } from "./landing/Landing";
 import { content as landingContent } from "./landing/content";
@@ -89,6 +91,7 @@ export default function App() {
     const c = counts[r];
     return (
       <button key={r} className="nav-item" aria-current={route === r ? "page" : undefined} onClick={() => { go(r); onPick?.(); }}>
+        {route === r && <m.span layoutId="nav-ind" className="nav-ind" transition={SPRING} />}
         <Icon size={17} aria-hidden />
         <span>{label}</span>
         {c && c.n > 0 && <span className={`count ${c.alert ? "alert" : ""}`} aria-label={`${c.n} ${c.alert ? "awaiting approval" : "open"}`}>{c.n}</span>}
@@ -168,6 +171,7 @@ export default function App() {
             </div>
           </div>
         </header>
+        <AnimatePresence>
         {menu && (
           <MenuSheet title="OmniSmartAlloc" onClose={() => setMenu(false)}
             links={NAV.map((n) => ({ label: n.label, href: PATHS[n.route], current: route === n.route, onSelect: () => go(n.route) }))}>
@@ -181,10 +185,11 @@ export default function App() {
             <a className="btn btn-tertiary" href="/ims">IMS (classic)</a>
           </MenuSheet>
         )}
-        <main className="content" key={`${route}/${sku ?? ""}`}>{view}</main>
+        </AnimatePresence>
+        <m.main className="content" key={s ? `${route}/${sku ?? ""}` : "loading"} {...PAGE}>{view}</m.main>
       </div>
 
-      {palette && <Palette close={() => setPalette(false)} go={go} />}
+      <AnimatePresence>{palette && <Palette close={() => setPalette(false)} go={go} />}</AnimatePresence>
     </div>
   );
 }

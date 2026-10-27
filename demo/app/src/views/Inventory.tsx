@@ -5,12 +5,10 @@ import { Warehouse, Lock, PackageCheck, Truck, Layers, Gauge, AlertTriangle, Cli
 import { CHANNELS, chanColor, chanVar, num, plural, STATE_TONE, stateColor, when, usedUnits } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Empty, Kpi, Legend, Meter, Pill } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 
 export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
   const { s } = useStore();
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => enter(".reveal"), { scope: root });
   if (!s) return null;
 
   const onHand = s.skus.reduce((a, p) => a + p.on_hand, 0);
@@ -21,14 +19,14 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
 
   return (
     <div ref={root} className="stack">
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>Inventory</h1>
           <p>One warehouse pool shared by every channel. Sellable stock is on hand minus committed; the agent caps how much each channel may sell.</p>
         </div>
       </div>
 
-      <div className="kpis reveal">
+      <div className="kpis">
         <Kpi label="On hand" icon={Warehouse} value={onHand} hint="units in the warehouse" />
         <Kpi label="Reserved" icon={Lock} value={committed} hint="committed to open orders" />
         <Kpi label="Allocatable" icon={PackageCheck} value={sellable} hint="sellable now" />
@@ -36,7 +34,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
         <Kpi label="Inbound shipments" icon={Layers} value={s.inbound.length} hint="purchase orders" />
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Stock by SKU" sub="On hand, reserved in open orders, and what each channel may still sell" />
         <div className="table-wrap" style={{ marginTop: 8 }}>
           <table className="table">
@@ -79,7 +77,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
         </div>
       </Card>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Incoming inventory" sub="Inbound purchase orders, with arrival adjusted for each supplier's track record" />
         <div className="table-wrap" style={{ marginTop: 8 }}>
           {s.inbound.length ? (
@@ -109,7 +107,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
         </div>
       </Card>
 
-      <div className="grid g-2 reveal">
+      <div className="grid g-2">
         <Card>
           <CardHead title="Allocation vs consumed" sub="Solid: allocated, light: used by orders since the allocation">
             <Legend items={CHANNELS.map((c) => ({ label: c, color: chanVar(c) }))} />
@@ -140,7 +138,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
         </Card>
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Allocated units per channel" sub="The agent's latest cap for each channel">
           <Legend items={CHANNELS.map((c) => ({ label: c, color: chanVar(c) }))} />
         </CardHead>
@@ -153,7 +151,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
         </div>
       </Card>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Agent activity" sub={`${plural(s.alerts.length, "alert")}, ${plural(s.decisions.length, "decision")}`} />
         <div className="list" style={{ paddingTop: 8 }}>
           {s.alerts.slice(0, 6).map((a) => (

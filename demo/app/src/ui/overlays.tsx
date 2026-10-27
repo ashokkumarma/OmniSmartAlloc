@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, m } from "motion/react";
 import { Button } from "./Button";
 import { CheckCircle2, AlertCircle, X } from "lucide-react";
-import { gsap, reducedMotion, useGSAP } from "../motion";
+import { NUDGE, SPRING, T_BASE, T_FAST } from "../motion";
 
 interface Toast { id: number; msg: string; ok: boolean }
 interface ConfirmOpts { title: string; body?: ReactNode; confirmLabel?: string; destructive?: boolean }
@@ -35,26 +36,24 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={{ toast, confirm, prompt }}>
       {children}
       <div className="toasts" role="status" aria-live="polite">
-        {toasts.map((t) => (
-          <ToastItem key={t.id} t={t} onClose={() => setToasts((x) => x.filter((y) => y.id !== t.id))} />
-        ))}
+        <AnimatePresence initial={false}>
+          {toasts.map((t) => (
+            <ToastItem key={t.id} t={t} onClose={() => setToasts((x) => x.filter((y) => y.id !== t.id))} />
+          ))}
+        </AnimatePresence>
       </div>
-      {dialog && <DialogSheet dialog={dialog} close={() => setDialog(null)} />}
+      <AnimatePresence>{dialog && <DialogSheet dialog={dialog} close={() => setDialog(null)} />}</AnimatePresence>
     </Ctx.Provider>
   );
 }
 
 function ToastItem({ t, onClose }: { t: Toast; onClose: () => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    if (!reducedMotion()) gsap.from(ref.current, { opacity: 0, duration: 0.2 });
-  });
   return (
-    <div ref={ref} className={`toast ${t.ok ? "ok" : "err"}`}>
+    <m.div layout className={`toast ${t.ok ? "ok" : "err"}`} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
       {t.ok ? <CheckCircle2 size={18} aria-hidden /> : <AlertCircle size={18} aria-hidden />}
       <span>{t.msg}</span>
       <button onClick={onClose} aria-label="Dismiss"><X size={16} /></button>
-    </div>
+    </m.div>
   );
 }
 
@@ -62,11 +61,6 @@ function ToastItem({ t, onClose }: { t: Toast; onClose: () => void }) {
 export function Sheet({ title, children, onClose, labelledBy, className = "" }: { title?: string; children: ReactNode; onClose: () => void; labelledBy?: string; className?: string }) {
   const scrim = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    if (reducedMotion()) return;
-    // opacity, not autoAlpha: a visibility:hidden panel cannot receive focus while it animates in
-    gsap.from([scrim.current, panel.current], { opacity: 0, duration: 0.2 });
-  });
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   // read during the first render: autoFocus inside the sheet moves focus before any effect runs
@@ -83,11 +77,12 @@ export function Sheet({ title, children, onClose, labelledBy, className = "" }: 
     };
   }, []);
   return (
-    <div ref={scrim} className="scrim" onMouseDown={(e) => e.target === scrim.current && onClose()}>
-      <div ref={panel} className={`sheet ${className}`} role="dialog" aria-modal="true" aria-label={labelledBy ? undefined : title} aria-labelledby={labelledBy}>
+    <m.div ref={scrim} className="scrim" onMouseDown={(e) => e.target === scrim.current && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={T_BASE}>
+      <m.div ref={panel} className={`sheet ${className}`} role="dialog" aria-modal="true" aria-label={labelledBy ? undefined : title} aria-labelledby={labelledBy}
+        initial={{ opacity: 0, scale: 0.97, y: NUDGE }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ ...SPRING, opacity: T_FAST }}>
         {children}
-      </div>
-    </div>
+      </m.div>
+    </m.div>
   );
 }
 

@@ -5,7 +5,6 @@ import type { AppState, Channel } from "../api";
 import { CHANNELS, CHANNEL_BLURB, chanColor, chanVar, money, num, STATUS_TONE, when } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Empty, Pill, Segmented, Spinner, Stepper } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 
 export function Storefronts() {
   const { s, placeOrder } = useStore();
@@ -14,7 +13,6 @@ export function Storefronts() {
   const [buying, setBuying] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => enter(".reveal"), { scope: root, dependencies: [ch], revertOnUpdate: true });
   if (!s) return null;
 
   const info = s.channels.find((c) => c.name === ch)!;
@@ -34,7 +32,7 @@ export function Storefronts() {
 
   return (
     <div ref={root} className="stack">
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>Storefronts</h1>
           <p>Place test orders as a shopper would. Each channel writes to its own system, exactly like production, and the agent sees it on the next run.</p>
@@ -43,7 +41,7 @@ export function Storefronts() {
           options={CHANNELS.map((c) => ({ value: c, label: <><i style={{ width: 8, height: 8, borderRadius: 4, background: chanVar(c), display: "inline-block" }} aria-hidden />{c}</> }))} />
       </div>
 
-      <Card className="reveal card-pad" style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+      <Card className="card-pad" style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ width: 48, height: 48, borderRadius: 12, background: chanVar(ch), display: "grid", placeItems: "center", color: "#fff", flex: "none" }} aria-hidden>
           <ShoppingBag size={22} />
         </div>
@@ -57,7 +55,7 @@ export function Storefronts() {
         </div>
       </Card>
 
-      <section className="reveal">
+      <section>
         <h2 className="section-title">Catalog</h2>
         <div className="grid g-4">
           {s.skus.map((p) => {
@@ -91,7 +89,7 @@ export function Storefronts() {
 
       <InventoryLog s={s} ch={ch} />
 
-      <div className="grid g-main reveal">
+      <div className="grid g-main">
         <Card>
           <CardHead title="Order feed" sub={`${num(orders.length)} recent ${ch} orders`} />
           <div className="list" style={{ paddingTop: 8 }}>
@@ -179,7 +177,7 @@ function InventoryLog({ s, ch }: { s: AppState; ch: Channel }) {
     .sort((a, b) => (b.ts < a.ts ? -1 : b.ts > a.ts ? 1 : 0)).slice(0, 40);
   const tone = { "Smart Allocation": "ok", Order: "warn", Baseline: undefined } as const;
   return (
-    <Card className="reveal">
+    <Card>
       <CardHead title="Inventory log" sub={`How ${ch}'s stock count changed: allocation moves and orders`}>
         <Segmented<string> label="Filter by SKU" value={sku} onChange={setSku}
           options={[{ value: "all", label: "All SKUs" }, ...s.skus.map((p) => ({ value: p.sku, label: p.sku }))]} />

@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { m } from "motion/react";
 import { Minus, Plus, Loader2, type LucideIcon } from "lucide-react";
 import { Chart, registerables, type ChartConfiguration } from "chart.js";
 import { chanVar, cssColor } from "../format";
-import { reducedMotion } from "../motion";
+import { DUR, prefersReducedMotion, SPRING } from "../motion";
 
 Chart.register(...registerables);
 
@@ -56,6 +57,7 @@ export function Kpi({ label, value, format = groupDigits, hint, icon: Icon, onCl
 export function Segmented<T extends string>({ value, onChange, options, label }: {
   value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode; count?: number }[]; label: string;
 }) {
+  const id = useId();
   return (
     <div className="segmented" role="tablist" aria-label={label}
       onKeyDown={(e) => {
@@ -67,7 +69,8 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
       }}>
       {options.map((o) => (
         <button key={o.value} role="tab" aria-selected={o.value === value} tabIndex={o.value === value ? 0 : -1} onClick={() => onChange(o.value)}>
-          {o.label}{o.count !== undefined && <span className="n">{o.count.toLocaleString("en-US")}</span>}
+          {o.value === value && <m.span layoutId={`seg-${id}`} className="seg-ind" transition={SPRING} />}
+          <span className="seg-label">{o.label}{o.count !== undefined && <span className="n">{o.count.toLocaleString("en-US")}</span>}</span>
         </button>
       ))}
     </div>
@@ -134,7 +137,7 @@ export function ChartBox({ make, deps, size = "", label }: { make: () => ChartCo
     const cfg = make();
     cfg.options = {
       responsive: true, maintainAspectRatio: false,
-      animation: reducedMotion() ? false : { duration: 200, easing: "easeOutQuad" },
+      animation: prefersReducedMotion() ? false : { duration: DUR.base * 1000, easing: "easeOutQuad" },
       ...cfg.options,
       plugins: { legend: { display: false }, ...cfg.options?.plugins,
         tooltip: { backgroundColor: cssColor("--surface"), titleColor: cssColor("--label"), bodyColor: cssColor("--label"), borderColor: grid, borderWidth: 1, padding: 10, cornerRadius: 8, boxPadding: 4, ...cfg.options?.plugins?.tooltip } },

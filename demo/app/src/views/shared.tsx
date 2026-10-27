@@ -6,7 +6,8 @@ import { STATUS_TONE, when } from "../format";
 import { useStore } from "../store";
 import { Sheet } from "../ui/overlays";
 import { Card, CardHead, ChanTag, Pill, Spinner } from "../ui/kit";
-import { gsap, reducedMotion, useGSAP } from "../motion";
+import { AnimatePresence, m } from "motion/react";
+import { NUDGE, T_BASE } from "../motion";
 
 /** One order with its status and, when it is still open or partial, the fulfilment actions. */
 export function OrderRow({ o, actions = true }: { o: Order; actions?: boolean }) {
@@ -21,7 +22,7 @@ export function OrderRow({ o, actions = true }: { o: Order; actions?: boolean })
   const last = (o.partial_shipments || []).filter((p) => p.reason).slice(-1)[0];
   const canAct = actions && (o.status === "open" || o.status === "partial");
   return (
-    <div className="row">
+    <m.div layout className="row" initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
       <div style={{ width: 96 }}><ChanTag name={o.channel} /></div>
       <div className="grow">
         <div><b className="num">{o.qty}×</b> {o.sku} <span className="muted tiny mono">#{o.id}</span></div>
@@ -39,8 +40,8 @@ export function OrderRow({ o, actions = true }: { o: Order; actions?: boolean })
           <Button variant="secondary" danger onClick={() => run("cancel")} disabled={!!working}>{working === "cancel" ? <Spinner /> : <X size={14} aria-hidden />}Cancel</Button>
         </div>
       )}
-      {partial && <PartialSheet o={o} close={() => setPartial(false)} />}
-    </div>
+      <AnimatePresence>{partial && <PartialSheet o={o} close={() => setPartial(false)} />}</AnimatePresence>
+    </m.div>
   );
 }
 
@@ -93,18 +94,11 @@ const RUN_LABEL: Record<RunState, string> = { queued: "Queued", running: "Runnin
 /** Live trace of the allocation agent: status, elapsed time, one row per tool call, and a lamp for each system it has read. */
 export function AgentRunCard({ job, pending = 0, onRetry }: { job: AgentJob | null; pending?: number; onRetry?: () => void }) {
   const list = useRef<HTMLOListElement>(null);
-  const seen = useRef(0);
   const started = useRef<number | null>(null);
   const [secs, setSecs] = useState(0);
   const steps = job?.steps ?? [];
-  useGSAP(() => {
-    const rows = list.current?.querySelectorAll("li") ?? [];
-    const fresh = Array.from(rows).slice(seen.current);
-    seen.current = rows.length;
-    if (fresh.length && !reducedMotion()) gsap.from(fresh, { opacity: 0, duration: 0.2, clearProps: "opacity" });
-    if (job?.running && list.current) list.current.scrollTop = list.current.scrollHeight;
-  }, { dependencies: [steps.length] });
   const running = !!job?.running;
+  useEffect(() => { if (running && list.current) list.current.scrollTop = list.current.scrollHeight; }, [steps.length, running]);
   useEffect(() => {
     if (!running) { started.current = null; return; }
     started.current ??= Date.now();
@@ -118,7 +112,7 @@ export function AgentRunCard({ job, pending = 0, onRetry }: { job: AgentJob | nu
   const lastSources = new Set(job.running ? steps[steps.length - 1]?.sources ?? [] : []);
   const reason = job.ok === false ? job.tail.trim().split("\n").filter(Boolean).pop() : undefined;
   return (
-    <Card aria-live="polite" className="reveal">
+    <Card aria-live="polite">
       <CardHead
         title={<span style={{ display: "inline-flex", gap: 10, alignItems: "center" }}><SlidersHorizontal size={16} style={{ color: "var(--accent-text)" }} aria-hidden />Agent run<span className={`run-status ${state}`} role="status"><i aria-hidden />{RUN_LABEL[state]}</span></span>}
         sub={`${steps.length} ${steps.length === 1 ? "step" : "steps"}${secs > 0 || job.running ? `, ${secs} s` : ""}${state === "waiting" ? `, ${pending} ${pending === 1 ? "change waits" : "changes wait"} for your approval` : ""}`}>
@@ -133,14 +127,16 @@ export function AgentRunCard({ job, pending = 0, onRetry }: { job: AgentJob | nu
         )}
         {steps.length ? (
           <ol ref={list} style={{ listStyle: "none", margin: 0, padding: 0, maxHeight: 280, overflow: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+            <AnimatePresence initial={false}>
             {steps.map((st) => (
-              <li key={st.n} style={{ display: "grid", gridTemplateColumns: "24px 20px minmax(0,1fr) auto", gap: 8, alignItems: "baseline", padding: "6px 0", borderTop: "1px solid var(--separator)" }}>
+              <m.li key={st.n} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} transition={T_BASE} style={{ display: "grid", gridTemplateColumns: "24px 20px minmax(0,1fr) auto", gap: 8, alignItems: "baseline", padding: "6px 0", borderTop: "1px solid var(--separator)" }}>
                 <span className="muted tiny num">{st.n}</span>
                 {st.ok ? <CheckCircle2 size={15} style={{ color: "var(--ok)", alignSelf: "center" }} aria-label="ok" /> : <XCircle size={15} style={{ color: "var(--bad)", alignSelf: "center" }} aria-label="failed" />}
                 <span>{st.text}{st.error && <span className="small" style={{ display: "block", color: "var(--bad)" }}>{st.error}</span>}</span>
                 <span style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "flex-end" }}>{st.sources.map((x) => <Pill key={x} tone="info">{x}</Pill>)}</span>
-              </li>
+              </m.li>
             ))}
+            </AnimatePresence>
           </ol>
         ) : <p className="muted" style={{ margin: 0 }}>Starting the agent...</p>}
         {sources.length > 0 && (

@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
+import { NUDGE, T_BASE } from "../motion";
+import { AnimatePresence, m } from "motion/react";
 import { Button } from "../ui/Button";
 import { Check, ChevronDown, SlidersHorizontal, X, TrendingDown, TrendingUp } from "lucide-react";
 import type { AgentEvent } from "../api";
 import { chanColor, money, when } from "../format";
 import { useStore } from "../store";
 import { Card, CardHead, ChanTag, ChartBox, Empty, Pill, Segmented, Spinner } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 import { AgentRunCard } from "./shared";
 
 type Group = "all" | "Auto-apply" | "Needs approval" | "Approved" | "Denied" | "Stock sync";
@@ -16,7 +17,6 @@ export function Agent() {
   const { s, events, savings, agent, runAgent } = useStore();
   const [filter, setFilter] = useState<Group>("all");
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => enter(".reveal"), { scope: root });
   if (!s) return null;
 
   const groups: Exclude<Group, "all">[] = ["Auto-apply", "Needs approval", "Approved", "Denied", "Stock sync"];
@@ -24,7 +24,7 @@ export function Agent() {
 
   return (
     <div ref={root} className="stack">
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>Smart Allocation</h1>
           <p>The allocation agent reads every source through Zetaris, scores each channel, and moves caps within guardrails. Big or risky moves wait for you.</p>
@@ -33,13 +33,13 @@ export function Agent() {
 
       <AgentRunCard job={agent} pending={events.filter((e) => e.status === "pending").length} onRetry={runAgent} />
 
-      <div className="grid g-2 reveal">
+      <div className="grid g-2">
         <SavingsCard total={savings?.total ?? 0} count={savings?.count ?? 0} bySku={savings?.by_sku ?? {}}
           pending={events.filter((e) => e.status === "pending").reduce((a, e) => a + (e.net_savings || 0), 0)} />
         <ScoreCard />
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="How channels are ranked" sub="Score = unit margin × demand confidence. Higher scores get stock first." />
         <div className="card-body grid g-4" style={{ gap: 20 }}>
           {s.skus.map((p) => {
@@ -72,14 +72,16 @@ export function Agent() {
         </div>
       </Card>
 
-      <div className="reveal" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <h2 className="section-title" style={{ margin: 0 }}>Decisions</h2>
         <Segmented<Group> label="Filter decisions" value={filter} onChange={setFilter}
           options={[{ value: "all", label: "All", count: events.length }, ...groups.map((g) => ({ value: g, label: g, count: events.filter((e) => group(e) === g).length }))]} />
       </div>
 
-      <div className="stack reveal" style={{ gap: 16 }}>
-        {rows.map((e) => <EventCard key={e.id} e={e} />)}
+      <div className="stack" style={{ gap: 16 }}>
+        <AnimatePresence initial={false} mode="popLayout">
+          {rows.map((e) => <m.div key={e.id} layout initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}><EventCard e={e} /></m.div>)}
+        </AnimatePresence>
         {!rows.length && (
           <Card><Empty icon={SlidersHorizontal} title={events.length ? "No decisions in this group" : "No agent decisions yet"}>
             {events.length ? "Choose another filter." : "Run an allocation cycle. Every change the agent proposes or applies shows up here."}

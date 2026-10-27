@@ -1,11 +1,12 @@
 import { useRef } from "react";
+import { NUDGE, T_BASE } from "../motion";
+import { AnimatePresence, m } from "motion/react";
 import { Button } from "../ui/Button";
 import { AlertTriangle, CheckCircle2, Clock, PackageCheck, PackageOpen, ShoppingBag, Truck, Warehouse, SlidersHorizontal, DatabaseZap, Lock } from "lucide-react";
 import type { Route } from "../App";
 import { CHANNELS, chanColor, chanVar, money, num, plural, STATE_TONE, stateColor, stateVar, when, usedUnits } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Kpi, Legend, Meter, Pill, Empty } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 import { AgentRunCard, OrderRow } from "./shared";
 
 interface Attention { id: string; tone: "bad" | "warn" | "info"; icon: typeof AlertTriangle; title: string; detail?: string; action: string; to: Route; sku?: string }
@@ -13,7 +14,6 @@ interface Attention { id: string; tone: "bad" | "warn" | "info"; icon: typeof Al
 export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
   const { s, events, fed, agent, runAgent, reset, busy } = useStore();
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => enter(".reveal"), { scope: root });
   if (!s) return null;
 
   const T = s.totals;
@@ -45,7 +45,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
 
   return (
     <div ref={root} className="stack">
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>Dashboard</h1>
           <p>One stock pool across four sales channels. Data is read live through Zetaris; the agent decides how much each channel may sell.</p>
@@ -55,7 +55,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
       <AgentRunCard job={agent} pending={pending.length} onRetry={runAgent} />
 
       {T.orders === 0 && (
-        <Card className="reveal">
+        <Card>
           <Empty icon={ShoppingBag} title="No orders yet">
             Load the demo data to see four channels sharing one stock pool.
             <div style={{ marginTop: 12 }}><Button variant="secondary" onClick={reset} disabled={busy.reset}>{busy.reset ? "Loading..." : "Load demo data"}</Button></div>
@@ -63,7 +63,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
         </Card>
       )}
 
-      <div className="kpis reveal">
+      <div className="kpis">
         <Kpi label="Total orders" icon={ShoppingBag} value={T.orders} hint={`${num(T.status_counts.open + T.status_counts.partial)} open`} />
         <Kpi label="Awaiting shipment" icon={Clock} value={T.units_awaiting} hint="units reserved" />
         <Kpi label="Units shipped" icon={PackageCheck} value={T.units_shipped} hint={`${num(T.units_cancelled)} cancelled`} />
@@ -71,21 +71,23 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
         <Kpi label="Inbound units" icon={Truck} value={inboundUnits} hint={plural(s.inbound.length, "shipment")} />
       </div>
 
-      <div className="grid g-main reveal">
+      <div className="grid g-main">
         <Card>
           <CardHead title="Needs attention" sub={attention.length ? plural(attention.length, "item") : "Nothing waiting on you"} />
           {attention.length ? (
             <div className="list" style={{ paddingTop: 8 }}>
+              <AnimatePresence initial={false} mode="popLayout">
               {attention.slice(0, 7).map((a) => (
-                <div className="row" key={a.id}>
+                <m.div layout className="row" key={a.id} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
                   <span style={{ color: `var(--${a.tone === "bad" ? "bad" : a.tone === "warn" ? "warn" : "info"})`, display: "grid" }}><a.icon size={18} aria-hidden /></span>
                   <div className="grow">
                     <div style={{ fontWeight: 500 }}>{a.title}</div>
                     {a.detail && <div className="meta">{a.detail}</div>}
                   </div>
                   <Button variant="tertiary" onClick={() => go(a.to, a.sku)}>{a.action}</Button>
-                </div>
+                </m.div>
               ))}
+              </AnimatePresence>
             </div>
           ) : <Empty icon={CheckCircle2} title="All clear">No approvals, stock risks or late shipments.</Empty>}
         </Card>
@@ -113,7 +115,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
         </Card>
       </div>
 
-      <section className="reveal">
+      <section>
         <h2 className="section-title">Stock health</h2>
         <div className="grid g-4">
           {s.skus.map((p) => (
@@ -148,7 +150,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
         </div>
       </section>
 
-      <div className="grid g-2 reveal">
+      <div className="grid g-2">
         <Card>
           <CardHead title="Open units by channel" sub="Units still to ship, per SKU">
             <Legend items={CHANNELS.map((c) => ({ label: c, color: chanVar(c) }))} />
@@ -173,7 +175,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
         </Card>
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Recent orders" sub={`Latest 10 of ${num(T.orders)}`}>
           <Button variant="tertiary" onClick={() => go("orders")}>All orders</Button>
         </CardHead>
@@ -182,7 +184,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
           {!s.orders.length && <Empty icon={ShoppingBag} title="No orders yet">Place one from Storefronts, or load Scenario 1.</Empty>}
         </div>
       </Card>
-      <p className="tiny muted reveal" style={{ textAlign: "center", margin: 0 }}>Last updated {when(new Date().toISOString())}, refreshes every 10 seconds</p>
+      <p className="tiny muted" style={{ textAlign: "center", margin: 0 }}>Last updated {when(new Date().toISOString())}, refreshes every 10 seconds</p>
     </div>
   );
 }

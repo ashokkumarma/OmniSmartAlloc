@@ -3,7 +3,6 @@ import { Button } from "../ui/Button";
 import { ArrowRight, ShoppingCart, Warehouse } from "lucide-react";
 import type { Route } from "../App";
 import { Card, CardHead } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 
 /** A step that names a screen gets a button that opens it. */
 function Step({ children, to, go, label }: { children: ReactNode; to?: Route; go: (r: Route) => void; label?: string }) {
@@ -18,17 +17,16 @@ function Step({ children, to, go, label }: { children: ReactNode; to?: Route; go
 /** The guided demo: what the OMS and IMS screens are for, and two scenarios that make the agent act. */
 export function Instructions({ go }: { go: (r: Route) => void }) {
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => enter(".reveal"), { scope: root });
   return (
     <div ref={root} className="stack">
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>Instructions</h1>
           <p>Two screens, two scenarios. Place orders in the OMS, fulfil them in the IMS, and watch the agent decide.</p>
         </div>
       </div>
 
-      <div className="grid g-2 reveal">
+      <div className="grid g-2">
         <Card>
           <CardHead title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><ShoppingCart size={17} aria-hidden />Order Management System (OMS)</span>} sub="Where orders happen" />
           <div className="card-body small" style={{ lineHeight: 1.6 }}>
@@ -48,7 +46,7 @@ export function Instructions({ go }: { go: (r: Route) => void }) {
         </Card>
       </div>
 
-      <div className="grid g-2 reveal">
+      <div className="grid g-2">
         <Card style={{ borderColor: "var(--warn)" }}>
           <CardHead title={<span style={{ color: "var(--warn)" }}>Scenario A: needs approval</span>} sub="A big order forces a big move, so the agent asks first" />
           <div className="card-body small">
@@ -78,7 +76,7 @@ export function Instructions({ go }: { go: (r: Route) => void }) {
         </Card>
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Good to know" />
         <div className="card-body small">
           <ul style={{ margin: 0, paddingInlineStart: 20, lineHeight: 1.8 }}>

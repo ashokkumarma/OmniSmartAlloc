@@ -5,14 +5,12 @@ import type { Route } from "../App";
 import { CHANNELS, chanVar, money, num, plural, STATE_TONE, when } from "../format";
 import { useStore } from "../store";
 import { Card, CardHead, ChanTag, Empty, Kpi, Meter, Pill } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 import { OrderRow } from "./shared";
 
 /** One product: its stock, how much each channel may sell (cap rails), what is inbound and the orders that hold stock. */
 export function SkuDetail({ sku, go }: { sku: string; go: (r: Route, sku?: string) => void }) {
   const { s } = useStore();
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => enter(".reveal"), { scope: root, dependencies: [sku] });
   if (!s) return null;
 
   const crumbs = (
@@ -43,7 +41,7 @@ export function SkuDetail({ sku, go }: { sku: string; go: (r: Route, sku?: strin
   return (
     <div ref={root} className="stack">
       {crumbs}
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>{p.title}</h1>
           <p className="mono" style={{ fontSize: "var(--t-footnote)" }}>
@@ -56,14 +54,14 @@ export function SkuDetail({ sku, go }: { sku: string; go: (r: Route, sku?: strin
         </div>
       </div>
 
-      <div className="kpis four reveal">
+      <div className="kpis four">
         <Kpi label="On hand" icon={Warehouse} value={p.on_hand} hint="units in the warehouse" />
         <Kpi label="Reserved" icon={Lock} value={p.committed} hint={`${num(reserved)} in open orders`} />
         <Kpi label="Allocatable" icon={PackageCheck} value={p.sellable_units ?? 0} hint="sellable now" />
         <Kpi label="Days of cover" icon={Gauge} value={p.days_of_cover ?? 0} hint={p.days_of_cover == null ? "no sales history" : "at the 30-day rate"} />
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="What each channel may sell" sub="The bar is the cap the agent set. The filled part is already taken by open orders." />
         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {p.allocation ? CHANNELS.map((c) => {
@@ -81,7 +79,7 @@ export function SkuDetail({ sku, go }: { sku: string; go: (r: Route, sku?: strin
         </div>
       </Card>
 
-      <div className="grid g-2 reveal">
+      <div className="grid g-2">
         <Card>
           <CardHead title="Inbound" sub={plural(inbound.length, "purchase order")} />
           {inbound.length ? (
@@ -114,7 +112,7 @@ export function SkuDetail({ sku, go }: { sku: string; go: (r: Route, sku?: strin
         </Card>
       </div>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title={open.length ? "Open orders" : "Recent orders"} sub={open.length ? `${plural(open.length, "order")} holding stock` : `${plural(orders.length, "order")} in total`} />
         <div className="list" style={{ marginTop: 8 }}>
           {shown.length ? shown.map((o) => <OrderRow key={o.id} o={o} />) : <Empty icon={PackageCheck} title="No orders for this product yet" />}

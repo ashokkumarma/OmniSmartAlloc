@@ -4,7 +4,6 @@ import { Database, Globe, Server, SlidersHorizontal, Workflow, RefreshCw, Databa
 import { CHANNELS, chanColor, chanVar, num } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, ChanTag, Empty, Pill, Spinner } from "../ui/kit";
-import { enter, useGSAP } from "../motion";
 
 const BACK_OFFICE = [
   { name: "WMS", holds: "Stock on hand, inbound POs" },
@@ -18,7 +17,6 @@ export function Sources() {
   const root = useRef<HTMLDivElement>(null);
   const live = !!fed?.ok;
 
-  useGSAP(() => enter(".reveal"), { scope: root });
 
   if (!s) return null;
   const openOrders = (c: string) => s.orders.filter((o) => o.channel === c && (o.status === "open" || o.status === "partial")).length;
@@ -30,7 +28,7 @@ export function Sources() {
 
   return (
     <div ref={root} className="stack">
-      <div className="page-head reveal">
+      <div className="page-head">
         <div>
           <h1>Data sources</h1>
           <p>Orders, stock, supplier performance, channel economics and business rules each live in their own system. Zetaris federates them so the agent queries one SQL endpoint; no data is copied.</p>
@@ -38,7 +36,7 @@ export function Sources() {
         <Pill tone={live ? "ok" : "warn"}>{live ? "Zetaris connected" : "Zetaris not connected"}</Pill>
       </div>
 
-      <Card className="reveal card-pad">
+      <Card className="card-pad">
         <div className="flow">
           <div className="flow-col">
             <div className="flow-label">Sources</div>
@@ -117,7 +115,7 @@ export function Sources() {
         </div>
       </Card>
 
-      <Card className="reveal">
+      <Card>
         <CardHead title="Live federated query" sub="One Lightning SQL statement that unions three Postgres tables with a REST API">
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {fed?.ok && <span className="tiny muted">{fed.rows?.length ?? 0} source rows, {fed.ms} ms, via Zetaris JDBC</span>}
