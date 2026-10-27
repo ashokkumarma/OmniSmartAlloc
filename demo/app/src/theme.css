@@ -27,12 +27,12 @@
   --st-abundant: #3DD68C; --st-balanced: #8FB8E8; --st-tight: #E8B04A; --st-critical: #FF6B6B;
 }
 :root[data-theme="light"] {
-  --ch-dtc: #5B5BD6; --ch-amazon: #B86200; --ch-etsy: #C2255C; --ch-walmart: #1F5FC4;
+  --ch-dtc: #5B5BD6; --ch-amazon: #A35700; --ch-etsy: #C2255C; --ch-walmart: #1F5FC4;
   --st-abundant: #006B28; --st-balanced: #1F5F8B; --st-tight: #8A5300; --st-critical: #B80000;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --ch-dtc: #5B5BD6; --ch-amazon: #B86200; --ch-etsy: #C2255C; --ch-walmart: #1F5FC4;
+    --ch-dtc: #5B5BD6; --ch-amazon: #A35700; --ch-etsy: #C2255C; --ch-walmart: #1F5FC4;
     --st-abundant: #006B28; --st-balanced: #1F5F8B; --st-tight: #8A5300; --st-critical: #B80000;
   }
 }
