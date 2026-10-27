@@ -1,0 +1,132 @@
+[
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "materialized_table",
+      "source_table",
+      "table_type",
+      "format",
+      "id"
+    ],
+    "rows": [
+      [
+        "inbound_raw",
+        null,
+        "http://host.docker.internal:8901/api/wms/inbound",
+        "rest",
+        null,
+        994
+      ],
+      [
+        "inventory_raw",
+        null,
+        "http://host.docker.internal:8901/api/wms/inventory",
+        "rest",
+        null,
+        987
+      ]
+    ],
+    "seconds": 0.06,
+    "title": "WMS: REST tables in the Lightning database",
+    "sql": "SHOW LIGHTNING TABLES WMS"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "sku",
+      "on_hand",
+      "committed",
+      "unputaway",
+      "age_hours",
+      "free_units"
+    ],
+    "rows": [
+      [
+        "LAMP-002",
+        24,
+        0,
+        0,
+        0.2,
+        24
+      ],
+      [
+        "LOCK-004",
+        75,
+        0,
+        0,
+        0.2,
+        75
+      ],
+      [
+        "MUG-001",
+        70,
+        0,
+        0,
+        0.2,
+        70
+      ],
+      [
+        "RUG-003",
+        30,
+        0,
+        0,
+        0.2,
+        30
+      ]
+    ],
+    "seconds": 0.84,
+    "title": "WMS: on-hand, committed and free stock per SKU",
+    "sql": "SELECT i.sku, i.on_hand, i.committed, i.unputaway, i.age_hours, i.on_hand - i.committed AS free_units\nFROM WMS.inventory_raw LATERAL VIEW explode(inventory) AS i\nORDER BY i.sku"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "sku",
+      "status",
+      "po_lines",
+      "units",
+      "soonest_eta_days"
+    ],
+    "rows": [
+      [
+        "LAMP-002",
+        "in_transit",
+        2,
+        400,
+        4
+      ],
+      [
+        "LOCK-004",
+        "in_transit",
+        1,
+        200,
+        5
+      ],
+      [
+        "MUG-001",
+        "in_transit",
+        1,
+        200,
+        5
+      ],
+      [
+        "RUG-003",
+        "in_transit",
+        1,
+        200,
+        5
+      ],
+      [
+        "RUG-003",
+        "planned",
+        1,
+        200,
+        40
+      ]
+    ],
+    "seconds": 1.14,
+    "title": "WMS: inbound purchase-order lines per SKU and status",
+    "sql": "SELECT s.sku, s.status, COUNT(*) AS po_lines, SUM(s.qty) AS units, MIN(s.eta_days) AS soonest_eta_days\nFROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s\nGROUP BY s.sku, s.status\nORDER BY s.sku, s.status"
+  }
+]

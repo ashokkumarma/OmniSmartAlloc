@@ -1,0 +1,406 @@
+[
+  {
+    "ok": true,
+    "columns": [
+      "Result"
+    ],
+    "rows": [],
+    "seconds": 0.04,
+    "title": "Ensure the parent metastore namespace exists (no-op if it already does)",
+    "sql": "CREATE NAMESPACE IF NOT EXISTS lightning.metastore"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "Result"
+    ],
+    "rows": [],
+    "seconds": 0.03,
+    "title": "Create the project namespace",
+    "sql": "CREATE NAMESPACE IF NOT EXISTS lightning.metastore.omni_usl"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "json"
+    ],
+    "rows": [
+      [
+        "{\"namespace\":[\"metastore\",\"omni_usl\"],\"name\":\"omnialloc\",\"tables\":[{\"name\":\"sku\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"locked\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"manual_override\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"clearance\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"promo_multiplier\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"supplier\",\"columnSpecs\":[{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_time_rate\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"typical_delay_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"inventory\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_hand\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"committed\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unputaway\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"age_hours\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"inbound_po\",\"columnSpecs\":[{\"name\":\"po_line\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"po\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"eta_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.supplier\"],\"refColumns\":[\"supplier\"]},\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel_economics\",\"columnSpecs\":[{\"name\":\"sku_channel\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unit_margin\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"demand_confidence\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v7\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v30\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v90\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"trend\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"floor_units\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"margin_age_hours\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel_order\",\"columnSpecs\":[{\"name\":\"order_key\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"order_id\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"ts\",\"dataType\":\"\\\"varchar(40)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"fulfilled_qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[]}]}"
+      ]
+    ],
+    "seconds": 0.05,
+    "title": "Compile and deploy the six-table OmniSmartAlloc model (one statement)",
+    "sql": "COMPILE USL IF NOT EXISTS omnialloc DEPLOY NAMESPACE lightning.metastore.omni_usl DDL\nCREATE TABLE sku (\n    sku varchar(64) NOT NULL PRIMARY KEY,\n    locked boolean,\n    manual_override boolean,\n    clearance boolean,\n    promo_multiplier double\n);\nCREATE TABLE supplier (\n    supplier varchar(64) NOT NULL PRIMARY KEY,\n    on_time_rate double,\n    typical_delay_days bigint\n);\nCREATE TABLE inventory (\n    sku varchar(64) NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES sku(sku),\n    on_hand bigint,\n    committed bigint,\n    unputaway bigint,\n    age_hours double\n);\nCREATE TABLE inbound_po (\n    po_line varchar(140) NOT NULL PRIMARY KEY,\n    po varchar(64),\n    sku varchar(64) FOREIGN KEY REFERENCES sku(sku),\n    qty bigint,\n    eta_days bigint,\n    status varchar(32),\n    supplier varchar(64) FOREIGN KEY REFERENCES supplier(supplier)\n);\nCREATE TABLE channel_economics (\n    sku_channel varchar(140) NOT NULL PRIMARY KEY,\n    sku varchar(64) FOREIGN KEY REFERENCES sku(sku),\n    channel varchar(32),\n    unit_margin double,\n    demand_confidence double,\n    v7 double,\n    v30 double,\n    v90 double,\n    trend double,\n    floor_units bigint,\n    margin_age_hours bigint\n);\nCREATE TABLE channel_order (\n    order_key varchar(140) NOT NULL PRIMARY KEY,\n    channel varchar(32),\n    order_id varchar(64),\n    sku varchar(64) FOREIGN KEY REFERENCES sku(sku),\n    ts varchar(40),\n    qty bigint,\n    fulfilled_qty bigint,\n    status varchar(32)\n)"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "registered"
+    ],
+    "rows": [
+      [
+        "{\"name\":\"sku\",\"query\":\"SELECT COALESCE(r.sku, '') AS sku, r.locked, r.manual_override, r.clearance, r.promo_multiplier\\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r\"}"
+      ]
+    ],
+    "seconds": 0.1,
+    "title": "Activate sku from RULES_ENGINE (REST)",
+    "sql": "ACTIVATE USL TABLE lightning.metastore.omni_usl.omnialloc.sku AS\nSELECT COALESCE(r.sku, '') AS sku, r.locked, r.manual_override, r.clearance, r.promo_multiplier\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "registered"
+    ],
+    "rows": [
+      [
+        "{\"name\":\"supplier\",\"query\":\"SELECT COALESCE(r.supplier, '') AS supplier, r.on_time_rate, r.typical_delay_days\\nFROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS r\"}"
+      ]
+    ],
+    "seconds": 0.1,
+    "title": "Activate supplier from SUPPLIER_PORTAL (REST)",
+    "sql": "ACTIVATE USL TABLE lightning.metastore.omni_usl.omnialloc.supplier AS\nSELECT COALESCE(r.supplier, '') AS supplier, r.on_time_rate, r.typical_delay_days\nFROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS r"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "registered"
+    ],
+    "rows": [
+      [
+        "{\"name\":\"inventory\",\"query\":\"SELECT COALESCE(i.sku, '') AS sku, i.on_hand, i.committed, i.unputaway, i.age_hours\\nFROM WMS.inventory_raw LATERAL VIEW explode(inventory) AS i\"}"
+      ]
+    ],
+    "seconds": 0.12,
+    "title": "Activate inventory from WMS inventory_raw (REST)",
+    "sql": "ACTIVATE USL TABLE lightning.metastore.omni_usl.omnialloc.inventory AS\nSELECT COALESCE(i.sku, '') AS sku, i.on_hand, i.committed, i.unputaway, i.age_hours\nFROM WMS.inventory_raw LATERAL VIEW explode(inventory) AS i"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "registered"
+    ],
+    "rows": [
+      [
+        "{\"name\":\"inbound_po\",\"query\":\"SELECT COALESCE(concat(s.po, '|', s.sku), '') AS po_line, s.po, s.sku, s.qty, s.eta_days, s.status, s.supplier\\nFROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s\"}"
+      ]
+    ],
+    "seconds": 0.18,
+    "title": "Activate inbound_po from WMS inbound_raw (REST)",
+    "sql": "ACTIVATE USL TABLE lightning.metastore.omni_usl.omnialloc.inbound_po AS\nSELECT COALESCE(concat(s.po, '|', s.sku), '') AS po_line, s.po, s.sku, s.qty, s.eta_days, s.status, s.supplier\nFROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "registered"
+    ],
+    "rows": [
+      [
+        "{\"name\":\"channel_economics\",\"query\":\"SELECT COALESCE(concat(e.sku, '|', e.channel), '') AS sku_channel, e.sku, e.channel, e.unit_margin,\\n       e.demand_confidence, e.v7, e.v30, e.v90, e.trend, e.floor_units, e.margin_age_hours\\nFROM CHANNEL_ANALYTICS.economics_raw LATERAL VIEW explode(economics) AS e\"}"
+      ]
+    ],
+    "seconds": 0.07,
+    "title": "Activate channel_economics from CHANNEL_ANALYTICS (REST)",
+    "sql": "ACTIVATE USL TABLE lightning.metastore.omni_usl.omnialloc.channel_economics AS\nSELECT COALESCE(concat(e.sku, '|', e.channel), '') AS sku_channel, e.sku, e.channel, e.unit_margin,\n       e.demand_confidence, e.v7, e.v30, e.v90, e.trend, e.floor_units, e.margin_age_hours\nFROM CHANNEL_ANALYTICS.economics_raw LATERAL VIEW explode(economics) AS e"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "registered"
+    ],
+    "rows": [
+      [
+        "{\"name\":\"channel_order\",\"query\":\"SELECT COALESCE(concat('DTC:', id), '') AS order_key, 'DTC' AS channel, id AS order_id, sku, ts,\\n       CAST(qty AS bigint) AS qty, CAST(fulfilled_qty AS bigint) AS fulfilled_qty, status\\nFROM CHANNEL_DB.dtc_orders\\nUNION ALL\\nSELECT COALESCE(concat('Etsy:', id), ''), 'Etsy', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.etsy_orders\\nUNION ALL\\nSELECT COALESCE(concat('Walmart:', id), ''), 'Walmart', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.walmart_orders\\nUNION ALL\\nSELECT COALESCE(concat('Amazon:', o.id), ''), 'Amazon', o.id, o.sku, o.ts, o.qty, o.fulfilled_qty, o.status\\nFROM AMAZON_API.orders_raw LATERAL VIEW explode(orders) AS o\"}"
+      ]
+    ],
+    "seconds": 0.33,
+    "title": "Activate channel_order: Postgres (3 tables over JDBC) UNION Amazon (REST) in one federated query",
+    "sql": "ACTIVATE USL TABLE lightning.metastore.omni_usl.omnialloc.channel_order AS\nSELECT COALESCE(concat('DTC:', id), '') AS order_key, 'DTC' AS channel, id AS order_id, sku, ts,\n       CAST(qty AS bigint) AS qty, CAST(fulfilled_qty AS bigint) AS fulfilled_qty, status\nFROM CHANNEL_DB.dtc_orders\nUNION ALL\nSELECT COALESCE(concat('Etsy:', id), ''), 'Etsy', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\nFROM CHANNEL_DB.etsy_orders\nUNION ALL\nSELECT COALESCE(concat('Walmart:', id), ''), 'Walmart', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\nFROM CHANNEL_DB.walmart_orders\nUNION ALL\nSELECT COALESCE(concat('Amazon:', o.id), ''), 'Amazon', o.id, o.sku, o.ts, o.qty, o.fulfilled_qty, o.status\nFROM AMAZON_API.orders_raw LATERAL VIEW explode(orders) AS o"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "updated"
+    ],
+    "rows": [
+      [
+        1
+      ]
+    ],
+    "seconds": 0.06,
+    "title": "Document the model",
+    "sql": "UPDATE USL lightning.metastore.omni_usl.omnialloc.inventory SET TABLE DESCRIPTION One row per SKU of warehouse stock from the WMS REST API. committed must never exceed on_hand"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "json"
+    ],
+    "rows": [
+      [
+        "{\"namespace\":[\"metastore\",\"omni_usl\"],\"name\":\"omnialloc\",\"tables\":[{\"name\":\"sku\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"locked\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"manual_override\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"clearance\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"promo_multiplier\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(r.sku, '') AS sku, r.locked, r.manual_override, r.clearance, r.promo_multiplier\\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r\"},{\"name\":\"supplier\",\"columnSpecs\":[{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_time_rate\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"typical_delay_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(r.supplier, '') AS supplier, r.on_time_rate, r.typical_delay_days\\nFROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS r\"},{\"name\":\"inbound_po\",\"columnSpecs\":[{\"name\":\"po_line\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"po\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"eta_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.supplier\"],\"refColumns\":[\"supplier\"]},\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat(s.po, '|', s.sku), '') AS po_line, s.po, s.sku, s.qty, s.eta_days, s.status, s.supplier\\nFROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s\"},{\"name\":\"channel_economics\",\"columnSpecs\":[{\"name\":\"sku_channel\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unit_margin\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"demand_confidence\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v7\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v30\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v90\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"trend\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"floor_units\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"margin_age_hours\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat(e.sku, '|', e.channel), '') AS sku_channel, e.sku, e.channel, e.unit_margin,\\n       e.demand_confidence, e.v7, e.v30, e.v90, e.trend, e.floor_units, e.margin_age_hours\\nFROM CHANNEL_ANALYTICS.economics_raw LATERAL VIEW explode(economics) AS e\"},{\"name\":\"channel_order\",\"columnSpecs\":[{\"name\":\"order_key\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"order_id\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"ts\",\"dataType\":\"\\\"varchar(40)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"fulfilled_qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat('DTC:', id), '') AS order_key, 'DTC' AS channel, id AS order_id, sku, ts,\\n       CAST(qty AS bigint) AS qty, CAST(fulfilled_qty AS bigint) AS fulfilled_qty, status\\nFROM CHANNEL_DB.dtc_orders\\nUNION ALL\\nSELECT COALESCE(concat('Etsy:', id), ''), 'Etsy', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.etsy_orders\\nUNION ALL\\nSELECT COALESCE(concat('Walmart:', id), ''), 'Walmart', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.walmart_orders\\nUNION ALL\\nSELECT COALESCE(concat('Amazon:', o.id), ''), 'Amazon', o.id, o.sku, o.ts, o.qty, o.fulfilled_qty, o.status\\nFROM AMAZON_API.orders_raw LATERAL VIEW explode(orders) AS o\"},{\"name\":\"inventory\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_hand\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"committed\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unputaway\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"age_hours\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[{\"name\":\"committed_within_on_hand\",\"expression\":\"on_hand IS NOT NULL AND committed IS NOT NULL AND committed >= 0 AND committed <= on_hand\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(i.sku, '') AS sku, i.on_hand, i.committed, i.unputaway, i.age_hours\\nFROM WMS.inventory_raw LATERAL VIEW explode(inventory) AS i\",\"description\":\"One row per SKU of warehouse stock from the WMS REST API. committed must never exceed on_hand\"}]}"
+      ]
+    ],
+    "seconds": 0.27,
+    "title": "DQ rule: committed stock can never exceed on-hand stock (and neither may be missing or negative)",
+    "sql": "REGISTER DQ committed_within_on_hand TABLE lightning.metastore.omni_usl.omnialloc.inventory AS\non_hand IS NOT NULL AND committed IS NOT NULL AND committed >= 0 AND committed <= on_hand"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "json"
+    ],
+    "rows": [
+      [
+        "{\"namespace\":[\"metastore\",\"omni_usl\"],\"name\":\"omnialloc\",\"tables\":[{\"name\":\"sku\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"locked\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"manual_override\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"clearance\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"promo_multiplier\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(r.sku, '') AS sku, r.locked, r.manual_override, r.clearance, r.promo_multiplier\\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r\"},{\"name\":\"supplier\",\"columnSpecs\":[{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_time_rate\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"typical_delay_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(r.supplier, '') AS supplier, r.on_time_rate, r.typical_delay_days\\nFROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS r\"},{\"name\":\"inventory\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_hand\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"committed\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unputaway\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"age_hours\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[{\"name\":\"committed_within_on_hand\",\"expression\":\"on_hand IS NOT NULL AND committed IS NOT NULL AND committed >= 0 AND committed <= on_hand\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(i.sku, '') AS sku, i.on_hand, i.committed, i.unputaway, i.age_hours\\nFROM WMS.inventory_raw LATERAL VIEW explode(inventory) AS i\",\"description\":\"One row per SKU of warehouse stock from the WMS REST API. committed must never exceed on_hand\"},{\"name\":\"inbound_po\",\"columnSpecs\":[{\"name\":\"po_line\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"po\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"eta_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.supplier\"],\"refColumns\":[\"supplier\"]},\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat(s.po, '|', s.sku), '') AS po_line, s.po, s.sku, s.qty, s.eta_days, s.status, s.supplier\\nFROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s\"},{\"name\":\"channel_order\",\"columnSpecs\":[{\"name\":\"order_key\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"order_id\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"ts\",\"dataType\":\"\\\"varchar(40)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"fulfilled_qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat('DTC:', id), '') AS order_key, 'DTC' AS channel, id AS order_id, sku, ts,\\n       CAST(qty AS bigint) AS qty, CAST(fulfilled_qty AS bigint) AS fulfilled_qty, status\\nFROM CHANNEL_DB.dtc_orders\\nUNION ALL\\nSELECT COALESCE(concat('Etsy:', id), ''), 'Etsy', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.etsy_orders\\nUNION ALL\\nSELECT COALESCE(concat('Walmart:', id), ''), 'Walmart', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.walmart_orders\\nUNION ALL\\nSELECT COALESCE(concat('Amazon:', o.id), ''), 'Amazon', o.id, o.sku, o.ts, o.qty, o.fulfilled_qty, o.status\\nFROM AMAZON_API.orders_raw LATERAL VIEW explode(orders) AS o\"},{\"name\":\"channel_economics\",\"columnSpecs\":[{\"name\":\"sku_channel\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unit_margin\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"demand_confidence\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v7\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v30\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v90\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"trend\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"floor_units\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"margin_age_hours\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[{\"name\":\"margin_and_confidence_sane\",\"expression\":\"unit_margin >= 0 AND demand_confidence >= 0 AND demand_confidence <= 1\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat(e.sku, '|', e.channel), '') AS sku_channel, e.sku, e.channel, e.unit_margin,\\n       e.demand_confidence, e.v7, e.v30, e.v90, e.trend, e.floor_units, e.margin_age_hours\\nFROM CHANNEL_ANALYTICS.economics_raw LATERAL VIEW explode(economics) AS e\"}]}"
+      ]
+    ],
+    "seconds": 0.29,
+    "title": "DQ rule: a channel may never be scored with a negative unit margin or confidence outside 0..1",
+    "sql": "REGISTER DQ margin_and_confidence_sane TABLE lightning.metastore.omni_usl.omnialloc.channel_economics AS\nunit_margin >= 0 AND demand_confidence >= 0 AND demand_confidence <= 1"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "json"
+    ],
+    "rows": [
+      [
+        "{\"namespace\":[\"metastore\",\"omni_usl\"],\"name\":\"omnialloc\",\"tables\":[{\"name\":\"sku\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"locked\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"manual_override\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"clearance\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"promo_multiplier\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(r.sku, '') AS sku, r.locked, r.manual_override, r.clearance, r.promo_multiplier\\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r\"},{\"name\":\"supplier\",\"columnSpecs\":[{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_time_rate\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"typical_delay_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(r.supplier, '') AS supplier, r.on_time_rate, r.typical_delay_days\\nFROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS r\"},{\"name\":\"inventory\",\"columnSpecs\":[{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"on_hand\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"committed\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unputaway\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"age_hours\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[{\"name\":\"committed_within_on_hand\",\"expression\":\"on_hand IS NOT NULL AND committed IS NOT NULL AND committed >= 0 AND committed <= on_hand\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(i.sku, '') AS sku, i.on_hand, i.committed, i.unputaway, i.age_hours\\nFROM WMS.inventory_raw LATERAL VIEW explode(inventory) AS i\",\"description\":\"One row per SKU of warehouse stock from the WMS REST API. committed must never exceed on_hand\"},{\"name\":\"inbound_po\",\"columnSpecs\":[{\"name\":\"po_line\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"po\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"eta_days\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"supplier\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.supplier\"],\"refColumns\":[\"supplier\"]},\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat(s.po, '|', s.sku), '') AS po_line, s.po, s.sku, s.qty, s.eta_days, s.status, s.supplier\\nFROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s\"},{\"name\":\"channel_economics\",\"columnSpecs\":[{\"name\":\"sku_channel\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"unit_margin\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"demand_confidence\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v7\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v30\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"v90\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"trend\",\"dataType\":\"\\\"double\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"floor_units\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"margin_age_hours\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[{\"name\":\"margin_and_confidence_sane\",\"expression\":\"unit_margin >= 0 AND demand_confidence >= 0 AND demand_confidence <= 1\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat(e.sku, '|', e.channel), '') AS sku_channel, e.sku, e.channel, e.unit_margin,\\n       e.demand_confidence, e.v7, e.v30, e.v90, e.trend, e.floor_units, e.margin_age_hours\\nFROM CHANNEL_ANALYTICS.economics_raw LATERAL VIEW explode(economics) AS e\"},{\"name\":\"channel_order\",\"columnSpecs\":[{\"name\":\"order_key\",\"dataType\":\"\\\"varchar(140)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"channel\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"order_id\",\"dataType\":\"\\\"varchar(64)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"sku\",\"dataType\":\"\\\"varchar(64)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.omni_usl.omnialloc.sku\"],\"refColumns\":[\"sku\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"ts\",\"dataType\":\"\\\"varchar(40)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"fulfilled_qty\",\"dataType\":\"\\\"long\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"status\",\"dataType\":\"\\\"varchar(32)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"omni_usl\",\"omnialloc\"],\"dqAnnotations\":[{\"name\":\"fulfilled_within_ordered\",\"expression\":\"fulfilled_qty >= 0 AND fulfilled_qty <= qty\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(concat('DTC:', id), '') AS order_key, 'DTC' AS channel, id AS order_id, sku, ts,\\n       CAST(qty AS bigint) AS qty, CAST(fulfilled_qty AS bigint) AS fulfilled_qty, status\\nFROM CHANNEL_DB.dtc_orders\\nUNION ALL\\nSELECT COALESCE(concat('Etsy:', id), ''), 'Etsy', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.etsy_orders\\nUNION ALL\\nSELECT COALESCE(concat('Walmart:', id), ''), 'Walmart', id, sku, ts, CAST(qty AS bigint), CAST(fulfilled_qty AS bigint), status\\nFROM CHANNEL_DB.walmart_orders\\nUNION ALL\\nSELECT COALESCE(concat('Amazon:', o.id), ''), 'Amazon', o.id, o.sku, o.ts, o.qty, o.fulfilled_qty, o.status\\nFROM AMAZON_API.orders_raw LATERAL VIEW explode(orders) AS o\"}]}"
+      ]
+    ],
+    "seconds": 1.05,
+    "title": "DQ rule: an order can never be fulfilled beyond its ordered quantity",
+    "sql": "REGISTER DQ fulfilled_within_ordered TABLE lightning.metastore.omni_usl.omnialloc.channel_order AS\nfulfilled_qty >= 0 AND fulfilled_qty <= qty"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "table",
+      "type",
+      "expression"
+    ],
+    "rows": [
+      [
+        "sku",
+        "sku",
+        "Primary key constraints",
+        ""
+      ],
+      [
+        "supplier",
+        "supplier",
+        "Primary key constraints",
+        ""
+      ],
+      [
+        "sku",
+        "inventory",
+        "Primary key constraints",
+        ""
+      ],
+      [
+        "sku",
+        "inventory",
+        "Foreign key constraints",
+        ""
+      ],
+      [
+        "committed_within_on_hand",
+        "inventory",
+        "Custom Data Quality",
+        "on_hand IS NOT NULL AND committed IS NOT NULL AND committed >= 0 AND committed <= on_hand"
+      ],
+      [
+        "po_line",
+        "inbound_po",
+        "Primary key constraints",
+        ""
+      ],
+      [
+        "sku",
+        "inbound_po",
+        "Foreign key constraints",
+        ""
+      ],
+      [
+        "supplier",
+        "inbound_po",
+        "Foreign key constraints",
+        ""
+      ],
+      [
+        "sku_channel",
+        "channel_economics",
+        "Primary key constraints",
+        ""
+      ],
+      [
+        "sku",
+        "channel_economics",
+        "Foreign key constraints",
+        ""
+      ],
+      [
+        "margin_and_confidence_sane",
+        "channel_economics",
+        "Custom Data Quality",
+        "unit_margin >= 0 AND demand_confidence >= 0 AND demand_confidence <= 1"
+      ],
+      [
+        "order_key",
+        "channel_order",
+        "Primary key constraints",
+        ""
+      ],
+      [
+        "sku",
+        "channel_order",
+        "Foreign key constraints",
+        ""
+      ],
+      [
+        "fulfilled_within_ordered",
+        "channel_order",
+        "Custom Data Quality",
+        "fulfilled_qty >= 0 AND fulfilled_qty <= qty"
+      ]
+    ],
+    "seconds": 0.07,
+    "title": "List every key constraint and DQ rule in the USL",
+    "sql": "LIST DQ USL lightning.metastore.omni_usl.omnialloc"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "table",
+      "type",
+      "total_record",
+      "valid_record",
+      "invalid_record"
+    ],
+    "rows": [
+      [
+        "committed_within_on_hand",
+        "inventory",
+        "Custom Data Quality",
+        4,
+        4,
+        0
+      ]
+    ],
+    "seconds": 0.67,
+    "title": "RUN DQ: committed_within_on_hand on inventory",
+    "sql": "RUN DQ committed_within_on_hand TABLE lightning.metastore.omni_usl.omnialloc.inventory"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "table",
+      "type",
+      "total_record",
+      "valid_record",
+      "invalid_record"
+    ],
+    "rows": [
+      [
+        "margin_and_confidence_sane",
+        "channel_economics",
+        "Custom Data Quality",
+        14,
+        14,
+        0
+      ]
+    ],
+    "seconds": 0.68,
+    "title": "RUN DQ: margin_and_confidence_sane on channel_economics",
+    "sql": "RUN DQ margin_and_confidence_sane TABLE lightning.metastore.omni_usl.omnialloc.channel_economics"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "table",
+      "type",
+      "total_record",
+      "valid_record",
+      "invalid_record"
+    ],
+    "rows": [
+      [
+        "fulfilled_within_ordered",
+        "channel_order",
+        "Custom Data Quality",
+        1085,
+        1085,
+        0
+      ]
+    ],
+    "seconds": 1.65,
+    "title": "RUN DQ: fulfilled_within_ordered on channel_order",
+    "sql": "RUN DQ fulfilled_within_ordered TABLE lightning.metastore.omni_usl.omnialloc.channel_order"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "table",
+      "type",
+      "total_record",
+      "valid_record",
+      "invalid_record"
+    ],
+    "rows": [
+      [
+        "sku",
+        "channel_order",
+        "Foreign Key Constraint",
+        1085,
+        1085,
+        0
+      ]
+    ],
+    "seconds": 2.56,
+    "title": "RUN DQ: the FK-generated rule channel_order.sku -> sku (every order SKU exists in the SKU master)",
+    "sql": "RUN DQ sku TABLE lightning.metastore.omni_usl.omnialloc.channel_order"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "sku",
+      "on_hand",
+      "committed",
+      "unputaway",
+      "age_hours"
+    ],
+    "rows": [],
+    "seconds": 0.44,
+    "title": "SHOW DQ: inventory rows failing the committed_within_on_hand rule",
+    "sql": "SHOW DQ INVALID RECORD committed_within_on_hand TABLE lightning.metastore.omni_usl.omnialloc.inventory"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "type",
+      "usl_id",
+      "count",
+      "activated"
+    ],
+    "rows": [
+      [
+        "omnialloc",
+        "usl",
+        1121,
+        6,
+        null
+      ]
+    ],
+    "seconds": 0.06,
+    "title": "Namespace now lists the activated tables",
+    "sql": "SHOW NAMESPACES OR TABLES IN lightning.metastore.omni_usl"
+  }
+]

@@ -1,0 +1,185 @@
+[
+  {
+    "ok": true,
+    "columns": [
+      "name",
+      "relation",
+      "source_table",
+      "partition clause",
+      "description",
+      "materialized table",
+      "datasource_id",
+      "relation_id"
+    ],
+    "rows": [
+      [
+        "dtc_orders",
+        "Table",
+        "dtc_orders",
+        "",
+        null,
+        null,
+        1060,
+        1067
+      ],
+      [
+        "etsy_orders",
+        "Table",
+        "etsy_orders",
+        "",
+        null,
+        null,
+        1060,
+        1068
+      ],
+      [
+        "walmart_orders",
+        "Table",
+        "walmart_orders",
+        "",
+        null,
+        null,
+        1060,
+        1069
+      ]
+    ],
+    "seconds": 0.1,
+    "title": "CHANNEL_DB: tables registered from the Postgres datasource",
+    "sql": "SHOW DATASOURCE TABLES CHANNEL_DB"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "col_name",
+      "data_type",
+      "comment",
+      "description",
+      "tags"
+    ],
+    "rows": [
+      [
+        "id",
+        "string",
+        "PK, NOT NULL, Indexed(dtc_orders_pkey)",
+        null,
+        null
+      ],
+      [
+        "ts",
+        "string",
+        "NOT NULL",
+        null,
+        null
+      ],
+      [
+        "sku",
+        "string",
+        "NOT NULL",
+        null,
+        null
+      ],
+      [
+        "qty",
+        "integer",
+        "NOT NULL",
+        null,
+        null
+      ],
+      [
+        "fulfilled_qty",
+        "integer",
+        "NOT NULL",
+        null,
+        null
+      ],
+      [
+        "status",
+        "string",
+        "NOT NULL",
+        null,
+        null
+      ],
+      [
+        "partial_shipments",
+        "string",
+        "NOT NULL",
+        null,
+        null
+      ]
+    ],
+    "seconds": 0.1,
+    "title": "CHANNEL_DB: column types of dtc_orders (etsy/walmart share the same shape)",
+    "sql": "DESCRIBE DATASOURCE TABLE CHANNEL_DB.dtc_orders"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "channel",
+      "status",
+      "orders",
+      "units",
+      "open_units"
+    ],
+    "rows": [
+      [
+        "DTC",
+        "cancelled",
+        15,
+        26,
+        26
+      ],
+      [
+        "DTC",
+        "fulfilled",
+        346,
+        481,
+        0
+      ],
+      [
+        "DTC",
+        "open",
+        3,
+        9,
+        9
+      ],
+      [
+        "Etsy",
+        "cancelled",
+        5,
+        5,
+        5
+      ],
+      [
+        "Etsy",
+        "fulfilled",
+        142,
+        192,
+        0
+      ],
+      [
+        "Walmart",
+        "cancelled",
+        16,
+        24,
+        24
+      ],
+      [
+        "Walmart",
+        "fulfilled",
+        198,
+        294,
+        0
+      ],
+      [
+        "Walmart",
+        "open",
+        2,
+        2,
+        2
+      ]
+    ],
+    "seconds": 1.14,
+    "title": "CHANNEL_DB: orders, units and unfulfilled units per channel table and status",
+    "sql": "SELECT 'DTC' AS channel, status, COUNT(*) AS orders, SUM(qty) AS units, SUM(qty - fulfilled_qty) AS open_units\nFROM CHANNEL_DB.dtc_orders GROUP BY status\nUNION ALL\nSELECT 'Etsy' AS channel, status, COUNT(*), SUM(qty), SUM(qty - fulfilled_qty)\nFROM CHANNEL_DB.etsy_orders GROUP BY status\nUNION ALL\nSELECT 'Walmart' AS channel, status, COUNT(*), SUM(qty), SUM(qty - fulfilled_qty)\nFROM CHANNEL_DB.walmart_orders GROUP BY status\nORDER BY channel, status"
+  }
+]

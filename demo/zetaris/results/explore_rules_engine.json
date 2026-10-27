@@ -1,0 +1,83 @@
+[
+  {
+    "ok": true,
+    "columns": [
+      "col_name",
+      "data_type",
+      "comment"
+    ],
+    "rows": [
+      [
+        "rules",
+        "array<struct<clearance:boolean,locked:boolean,manual_override:boolean,promo_multiplier:double,sku:string>>",
+        null
+      ]
+    ],
+    "seconds": 0.12,
+    "title": "RULES_ENGINE: column types Zetaris froze for the raw REST table",
+    "sql": "DESCRIBE RULES_ENGINE.rules_raw"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "sku",
+      "locked",
+      "manual_override",
+      "clearance",
+      "promo_multiplier"
+    ],
+    "rows": [
+      [
+        "LAMP-002",
+        0,
+        0,
+        0,
+        1.0
+      ],
+      [
+        "LOCK-004",
+        0,
+        0,
+        0,
+        1.0
+      ],
+      [
+        "MUG-001",
+        0,
+        0,
+        0,
+        1.0
+      ],
+      [
+        "RUG-003",
+        0,
+        0,
+        0,
+        1.0
+      ]
+    ],
+    "seconds": 0.37,
+    "title": "RULES_ENGINE: per-SKU locks, overrides, clearance and promotion multipliers",
+    "sql": "SELECT r.sku, r.locked, r.manual_override, r.clearance, r.promo_multiplier\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r\nORDER BY r.sku"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "skus_blocked",
+      "skus_on_clearance",
+      "skus_promoted",
+      "skus_total"
+    ],
+    "rows": [
+      [
+        0,
+        0,
+        0,
+        4
+      ]
+    ],
+    "seconds": 0.29,
+    "title": "RULES_ENGINE: how many SKUs each rule blocks or boosts",
+    "sql": "SELECT SUM(CASE WHEN r.locked OR r.manual_override THEN 1 ELSE 0 END) AS skus_blocked,\n       SUM(CASE WHEN r.clearance THEN 1 ELSE 0 END) AS skus_on_clearance,\n       SUM(CASE WHEN r.promo_multiplier > 1 THEN 1 ELSE 0 END) AS skus_promoted,\n       COUNT(*) AS skus_total\nFROM RULES_ENGINE.rules_raw LATERAL VIEW explode(rules) AS r"
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "ok": true,
+    "columns": [
+      "col_name",
+      "data_type",
+      "comment"
+    ],
+    "rows": [
+      [
+        "suppliers",
+        "array<struct<on_time_rate:double,supplier:string,typical_delay_days:bigint>>",
+        null
+      ]
+    ],
+    "seconds": 0.09,
+    "title": "SUPPLIER_PORTAL: column types Zetaris froze for the raw REST table",
+    "sql": "DESCRIBE SUPPLIER_PORTAL.reliability_raw"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "supplier",
+      "on_time_rate",
+      "typical_delay_days"
+    ],
+    "rows": [
+      [
+        "BRIGHT",
+        0.9,
+        1
+      ],
+      [
+        "ACME-EAST",
+        0.8,
+        4
+      ],
+      [
+        "KEYCO",
+        0.6,
+        10
+      ]
+    ],
+    "seconds": 0.51,
+    "title": "SUPPLIER_PORTAL: suppliers ranked by on-time rate",
+    "sql": "SELECT r.supplier, r.on_time_rate, r.typical_delay_days\nFROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS r\nORDER BY r.on_time_rate DESC"
+  },
+  {
+    "ok": true,
+    "columns": [
+      "supplier",
+      "on_time_rate",
+      "inbound_units",
+      "units_likely_late"
+    ],
+    "rows": [
+      [
+        "ACME-EAST",
+        0.8,
+        800,
+        160.0
+      ],
+      [
+        "KEYCO",
+        0.6,
+        200,
+        80.0
+      ],
+      [
+        "BRIGHT",
+        0.9,
+        200,
+        20.0
+      ]
+    ],
+    "seconds": 0.85,
+    "title": "SUPPLIER_PORTAL x WMS: inbound units at risk, weighted by supplier lateness (cross-source join)",
+    "sql": "SELECT w.supplier, r.on_time_rate, SUM(w.qty) AS inbound_units,\n       ROUND(SUM(w.qty) * (1 - r.on_time_rate), 1) AS units_likely_late\nFROM (SELECT s.supplier, s.qty FROM WMS.inbound_raw LATERAL VIEW explode(inbound) AS s) w\nJOIN (SELECT x.supplier, x.on_time_rate FROM SUPPLIER_PORTAL.reliability_raw LATERAL VIEW explode(suppliers) AS x) r\n  ON r.supplier = w.supplier\nGROUP BY w.supplier, r.on_time_rate\nORDER BY units_likely_late DESC"
+  }
+]
