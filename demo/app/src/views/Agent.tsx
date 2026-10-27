@@ -172,7 +172,7 @@ function EventCard({ e }: { e: AgentEvent }) {
         {e.status === "pending" && e.approval_id && (
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <Button variant="secondary" disabled={working} onClick={async () => { setWorking(true); await approve(e.approval_id!); setWorking(false); }}>{working ? <Spinner /> : <Check size={15} aria-hidden />}Approve</Button>
-            <Button variant="secondary" disabled={working} onClick={() => deny(e.approval_id!)}><X size={15} aria-hidden />Deny</Button>
+            <Button variant="secondary" danger disabled={working} onClick={() => deny(e.approval_id!)}><X size={15} aria-hidden />Deny</Button>
             <span className="small muted">Nothing is written until you approve. Your decision applies the whole {e.sku} proposal.</span>
           </div>
         )}

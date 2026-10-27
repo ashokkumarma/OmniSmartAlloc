@@ -67,7 +67,7 @@ export function Orders() {
           <CardHead title="Open orders" sub={`${num(open.length)} shown`}>
             <div style={{ display: "flex", gap: 8 }}>
               <Button variant="secondary" onClick={() => settleAllOpen("fulfill")} disabled={busy.bulk || !c.open}>{busy.bulk ? <Spinner /> : <Check size={14} aria-hidden />}Fulfill all open</Button>
-              <Button variant="secondary" onClick={() => settleAllOpen("cancel")} disabled={busy.bulk || !c.open}><X size={14} aria-hidden />Cancel all open</Button>
+              <Button variant="secondary" danger onClick={() => settleAllOpen("cancel")} disabled={busy.bulk || !c.open}><X size={14} aria-hidden />Cancel all open</Button>
             </div>
           </CardHead>
           <div className="list" style={{ paddingTop: 8 }}>

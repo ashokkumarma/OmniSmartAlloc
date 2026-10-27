@@ -36,7 +36,7 @@ export function OrderRow({ o, actions = true }: { o: Order; actions?: boolean })
         <div className="acts">
           <Button variant="secondary" onClick={() => run("fulfill")} disabled={!!working}>{working === "fulfill" ? <Spinner /> : <Check size={14} aria-hidden />}Fulfill all</Button>
           {o.remaining > 1 && <Button variant="secondary" onClick={() => setPartial(true)} disabled={!!working}><SplitSquareHorizontal size={14} aria-hidden />Partial</Button>}
-          <Button variant="secondary" onClick={() => run("cancel")} disabled={!!working}>{working === "cancel" ? <Spinner /> : <X size={14} aria-hidden />}Cancel</Button>
+          <Button variant="secondary" danger onClick={() => run("cancel")} disabled={!!working}>{working === "cancel" ? <Spinner /> : <X size={14} aria-hidden />}Cancel</Button>
         </div>
       )}
       {partial && <PartialSheet o={o} close={() => setPartial(false)} />}

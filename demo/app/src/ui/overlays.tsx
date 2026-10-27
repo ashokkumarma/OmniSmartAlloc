@@ -121,7 +121,7 @@ function DialogSheet({ dialog, close }: { dialog: Dialog; close: () => void }) {
       )}
       <div className="acts">
         <Button variant="secondary" onClick={cancel}>Cancel</Button>
-        <Button variant="primary" onClick={accept} autoFocus={dialog.kind === "confirm"}>
+        <Button variant="primary" danger={!!dialog.destructive} onClick={accept} autoFocus={dialog.kind === "confirm"}>
           {dialog.confirmLabel ?? "OK"}
         </Button>
       </div>
