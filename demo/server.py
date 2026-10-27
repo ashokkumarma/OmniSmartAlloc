@@ -1,7 +1,8 @@
 """OmniSmartAlloc demo UI server (port 8902).
 
-Pages:   /channels  order creation across DTC, Amazon, Etsy, Walmart
-         /ims       centralized inventory + agent activity
+Pages:   /oms       order management (OMS): order creation across DTC, Amazon, Etsy, Walmart
+         /ims       inventory management (IMS): centralized inventory + agent activity
+         /, /app, /ops, /channels, ...  the React app (demo/app), when it is built
 APIs:    /api/state /api/order /api/order/<id>/(fulfill|partial|cancel) /api/federated
          /api/agent/run /api/agent/status
 
@@ -16,6 +17,7 @@ Run: docker compose -f demo/docker-compose.channels.yml up -d   (channel order D
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -32,16 +34,22 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "demo"))
 import order_stores  # noqa: E402
 from src.allocation import agent_log  # noqa: E402
+from src.main import EVENT_PREFIX  # noqa: E402
 
 DATA = ROOT / "demo" / "data"
 OUTBOX = ROOT / "demo" / "outbox"
 WEB = ROOT / "demo" / "web"
+APP_DIST = ROOT / "demo" / "app" / "dist"  # built by `npm run build` in demo/app (scripts/start_demo.py does it)
+APP_ROUTES = {"/", "/app", "/channels", "/ops", "/orders", "/inventory", "/agent", "/storefronts", "/sources",
+              "/instructions", "/dashboard", "/smart-allocation"}
+APP_TYPES = {".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml",
+             ".woff2": "font/woff2", ".png": "image/png", ".json": "application/json"}
 VENV_PY = ROOT / ".venv" / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
 CHANNELS = {"DTC": "#7C3AED", "Amazon": "#FF9900", "Etsy": "#F1641E", "Walmart": "#0071CE"}
 STATE_COLORS = {"Abundant": "#22C55E", "Balanced": "#38BDF8", "Tight": "#F59E0B", "Critical": "#EF4444"}
 
 _LOCK = threading.Lock()
-_AGENT_JOB: dict = {"running": False, "tail": ""}
+_AGENT_JOB: dict = {"running": False, "tail": "", "ok": None, "steps": []}
 _AUTO_AGENT = {"enabled": True}
 _AGENT_TIMER: threading.Timer | None = None
 _AGENT_PENDING_SKUS: set[str] = set()
@@ -150,6 +158,28 @@ def _federated() -> dict:
         return result
 
 
+def _totals(orders: list[dict]) -> dict:
+    """KPI and chart totals over every order. The page only receives the latest 200 orders, so it must not count them."""
+    status_counts = {s: 0 for s in ("open", "partial", "fulfilled", "cancelled")}
+    closed_units: dict[str, dict[str, int]] = {ch: {} for ch in CHANNELS}
+    for o in orders:
+        status_counts[o["status"]] = status_counts.get(o["status"], 0) + 1
+        if o["status"] not in OPEN_STATUSES:
+            units = o["qty"] if o["status"] == "fulfilled" else o["fulfilled_qty"]
+            per_sku = closed_units.setdefault(o["channel"], {})
+            per_sku[o["sku"]] = per_sku.get(o["sku"], 0) + units
+    return {
+        "orders": len(orders),
+        "units_ordered": sum(o["qty"] for o in orders),
+        "units_awaiting": sum(o["remaining"] for o in orders if o["status"] in OPEN_STATUSES),
+        "units_shipped": sum(o["fulfilled_qty"] or 0 for o in orders),
+        "units_cancelled": sum(o["qty"] - (o["fulfilled_qty"] or 0) for o in orders if o["status"] == "cancelled"),
+        "skus": len({o["sku"] for o in orders}),
+        "status_counts": status_counts,
+        "closed_units": closed_units,
+    }
+
+
 def _state() -> dict:
     inv = _load("wms_inventory.json")["inventory"]
     econ = _load("channel_economics.json")["economics"]
@@ -195,7 +225,7 @@ def _state() -> dict:
                         "projected_date": time.strftime("%Y-%m-%d", time.gmtime(time.time() + (eta + delay) * 86400)),
                         "on_time_rate": rel.get("on_time_rate")})
     return {"skus": skus, "channels": [{"name": n, "color": c, "source": order_stores.SOURCES[n]} for n, c in CHANNELS.items()],
-            "economics": econ, "inbound": inbound, "orders": list(reversed(orders))[:200],
+            "economics": econ, "inbound": inbound, "orders": list(reversed(orders))[:200], "totals": _totals(orders),
             "alerts": list(reversed(_jsonl(OUTBOX / "alerts.jsonl")))[:100],
             "decisions": list(reversed(decisions[-50:])),
             "alloc_log": [{"ts": r["ts"], "sku": r["sku"], "allocation": r["allocation"], "reason": r.get("reason", "")}
@@ -281,6 +311,7 @@ def _reset() -> dict:
         orders = json.loads((BASELINE / "orders.json").read_text(encoding="utf-8"))
         if orders:
             order_stores.save_many(orders)
+        OUTBOX.mkdir(parents=True, exist_ok=True)  # gitignored, so absent on a fresh clone
         for f in (BASELINE / "outbox").glob("*.jsonl"):
             (OUTBOX / f.name).write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
         return {"reset": True, "skus": len(_load("wms_inventory.json")["inventory"]),
@@ -345,23 +376,56 @@ def _scenario1() -> dict:
             "passed": sum(1 for c in checks if c["ok"] is True), "failed": sum(1 for c in checks if c["ok"] is False)}
 
 
+def _run_one(question: str, steps: list[dict], out: list[str]) -> bool:
+    """Run the agent once, streaming its "@@step {json}" lines into `steps` (the live trace on /ops)."""
+    proc = subprocess.Popen([str(VENV_PY), "-m", "src.main", question, "--max-steps", "25", "--events"], cwd=ROOT,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8",
+                            errors="replace", env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    timed_out = threading.Event()
+
+    def _kill() -> None:
+        timed_out.set()
+        proc.kill()
+
+    timer = threading.Timer(600, _kill)
+    timer.start()
+    try:
+        for line in proc.stdout:
+            if line.startswith(EVENT_PREFIX):
+                try:
+                    steps.append(json.loads(line[len(EVENT_PREFIX):]))
+                    continue
+                except json.JSONDecodeError:
+                    pass
+            out.append(line)
+        proc.wait()
+    finally:
+        timer.cancel()
+    if timed_out.is_set():
+        out.append(f"agent timed out after 600 s: {question}\n")
+    return proc.returncode == 0 and not timed_out.is_set()
+
+
 def _run_agent(scope: str | list[str]) -> None:
+    """Run the allocation cycle for each queued scope ("all" or one SKU), one after another."""
     scopes = [scope] if isinstance(scope, str) else scope
-    _AGENT_JOB.update(running=True, scope=", ".join(scopes), tail="")
-    output: list[str] = []
+    steps: list[dict] = []
+    out: list[str] = []
+    _AGENT_JOB.update(running=True, scope=", ".join(scopes), tail="", ok=None, steps=steps)
+    ok = True
     try:
         for item in scopes:
             q = ("Run the allocation cycle for every SKU in the catalog: MUG-001, LAMP-002, RUG-003 and LOCK-004."
                  if item == "all" else f"Run the allocation cycle for SKU {item}.")
-            try:
-                res = subprocess.run([str(VENV_PY), "-m", "src.main", q, "--max-steps", "25"],
-                                     cwd=ROOT, capture_output=True, text=True, timeout=600)
-                output.append(res.stdout + res.stderr)
-            except subprocess.TimeoutExpired:
-                output.append(f"Agent timed out for {item} after 600 s")
+            if not _run_one(q, steps, out):
+                ok = False
                 break
-        _AGENT_JOB["tail"] = "".join(output)[-4000:]
+    except OSError as e:  # the agent could not be started (no venv, bad interpreter path)
+        ok = False
+        out.append(f"could not start the agent: {e}\n")
     finally:
+        _AGENT_JOB["tail"] = "".join(out)[-4000:]
+        _AGENT_JOB["ok"] = ok
         _AGENT_JOB["running"] = False
 
 
@@ -370,7 +434,6 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
 
@@ -379,10 +442,19 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = urlparse(self.path).path
-        if path in ("/", "/channels", "/oms"):
+        built = (APP_DIST / "index.html").is_file()
+        if built and (path in APP_ROUTES or re.fullmatch(r"/inventory/[A-Za-z0-9-]{1,32}", path)):  # the React app (demo/app) handles its own routing
+            return self._send(200, (APP_DIST / "index.html").read_bytes(), "text/html; charset=utf-8")
+        if built and (m := re.fullmatch(r"/(assets/\w[\w.-]*|favicon\.svg)", path)) and (APP_DIST / m.group(1)).is_file():
+            f = APP_DIST / m.group(1)
+            return self._send(200, f.read_bytes(), APP_TYPES.get(f.suffix, "application/octet-stream"))
+        # The original pages: always at /classic/..., and at / /channels /ops when the app is not built.
+        if path in ("/oms", "/classic/channels") or (not built and path in ("/", "/channels")):
             return self._send(200, (WEB / "channels.html").read_bytes(), "text/html; charset=utf-8")
-        if path in ("/ops", "/ims"):
+        if path in ("/ims", "/classic/ops") or (not built and path == "/ops"):
             return self._send(200, (WEB / "ops.html").read_bytes(), "text/html; charset=utf-8")
+        if path == "/vendor/chart.umd.js":  # served locally so charts work without internet
+            return self._send(200, (WEB / "vendor" / "chart.umd.js").read_bytes(), "text/javascript; charset=utf-8")
         if path == "/api/state":
             return self._json(200, _state())
         if path == "/api/agent/status":
@@ -446,5 +518,8 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8902
-    print(f"OmniSmartAlloc demo UI on http://localhost:{port}  (/oms and /ims)")
-    ThreadingHTTPServer(("0.0.0.0", port), Handler).serve_forever()
+    # Localhost only: the pages can reset the demo and start paid agent runs, so they must not be reachable
+    # from the network. Set OMNI_UI_HOST=0.0.0.0 to share it deliberately.
+    host = os.environ.get("OMNI_UI_HOST", "127.0.0.1")
+    print(f"OmniSmartAlloc demo UI on http://localhost:{port}  (app: /  OMS: /oms  IMS: /ims)")
+    ThreadingHTTPServer((host, port), Handler).serve_forever()

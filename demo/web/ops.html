@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OmniSmartAlloc — Inventory & Agent Ops</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart.umd.js"></script>
 <style>
   :root { --bg:#0B1020; --card:#141A2E; --line:#232B45; --txt:#E8ECF7; --mut:#8B93AD; }
   * { box-sizing:border-box; margin:0 }
@@ -15,8 +15,17 @@
   nav a { color:#67E8F9; font-size:13px }
   .grow { margin-left:auto }
   button { border:none; border-radius:9px; padding:9px 18px; font-weight:700; cursor:pointer }
-  #runBtn { background:linear-gradient(90deg,#38BDF8,#A78BFA); color:#E4E9F7 }
-  #runBtn:disabled { opacity:.5; cursor:wait }
+  /* header buttons: one primary action per page, demo controls stay quiet */
+  .hbtn { background:transparent; color:#C9D1EA; border:1px solid #334155; font-weight:600; font-size:13px; padding:8px 14px; border-radius:9px; cursor:pointer }
+  .hbtn:hover { border-color:#64748B; color:#fff }
+  .hbtn.primary { background:#38BDF8; border-color:#38BDF8; color:#0B1020; font-weight:700 }
+  .hbtn.primary:hover { background:#7DD3FC; border-color:#7DD3FC }
+  .hbtn:disabled { opacity:.55; cursor:progress }
+  .hbtn:focus-visible, .tab:focus-visible, nav a:focus-visible { outline:2px solid #7DD3FC; outline-offset:2px }
+  .hgroup { display:flex; gap:8px; align-items:center; flex-shrink:0 }
+  .hbtn, .pill, nav a { white-space:nowrap }
+  header { flex-wrap:wrap }
+  .hlabel { font-size:12px; color:var(--mut) }
   .tabs { display:flex; gap:8px; padding:14px 28px 0 }
   .tab { padding:10px 24px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
     background:#10152A; color:var(--mut); cursor:pointer; font-weight:700; font-size:14px }
@@ -103,6 +112,19 @@
   .pmerr { font-size:11.5px; color:#F87171; min-height:16px; margin-top:4px }
   .mact { display:flex; justify-content:flex-end; gap:8px; margin-top:16px }
   .mact button:disabled { opacity:.45; cursor:not-allowed }
+  .toast { position:fixed; bottom:24px; right:24px; padding:13px 18px; border-radius:10px; font-weight:600; color:#fff;
+    opacity:0; transition:.3s; max-width:420px; white-space:pre-line; pointer-events:none; z-index:60 }
+  .toast.ok { background:#065F46 } .toast.err { background:#7F1D1D }
+  /* live agent trace */
+  .run-card h3 { display:flex; justify-content:space-between; align-items:baseline; gap:12px }
+  .run-card h3 small { color:var(--mut); font-weight:400; text-transform:none; letter-spacing:0; font-size:12px }
+  .run-steps { list-style:none; padding:0; display:flex; flex-direction:column; gap:6px; max-height:260px; overflow:auto }
+  .run-steps li { display:grid; grid-template-columns:28px 18px minmax(0,1fr) auto; gap:8px; align-items:baseline; font-size:13px; padding:6px 10px; background:#10152A; border-radius:8px }
+  .run-steps .n { color:var(--mut); font-variant-numeric:tabular-nums }
+  .run-steps .ok { color:#4ADE80 } .run-steps .bad { color:#F87171 }
+  .run-steps .err { display:block; color:#FCA5A5; font-size:12px; margin-top:2px }
+  .src-chip { display:inline-block; font-size:11px; color:#BAE6FD; border:1px solid #1E3A5F; border-radius:99px; padding:1px 8px; margin-left:4px }
+  .run-sources { margin-top:10px; font-size:12px; color:var(--mut) }
 </style>
 </head>
 <body>
@@ -111,27 +133,31 @@
   <span class="pill">centralized stock via Zetaris</span>
   <span class="pill">decisions by Nemotron agent</span>
   <div class="grow"></div>
-  <button id="resetBtn" style="background:linear-gradient(90deg,#86EFAC,#22C55E);color:#0B1020;margin-right:10px" onclick="resetDemo()">↺ Reset demo data</button>
-  <button id="simBtn" style="display:none" onclick="simOrder()">⚡ Simulate order</button>
-  <button id="runBtn" onclick="runAgent()">▶ Run allocation cycle</button>
+  <div class="hgroup">
+    <span class="hlabel">Demo data</span>
+    <button class="hbtn" id="resetBtn" onclick="resetDemo()">Reset demo</button>
+    <button class="hbtn" id="simBtn" style="display:none" onclick="simOrder()">Simulate order</button>
+  </div>
+  <button class="hbtn primary" id="runBtn" onclick="runAgent()">Run allocation cycle</button>
   <label id="autoRunLbl" style="display:flex;align-items:center;gap:5px;margin-left:10px;font-size:11px;color:var(--mut);cursor:pointer">
     <input type="checkbox" id="autoRunChk" onchange="toggleAuto(this.checked)"> auto-run</label>
-  <nav style="margin-left:14px"><a href="/oms">← Order Management System</a></nav>
 </header>
 <div class="tabs">
   <div class="tab" id="tabAgentLog" onclick="show('agentlog')">Smart Allocation <span id="alBadge" class="tab-dot"></span></div>
   <div class="tab" id="tabDashboard" onclick="show('dashboard')">Dashboard</div>
   <div class="tab" id="tabOrders" onclick="show('orders')">Orders<span id="ordDot" class="tab-dot"></span></div>
   <div class="tab" id="tabInventory" onclick="show('inventory')">Inventory</div>
+  <nav style="margin-left:auto;align-self:center"><a href="/oms">← Order Management System</a></nav>
 </div>
 <main>
   <div id="pgDashboard" style="display:flex;flex-direction:column;gap:18px">
+    <div class="card run-card" id="agentRun" hidden aria-live="polite"></div>
     <div class="kpis" id="kpiDash"></div>
     <div class="row">
       <div class="card"><h3>Open units by channel</h3><canvas id="chOpen"></canvas></div>
       <div class="card"><h3>Order status mix</h3><canvas id="chStatus"></canvas></div>
     </div>
-    <div class="card"><h3>All orders</h3><div class="feed" id="allOrders"></div></div>
+    <div class="card"><h3>Recent orders</h3><div class="feed" id="allOrders"></div></div>
   </div>
 
   <div id="pgOrders" style="display:flex;flex-direction:column;gap:18px">
@@ -201,6 +227,7 @@ const valueLabels={id:'valueLabels',afterDatasetsDraw(chart){
     meta.data.forEach((el,j)=>{
       const v=+ds.data[j]; if(!v) return;
       if(meta.type==='doughnut'||meta.type==='pie'){
+        if(v/total<0.08) return;  // thin slices: the label would overlap its neighbours; the tooltip still shows it
         const {x,y}=el.tooltipPosition(); ctx.fillStyle='#fff';
         ctx.fillText(`${v} (${Math.round(v/total*100)}%)`,x,y); return; }
       const h=Math.abs(el.base-el.y);
@@ -253,24 +280,21 @@ const orderRow=(o,actions)=>
       <button style="background:#B91C1C;${btn}" onclick="settle('${o.id}','cancel')">✖ Cancel</button></span>`:''}</div>`;
 
 function renderDashboard(){
-  const awaiting=S.orders.filter(o=>o.status==='open'||o.status==='partial').reduce((a,o)=>a+o.remaining,0);
-  const shippedU=S.orders.reduce((a,o)=>a+(o.fulfilled_qty||0),0);
+  const T=S.totals;  // over every order; S.orders is only the latest 200
   $('kpiDash').innerHTML =
-    kpi('Total orders',S.orders.length)+kpi('Units ordered',S.orders.reduce((a,o)=>a+o.qty,0))+
-    kpi('Units awaiting shipment',awaiting)+kpi('Units shipped',shippedU)+
-    kpi('SKUs ordered',new Set(S.orders.map(o=>o.sku)).size);
-  $('allOrders').innerHTML = S.orders.map(o=>orderRow(o,o.status==='open'||o.status==='partial')).join('')
-    || '<small style="color:var(--mut)">No orders yet.</small>';
+    kpi('Total orders',T.orders)+kpi('Units ordered',T.units_ordered)+
+    kpi('Units awaiting shipment',T.units_awaiting)+kpi('Units shipped',T.units_shipped)+
+    kpi('SKUs ordered',T.skus);
+  $('allOrders').innerHTML = (S.orders.slice(0,10).map(o=>orderRow(o,o.status==='open'||o.status==='partial')).join('')
+    || '<small style="color:var(--mut)">No orders yet.</small>') +
+    (S.totals.orders > 10 ? `<a href="javascript:void 0" onclick="show('orders')" style="display:inline-block;margin-top:10px;color:#67E8F9;font-size:13px">See recent orders and filters on the Orders tab →</a>` : '');
   const chans=S.channels.map(c=>c.name);
   if(charts.chOpen)charts.chOpen.destroy();
   charts.chOpen=new Chart($('chOpen'),{type:'bar',data:{labels:S.skus.map(p=>p.sku),
     datasets:chans.map(c=>({label:c,data:S.skus.map(p=>p.open_by_channel[c]||0),backgroundColor:chanColor(c),stack:'o'}))},
     options:{layout:{padding:{top:44}},scales:{x:{...grid.x,stacked:true},y:{...grid.y,stacked:true}},
       plugins:{legend:{padding:24,labels:{color:'#C9D1EA'},boxWidth:10,font:{size:10}}}}});
-  const mix={'awaiting shipment':0,shipped:0,cancelled:0};
-  S.orders.forEach(o=>{ mix.shipped+=o.fulfilled_qty||0;
-    if(o.status==='open'||o.status==='partial') mix['awaiting shipment']+=o.remaining;
-    else if(o.status==='cancelled') mix.cancelled+=o.qty-(o.fulfilled_qty||0); });
+  const mix={'awaiting shipment':T.units_awaiting,shipped:T.units_shipped,cancelled:T.units_cancelled};
   if(charts.chStatus)charts.chStatus.destroy();
   charts.chStatus=new Chart($('chStatus'),{type:'doughnut',
     data:{labels:Object.keys(mix).map(k=>k+' (units)'),datasets:[{data:Object.values(mix),
@@ -281,10 +305,10 @@ function renderDashboard(){
 function renderOrders(){
   const allOpen=S.orders.filter(isOpen), allClosed=S.orders.filter(o=>!isOpen(o));
   $('kpiOrders').innerHTML =
-    kpiF('Open orders',allOpen.length,'open')+
-    kpiF('Partially fulfilled',allClosed.filter(o=>o.status==='partial').length,'partial')+
-    kpiF('Fulfilled',allClosed.filter(o=>o.status==='fulfilled').length,'fulfilled')+
-    kpiF('Cancelled',allClosed.filter(o=>o.status==='cancelled').length,'cancelled');
+    kpiF('Open orders',S.totals.status_counts.open,'open')+
+    kpiF('Partially fulfilled',S.totals.status_counts.partial,'partial')+
+    kpiF('Fulfilled',S.totals.status_counts.fulfilled,'fulfilled')+
+    kpiF('Cancelled',S.totals.status_counts.cancelled,'cancelled');
   const match = ofilter==='all'||ofilter==='open' ? isOpen : o=>o.status===ofilter;
   const open = allOpen.filter(match), closed = allClosed.filter(match);
   $('openHint').textContent = ofilter==='partial'||ofilter==='fulfilled'||ofilter==='cancelled' ? '— filtered out (see settled below)' : '';
@@ -461,20 +485,38 @@ function renderAgentLog(){
 function toggleCalc(id){ document.getElementById('calc-'+id).classList.toggle('show'); }
 async function approveEv(id){
   const r=await fetch(`/api/approvals/${id}/approve`,{method:'POST'});
-  if(!r.ok) alert((await r.json()).error); state();
+  if(!r.ok) toast((await r.json()).error, false); state();
 }
 async function denyEv(id){
   const reason=prompt('Why are you denying this change? The agent sees this reason on its next run.');
   if(reason===null) return;
-  if(!reason.trim()){ alert('A reason is required to deny.'); return; }
+  if(!reason.trim()){ toast('A reason is required to deny.', false); return; }
   const r=await fetch(`/api/approvals/${id}/deny`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});
-  if(!r.ok) alert((await r.json()).error); state();
+  if(!r.ok) toast((await r.json()).error, false); state();
+}
+// Live trace of the allocation agent: one row per tool call, streamed from /api/agent/status.
+function renderAgentRun(job){
+  const box=$('agentRun'), steps=(job&&job.steps)||[];
+  if(!job||(!job.running&&!steps.length)){ box.hidden=true; return; }
+  box.hidden=false;
+  const sources=[...new Set(steps.flatMap(s=>s.sources||[]))].sort();
+  const status=job.running?`Running · ${steps.length} step${steps.length===1?'':'s'} so far`
+    :`Last run · ${steps.length} steps · ${job.ok?'finished':'did not finish'}`;
+  box.innerHTML=`<h3>Agent run <small>${esc(status)}</small></h3>`+
+    (steps.length?`<ol class="run-steps">${steps.map(s=>`<li><span class="n">${s.n}</span>`+
+      `<span class="${s.ok?'ok':'bad'}" aria-label="${s.ok?'ok':'failed'}">${s.ok?'✓':'✗'}</span>`+
+      `<span>${esc(s.text)}${s.error?`<span class="err">${esc(s.error)}</span>`:''}</span>`+
+      `<span>${(s.sources||[]).map(x=>`<span class="src-chip">${esc(x)}</span>`).join('')}</span></li>`).join('')}</ol>`
+      :'<small style="color:var(--mut)">Starting the agent…</small>')+
+    (sources.length?`<div class="run-sources">Sources the agent read: ${sources.map(x=>`<span class="src-chip">${esc(x)}</span>`).join('')}</div>`:'');
+  const list=box.querySelector('.run-steps'); if(list&&job.running) list.scrollTop=list.scrollHeight;
 }
 function render(){ if(!S) return;
+  renderAgentRun(S.agent);
   page==='dashboard'?renderDashboard():page==='orders'?renderOrders():page==='agentlog'?renderAgentLog():renderInventory(); }
 async function settle(id,a,body){
   const r=await fetch(`/api/order/${id}/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
-  if(!r.ok) alert((await r.json()).error); state(); }
+  if(!r.ok) toast((await r.json()).error, false); state(); }
 let pOrder=null;
 function openPartial(id){
   pOrder=S.orders.find(o=>o.id===id); if(!pOrder) return;
@@ -500,19 +542,19 @@ document.addEventListener('keydown',e=>{ if(!pOrder) return;
 async function settleAll(a){ for(const o of S.orders.filter(o=>o.status==='open')) await fetch(`/api/order/${o.id}/${a}`,{method:'POST'}); state(); }
 async function scenario1(){
   if(!confirm('Load Scenario 1 (LAMP-002: DTC selling ahead of forecast while Amazon lags)? This replaces all LAMP-002 orders, stock, inbound, margins and allocation; other SKUs are untouched.')) return;
-  const b=$('scn1Btn'); b.disabled=true; b.textContent='Loading scenario…';
+  await busy($('scn1Btn'), 'Loading scenario…', async()=>{
   const r=await (await fetch('/api/scenario/1',{method:'POST'})).json();
-  b.disabled=false; b.textContent='Scenario 1: Auto Apply';
   const bad=r.checks.filter(c=>c.ok===false), info=r.checks.filter(c=>c.ok===null&&c.name.startsWith('engine preview'));
-  alert(`Scenario 1 loaded for LAMP-002: ${r.summary.orders_total} orders, on hand ${r.summary.on_hand}, sellable ${r.summary.sellable}.\n`+
+  toast(`Scenario 1 loaded for LAMP-002: ${r.summary.orders_total} orders, on hand ${r.summary.on_hand}, sellable ${r.summary.sellable}.\n`+
     `Checks: ${r.passed} passed, ${r.failed} failed`+(bad.length?'\n- '+bad.map(c=>c.name).join('\n- '):'')+
-    (info.length?'\n\n'+info.map(c=>c.name+': '+c.detail).join('\n'):'')); state();
+    (info.length?'\n\n'+info.map(c=>c.name+': '+c.detail).join('\n'):''), r.failed===0); await state();
+  });
 }
 async function genHistory(){
-  const b=$('histBtn'); b.disabled=true; b.textContent='Generating…';
-  const r=await (await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"days":90}'})).json();
-  b.disabled=false; b.textContent='⟳ Generate history orders';
-  alert(`Generated ${r.generated} orders: `+Object.entries(r.by_channel).map(([c,n])=>`${c} ${n}`).join(', ')); state();
+  await busy($('histBtn'), 'Generating…', async()=>{
+    const r=await (await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"days":90}'})).json();
+    toast(`Generated ${r.generated} orders: `+Object.entries(r.by_channel).map(([c,n])=>`${c} ${n}`).join(', '), true); await state();
+  });
 }
 async function toggleAuto(on){
   await fetch('/api/agent/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:on})});
@@ -534,18 +576,32 @@ async function simOrder(){
 }
 async function resetDemo(){
   if(!confirm('Reset the demo? This wipes ALL orders and restores the baseline stock, allocation split and channel margins.')) return;
-  const b=$('resetBtn'); b.disabled=true; b.textContent='Resetting…';
-  await fetch('/api/reset',{method:'POST'});
-  b.disabled=false; b.textContent='↺ Reset demo data'; state();
+  await busy($('resetBtn'), 'Resetting…', async()=>{
+    const r=await (await fetch('/api/reset',{method:'POST'})).json();
+    toast(r.reset ? `Demo reset: ${r.orders_restored} orders restored` : (r.error || 'Reset failed'), !!r.reset); await state();
+  });
 }
 async function runAgent(){
   const b=$('runBtn'); b.disabled=true; b.textContent='Agent running…';
   await fetch('/api/agent/run',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"scope":"all"}'});
+  renderAgentRun({running:true, steps:[]});
   const t=setInterval(async()=>{const j=await (await fetch('/api/agent/status')).json();
-    if(!j.running){clearInterval(t);b.disabled=false;b.textContent='▶ Run allocation cycle';state();}},2000);
+    renderAgentRun(j);
+    if(!j.running){clearInterval(t);b.disabled=false;b.textContent='Run allocation cycle';state();
+      if(j.ok===false){ const last=(j.tail||'').trim().split('\n').filter(Boolean).pop()||'no output';
+        toast('The agent run did not finish: '+last.slice(0,300), false); }}},2000);
+}
+function toast(msg, ok){ const t=$('toast'); t.textContent=msg; t.className='toast '+(ok?'ok':'err');
+  t.style.opacity=1; clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.style.opacity=0, 5200); }
+// Disable the button and show progress while an action runs; a network failure becomes a toast.
+async function busy(btn, label, fn){
+  const text=btn.textContent; btn.disabled=true; btn.textContent=label;
+  try { await fn(); } catch(e) { toast('Could not reach the demo server: '+e.message, false); }
+  finally { btn.disabled=false; btn.textContent=text; }
 }
 show('agentlog'); state();
 setInterval(state, 8000); // keep caps/stock/agent log fresh even if a change happened outside this tab
 </script>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

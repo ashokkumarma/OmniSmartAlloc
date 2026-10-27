@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from src.tools.registry import ToolRegistry
 
@@ -48,7 +48,8 @@ class ReActAgent:
         self.system_prompt, self.max_steps, self.temperature = system_prompt, max_steps, temperature
         self.chat_extra_headers = chat_extra_headers or {}
 
-    def run(self, question: str) -> AgentResult:
+    def run(self, question: str, on_step: Callable[[Step, set[str]], None] | None = None) -> AgentResult:
+        """on_step(step, sources) is called after every tool call, e.g. to stream progress."""
         messages: list[dict[str, Any]] = [{"role": "system", "content": self.system_prompt},
                                           {"role": "user", "content": question}]
         result = AgentResult(answer="")
@@ -66,12 +67,17 @@ class ReActAgent:
                                             for c in msg.tool_calls]})
             for call in msg.tool_calls:
                 ok, output = self.tools.call(call.function.name, call.function.arguments)
-                result.steps.append(Step(call.function.name, call.function.arguments, ok, output))
+                step = Step(call.function.name, call.function.arguments, ok, output)
+                result.steps.append(step)
+                sources: set[str] = set()
                 if ok:
                     try:
-                        result.sources_touched |= _sources_from(call.function.name, json.loads(call.function.arguments or "{}"))
+                        sources = _sources_from(call.function.name, json.loads(call.function.arguments or "{}"))
                     except json.JSONDecodeError:
                         pass
+                    result.sources_touched |= sources
+                if on_step:
+                    on_step(step, sources)
                 messages.append({"role": "tool", "tool_call_id": call.id, "content": output})
         result.stopped_reason = "max_steps"
         result.answer = "Stopped: reached the step limit before the model produced a final answer."
