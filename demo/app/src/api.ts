@@ -33,6 +33,8 @@ export interface AppState {
   orders: Order[]; alerts: Alert[]; decisions: Decision[]; agent: AgentJob; totals: Totals;
   /** True when the server re-runs the agent by itself after orders, approvals and scenarios. */
   agent_auto?: boolean;
+  /** Every allocation the agent wrote, oldest first (the last 200). */
+  alloc_log?: { ts: string; sku: string; allocation: Record<string, number>; reason: string }[];
 }
 
 export interface EventChannel {
@@ -44,6 +46,8 @@ export interface AgentEvent {
   without_change: { lines: string[]; total: number }; with_change: { lines: string[]; total: number };
   net_savings: number; channels: EventChannel[]; moves: { reduce: { channel: Channel; units: number }[]; add: { channel: Channel; units: number }[] };
   why: string[] | string; approval_id: string | null; deny_reason: string | null; approved_ts: string | null;
+  /** Stock was sold or committed and caps were trimmed to match; nothing moved between channels. */
+  stock_sync?: boolean;
 }
 
 /** Projected savings of the allocations now in force (auto-applied or approved), per SKU. */

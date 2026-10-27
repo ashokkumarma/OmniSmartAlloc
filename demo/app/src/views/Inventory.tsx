@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import type { Route } from "../App";
 import { Warehouse, Lock, PackageCheck, Truck, Layers, Gauge, AlertTriangle, ClipboardList } from "lucide-react";
-import { CHANNELS, chanColor, chanVar, num, plural, STATE_TONE, stateColor, when } from "../format";
+import { CHANNELS, chanColor, chanVar, num, plural, STATE_TONE, stateColor, when, usedUnits } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Empty, Kpi, Legend, Meter, Pill } from "../ui/kit";
 import { enter, useGSAP } from "../motion";
@@ -39,7 +39,7 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
         <CardHead title="Stock by SKU" sub="On hand, reserved in open orders, and what each channel may still sell" />
         <div className="table-wrap" style={{ marginTop: 8 }}>
           <table className="table">
-            <thead><tr><th>Product</th><th>State</th><th className="num">On hand</th><th>Reserved</th><th className="num">Allocatable</th><th className="num">Cover</th><th style={{ minWidth: 220 }}>Channel allocation <span className="muted">(open / allocated)</span></th></tr></thead>
+            <thead><tr><th>Product</th><th>State</th><th className="num">On hand</th><th>Reserved</th><th className="num">Allocatable</th><th className="num">Cover</th><th style={{ minWidth: 220 }}>Channel allocation <span className="muted">(used / allocated)</span></th></tr></thead>
             <tbody>
               {s.skus.map((p) => {
                 const reserved = Object.values(p.open_by_channel).reduce((a, b) => a + b, 0);
@@ -58,11 +58,11 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
                       {p.allocation ? (
                         <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           {CHANNELS.map((c) => {
-                            const a = p.allocation?.[c] ?? 0, o = p.open_by_channel[c] ?? 0;
+                            const a = p.allocation?.[c] ?? 0, o = usedUnits(p, c);
                             return (
                               <div className="alloc-row" key={c}>
                                 <span>{c}</span>
-                                <Meter pct={a ? (o / a) * 100 : 0} color={chanVar(c)} label={`${c}: ${o} open of ${a} allocated`} />
+                                <Meter pct={a ? (o / a) * 100 : 0} color={chanVar(c)} label={`${c}: ${o} used of ${a} allocated`} />
                                 <span className="v">{o}/{a}</span>
                               </div>
                             );
@@ -110,17 +110,17 @@ export function Inventory({ go }: { go: (r: Route, sku?: string) => void }) {
 
       <div className="grid g-2 reveal">
         <Card>
-          <CardHead title="Allocation vs open orders" sub="Solid: allocated, light: open">
+          <CardHead title="Allocation vs consumed" sub="Solid: allocated, light: used by orders since the allocation">
             <Legend items={CHANNELS.map((c) => ({ label: c, color: chanVar(c) }))} />
           </CardHead>
           <div className="card-body">
-            <ChartBox size="lg" label="Allocation versus open orders by SKU and channel" deps={[JSON.stringify(s.skus.map((p) => [p.allocation, p.open_by_channel]))]} make={() => ({
+            <ChartBox size="lg" label="Allocation versus consumed units by SKU and channel" deps={[JSON.stringify(s.skus.map((p) => [p.allocation, p.used_by_channel]))]} make={() => ({
               type: "bar",
               data: {
                 labels: skuLabels,
                 datasets: [
                   ...CHANNELS.map((c) => ({ label: `${c} allocated`, data: s.skus.map((p) => p.allocation?.[c] ?? 0), backgroundColor: chanColor(c), stack: "a", borderRadius: 3, maxBarThickness: 36 })),
-                  ...CHANNELS.map((c) => ({ label: `${c} open`, data: s.skus.map((p) => p.open_by_channel[c] ?? 0), backgroundColor: chanColor(c) + "4d", borderColor: chanColor(c), borderWidth: 1, stack: "c", borderRadius: 3, maxBarThickness: 36 })),
+                  ...CHANNELS.map((c) => ({ label: `${c} used`, data: s.skus.map((p) => usedUnits(p, c)), backgroundColor: chanColor(c) + "4d", borderColor: chanColor(c), borderWidth: 1, stack: "c", borderRadius: 3, maxBarThickness: 36 })),
                 ],
               },
               options: { scales: axes(true) },

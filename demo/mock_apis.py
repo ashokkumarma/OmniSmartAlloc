@@ -42,12 +42,22 @@ def _floats(payload: dict, fields: tuple[str, ...]) -> dict:
     return payload
 
 
+
+def _nested_as_text(payload: dict) -> dict:
+    """Send each order's partial_shipments entries as JSON text. Zetaris types the column from the data it saw
+    when the source was registered (an empty list becomes array<string>); objects in it later fail every query
+    on the table with "GenericRowWithSchema cannot be converted to the string type". The SQL views never read it."""
+    for o in payload.get("orders", []):
+        o["partial_shipments"] = [x if isinstance(x, str) else json.dumps(x) for x in o.get("partial_shipments") or []]
+    return payload
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         if self.path == "/health":
             return self._send(200, {"status": "ok", "apis": sorted(ROUTES)})
         if name := ROUTES.get(self.path):
-            return self._send(200, _floats(json.loads((DATA / name).read_text()), FLOAT_FIELDS.get(self.path, ())))
+            payload = _floats(json.loads((DATA / name).read_text()), FLOAT_FIELDS.get(self.path, ()))
+            return self._send(200, _nested_as_text(payload) if self.path == "/api/amazon/orders" else payload)
         self._send(404, {"error": f"unknown endpoint {self.path}"})
 
     def _send(self, code: int, payload: dict) -> None:

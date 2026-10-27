@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { AlertTriangle, CheckCircle2, Clock, PackageCheck, PackageOpen, ShoppingBag, Truck, Warehouse, Sparkles, DatabaseZap, Lock } from "lucide-react";
 import type { Route } from "../App";
-import { CHANNELS, chanColor, chanVar, money, num, plural, STATE_TONE, stateColor, stateVar, when } from "../format";
+import { CHANNELS, chanColor, chanVar, money, num, plural, STATE_TONE, stateColor, stateVar, when, usedUnits } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Kpi, Legend, Meter, Pill, Empty } from "../ui/kit";
 import { enter, useGSAP } from "../motion";
@@ -46,7 +46,7 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
     <div ref={root} className="stack">
       <div className="page-head reveal">
         <div>
-          <h1>Overview</h1>
+          <h1>Dashboard</h1>
           <p>One stock pool across four sales channels. Data is read live through Zetaris; the agent decides how much each channel may sell.</p>
         </div>
       </div>
@@ -89,6 +89,18 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
           ) : <Empty icon={CheckCircle2} title="All clear">No approvals, stock risks or late shipments.</Empty>}
         </Card>
         <Card>
+          <CardHead title="On hand per channel" sub="What each channel can still sell: allocation minus units used">
+            <Legend items={CHANNELS.map((c) => ({ label: c, color: chanVar(c) }))} />
+          </CardHead>
+          <div className="card-body">
+            <ChartBox label="On hand units per channel and SKU" deps={[JSON.stringify(s.skus.map((p) => [p.allocation, p.used_by_channel]))]} make={() => ({
+              type: "bar",
+              data: { labels: s.skus.map((p) => p.sku), datasets: CHANNELS.map((c) => ({ label: c, data: s.skus.map((p) => (p.allocation ? Math.max(0, (p.allocation[c] ?? 0) - usedUnits(p, c)) : 0)), backgroundColor: chanColor(c), borderRadius: 4, maxBarThickness: 28 })) },
+              options: { scales: axes(false, "units") },
+            })} />
+          </div>
+        </Card>
+        <Card>
           <CardHead title="Margin by channel" sub="Average unit margin as % of price" />
           <div className="card-body">
             <ChartBox label="Profit margin percent by channel" deps={[margins.join()]} make={() => ({
@@ -119,11 +131,11 @@ export function Overview({ go }: { go: (r: Route, sku?: string) => void }) {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {p.allocation ? CHANNELS.map((c) => {
-                  const a = p.allocation?.[c] ?? 0, o = p.open_by_channel[c] ?? 0;
+                  const a = p.allocation?.[c] ?? 0, o = usedUnits(p, c);
                   return (
                     <div className="alloc-row" key={c}>
                       <span style={{ color: "var(--label-2)" }}>{c}</span>
-                      <Meter pct={a ? (o / a) * 100 : 0} color={chanVar(c)} label={`${c}: ${o} open of ${a} allocated`} />
+                      <Meter pct={a ? (o / a) * 100 : 0} color={chanVar(c)} label={`${c}: ${o} used of ${a} allocated`} />
                       <span className="v">{o}/{a}</span>
                     </div>
                   );

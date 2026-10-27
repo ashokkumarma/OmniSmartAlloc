@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  LayoutGrid, Package, Boxes, Sparkles, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, type LucideIcon,
+  LayoutGrid, Package, Boxes, Sparkles, Store, Database, Play, FlaskConical, History, RotateCcw, Search, CornerDownLeft, BookOpen, type LucideIcon,
   ExternalLink,
 } from "lucide-react";
 import { useStore } from "./store";
@@ -17,17 +17,22 @@ import { SkuDetail } from "./views/SkuDetail";
 import { Agent } from "./views/Agent";
 import { Storefronts } from "./views/Storefronts";
 import { Sources } from "./views/Sources";
+import { Instructions } from "./views/Instructions";
 
-export type Route = "overview" | "orders" | "inventory" | "agent" | "storefronts" | "sources";
-const PATHS: Record<Route, string> = { overview: "/app", orders: "/orders", inventory: "/inventory", agent: "/agent", storefronts: "/storefronts", sources: "/sources" };
-const ALIASES: Record<string, Route> = { "/ops": "overview", "/channels": "storefronts" };
-const NAV: { route: Route; label: string; icon: LucideIcon }[] = [
-  { route: "overview", label: "Overview", icon: LayoutGrid },
-  { route: "orders", label: "Orders", icon: Package },
-  { route: "inventory", label: "Inventory", icon: Boxes },
-  { route: "agent", label: "Agent", icon: Sparkles },
-  { route: "storefronts", label: "Storefronts", icon: Store },
-  { route: "sources", label: "Data sources", icon: Database },
+export type Route = "instructions" | "overview" | "orders" | "inventory" | "agent" | "storefronts" | "sources";
+const PATHS: Record<Route, string> = { instructions: "/instructions", overview: "/app", orders: "/orders", inventory: "/inventory", agent: "/agent", storefronts: "/storefronts", sources: "/sources" };
+const ALIASES: Record<string, Route> = { "/ops": "overview", "/dashboard": "overview", "/channels": "storefronts", "/smart-allocation": "agent" };
+// Two systems, as in the guided demo: the OMS takes orders, the IMS fulfils them and shows the agent's decisions.
+type Group = "oms" | "ims";
+const GROUPS: { id: Group; label: string }[] = [{ id: "oms", label: "Order management (OMS)" }, { id: "ims", label: "Inventory management (IMS)" }];
+const NAV: { route: Route; label: string; icon: LucideIcon; group: Group }[] = [
+  { route: "instructions", label: "Instructions", icon: BookOpen, group: "oms" },
+  { route: "storefronts", label: "Storefronts", icon: Store, group: "oms" },
+  { route: "agent", label: "Smart Allocation", icon: Sparkles, group: "ims" },
+  { route: "overview", label: "Dashboard", icon: LayoutGrid, group: "ims" },
+  { route: "orders", label: "Orders", icon: Package, group: "ims" },
+  { route: "inventory", label: "Inventory", icon: Boxes, group: "ims" },
+  { route: "sources", label: "Data sources", icon: Database, group: "ims" },
 ];
 
 /** The section a URL belongs to; /inventory/<SKU> is a product page inside Inventory. */
@@ -82,7 +87,7 @@ export default function App() {
   const counts: Partial<Record<Route, { n: number; alert?: boolean }>> = { orders: { n: openOrders }, agent: { n: pending, alert: pending > 0 } };
   const title = NAV.find((n) => n.route === route)!.label;
 
-  const navItems = (onPick?: () => void) => NAV.map(({ route: r, label, icon: Icon }) => {
+  const navItems = (onPick?: () => void, group?: Group) => NAV.filter((n) => !group || n.group === group).map(({ route: r, label, icon: Icon }) => {
     const c = counts[r];
     return (
       <button key={r} className="nav-item" aria-current={route === r ? "page" : undefined} onClick={() => { go(r); onPick?.(); }}>
@@ -95,6 +100,7 @@ export default function App() {
 
   let view: ReactNode;
   if (!s) view = <div className={offline ? "empty" : undefined} style={{ marginTop: offline ? 80 : 0 }}>{offline ? <><b>Cannot reach the demo server</b>Start it with <span className="mono">scripts/start_demo.py</span>.</> : <PageSkeleton />}</div>;
+  else if (route === "instructions") view = <Instructions go={go} />;
   else if (route === "overview") view = <Overview go={go} />;
   else if (route === "orders") view = <Orders />;
   else if (route === "inventory") view = sku ? <SkuDetail sku={sku} go={go} /> : <Inventory go={go} />;
@@ -119,8 +125,12 @@ export default function App() {
         <button className="btn sm" style={{ justifyContent: "flex-start", color: "var(--label-2)", margin: "0 4px 4px" }} onClick={() => setPalette(true)}>
           <Search size={14} aria-hidden /> Search <span style={{ marginInlineStart: "auto" }} className="kbd">⌘K</span>
         </button>
-        <div className="nav-label">Operate</div>
-        <nav className="nav" aria-label="Sections">{navItems()}</nav>
+        {GROUPS.map((g) => (
+          <div key={g.id}>
+            <div className="nav-label">{g.label}</div>
+            <nav className="nav" aria-label={g.label}>{navItems(undefined, g.id)}</nav>
+          </div>
+        ))}
         <div className="nav-label">Demo data</div>
         <div className="nav">
           <button className="nav-item" onClick={store.scenario1} disabled={busy.scenario}>{busy.scenario ? <Spinner size={17} /> : <FlaskConical size={17} aria-hidden />}<span>{busy.scenario ? "Loading scenario…" : "Scenario 1"}</span></button>

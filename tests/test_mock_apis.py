@@ -20,3 +20,9 @@ def test_whole_numbers_in_decimal_columns_are_sent_as_floats():
 def test_booleans_are_left_alone():
     out = mock_apis._floats({"rules": [{"locked": True, "promo_multiplier": 1}]}, ("promo_multiplier", "locked"))
     assert out["rules"][0]["locked"] is True and out["rules"][0]["promo_multiplier"] == 1.0
+
+
+def test_amazon_partial_shipments_are_sent_as_text():
+    out = mock_apis._nested_as_text({"orders": [{"id": "a", "partial_shipments": [{"qty": 1, "reason": "split"}]}, {"id": "b"}]})
+    assert out["orders"][0]["partial_shipments"] == ['{"qty": 1, "reason": "split"}']
+    assert out["orders"][1]["partial_shipments"] == []

@@ -47,3 +47,7 @@ export function ago(ts: string): string {
 }
 
 export const plural = (n: number, one: string, many = `${one}s`) => `${num(n)} ${n === 1 ? one : many}`;
+
+/** Units a channel's orders drew from its allocation since it was written (the server's rule); falls back to open units. */
+export const usedUnits = (p: { used_by_channel?: Record<string, number>; open_by_channel: Record<string, number> }, c: string) =>
+  p.used_by_channel ? p.used_by_channel[c] ?? 0 : p.open_by_channel[c] ?? 0;

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { ShoppingCart, Database, Globe, ShoppingBag, ChevronDown } from "lucide-react";
-import type { Channel } from "../api";
+import type { AppState, Channel } from "../api";
 import { CHANNELS, CHANNEL_BLURB, chanColor, chanVar, money, num, STATUS_TONE, when } from "../format";
 import { useStore } from "../store";
 import { axes, Card, CardHead, ChartBox, Empty, Pill, Segmented, Spinner, Stepper } from "../ui/kit";
@@ -80,7 +80,7 @@ export function Storefronts() {
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: "auto" }}>
                   <Stepper label={`Quantity of ${p.title}`} value={qty[key] ?? 1} min={1} max={Math.max(1, free)} onChange={(n) => setQty((q) => ({ ...q, [key]: n }))} />
                   <button className="btn primary" style={{ flex: 1 }} disabled={buying === p.sku} onClick={(e) => buy(p.sku, e.currentTarget)}>
-                    {buying === p.sku ? <Spinner /> : <ShoppingCart size={15} aria-hidden />}Buy
+                    {buying === p.sku ? <Spinner /> : <ShoppingCart size={15} aria-hidden />}Place order
                   </button>
                 </div>
               </Card>
@@ -88,6 +88,8 @@ export function Storefronts() {
           })}
         </div>
       </section>
+
+      <InventoryLog s={s} ch={ch} />
 
       <div className="grid g-main reveal">
         <Card>
@@ -136,5 +138,71 @@ export function Storefronts() {
         </div>
       </div>
     </div>
+  );
+}
+
+type LogRow = { ts: string; sku: string; type: "Baseline" | "Smart Allocation" | "Order"; from: string; q: number; start: number; final: number };
+
+/** A channel's stock count over time for one SKU: allocation writes set it, orders draw it down (the IMS rule). */
+function ledger(s: AppState, sku: string, ch: Channel): LogRow[] {
+  const log = (s.alloc_log ?? []).filter((r) => r.sku === sku).sort((a, b) => (a.ts < b.ts ? -1 : 1));
+  if (!log.length) return [];
+  const orders = s.orders.filter((o) => o.sku === sku && o.status !== "cancelled" && o.ts >= log[0].ts);
+  type Step = { ts: string; w?: (typeof log)[number]; o?: (typeof orders)[number] };
+  const steps: Step[] = [...log.map((w): Step => ({ ts: w.ts, w })), ...orders.map((o): Step => ({ ts: o.ts, o }))]
+    .sort((a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : a.w ? -1 : 1));
+  const cnt: Record<string, number> = {};
+  const rows: LogRow[] = [];
+  const fmt = (list: [string, number][]) => list.map(([c, d]) => `${c} (${d > 0 ? "+" : ""}${d})`).join(", ");
+  for (const st of steps) {
+    if (st.o) {
+      const o = st.o, before = cnt[o.channel] ?? 0;
+      cnt[o.channel] = before - o.qty;
+      if (o.channel === ch) rows.push({ ts: o.ts, sku, type: "Order", from: `Order #${o.id}`, q: -o.qty, start: before, final: before - o.qty });
+      continue;
+    }
+    const a = st.w!.allocation, first = Object.keys(cnt).length === 0;
+    const deltas = Object.keys(a).map((c) => [c, a[c] - (cnt[c] ?? 0)] as [string, number]);
+    const mine = deltas.find(([c]) => c === ch);
+    if (mine && mine[1] !== 0 && !first) {
+      const d = mine[1], others = deltas.filter(([c, x]) => c !== ch && (d > 0 ? x < 0 : x > 0));
+      rows.push({ ts: st.ts, sku, type: "Smart Allocation", from: others.length ? fmt(others) : d > 0 ? "Unallocated stock" : "Returned to pool", q: d, start: cnt[ch] ?? 0, final: a[ch] });
+    } else if (first && mine) rows.push({ ts: st.ts, sku, type: "Baseline", from: "Baseline split", q: a[ch], start: 0, final: a[ch] });
+    for (const [c] of deltas) cnt[c] = a[c];
+  }
+  return rows;
+}
+
+function InventoryLog({ s, ch }: { s: AppState; ch: Channel }) {
+  const [sku, setSku] = useState("all");
+  const rows = (sku === "all" ? s.skus.map((p) => p.sku) : [sku]).flatMap((k) => ledger(s, k, ch))
+    .sort((a, b) => (b.ts < a.ts ? -1 : b.ts > a.ts ? 1 : 0)).slice(0, 40);
+  const tone = { "Smart Allocation": "ok", Order: "warn", Baseline: undefined } as const;
+  return (
+    <Card className="reveal">
+      <CardHead title="Inventory log" sub={`How ${ch}'s stock count changed: allocation moves and orders`}>
+        <Segmented<string> label="Filter by SKU" value={sku} onChange={setSku}
+          options={[{ value: "all", label: "All SKUs" }, ...s.skus.map((p) => ({ value: p.sku, label: p.sku }))]} />
+      </CardHead>
+      <div className="card-body" style={{ overflowX: "auto" }}>
+        {rows.length ? (
+          <table className="table">
+            <thead><tr><th>Type</th><th>From</th><th>SKU</th><th className="num">Added / removed</th><th className="num">Start</th><th className="num">Final</th></tr></thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={`${r.ts}-${r.sku}-${i}`}>
+                  <td><Pill tone={tone[r.type]}>{r.type}</Pill></td>
+                  <td>{r.from}<div className="tiny muted">{when(r.ts)}</div></td>
+                  <td className="mono">{r.sku}</td>
+                  <td className="num" style={{ fontWeight: 600, color: r.q > 0 ? "var(--ok)" : "var(--bad)" }}>{r.q > 0 ? "+" : ""}{r.q}</td>
+                  <td className="num">{r.start}</td>
+                  <td className="num"><b>{r.final}</b></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : <Empty icon={ShoppingBag} title={`No movements for ${ch} yet`}>Allocation moves and orders appear here.</Empty>}
+      </div>
+    </Card>
   );
 }
