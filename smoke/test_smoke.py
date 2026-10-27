@@ -1,4 +1,4 @@
-"""Smoke tests against a running demo stack (see SMOKE_TESTS.md).
+"""Smoke tests against a running demo stack.
 
 Start the stack first:  .venv\\Scripts\\python.exe scripts/start_demo.py
 Run:                    .venv\\Scripts\\python.exe -m pytest smoke

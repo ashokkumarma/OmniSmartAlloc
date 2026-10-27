@@ -1,4 +1,4 @@
-"""Validate the Open Agent Hackathon 2026 stack: system, Zetaris, Nemotron/Meterless, Cursor config.
+"""Validate the Open Agent Hackathon 2026 stack: system, Zetaris, Nemotron/Meterless, tests.
 
 Usage: python scripts/validate_stack.py [--skip-network]
 Exit code 0 when there are no FAIL results, 1 otherwise. Secrets are never printed.
@@ -320,14 +320,6 @@ def ping_openai(report: Report, label: str, base_url: str, key: str, headers: di
         report.add("Inference", f"{label} completion", FAIL, f"{type(e).__name__}: {str(e)[:120]}")
 
 
-# ---------------------------------------------------------------- editor
-def check_editor(report: Report) -> None:
-    root_rules = ROOT / ".cursorrules"
-    mdc = list((ROOT / ".cursor" / "rules").glob("*.mdc")) if (ROOT / ".cursor" / "rules").is_dir() else []
-    found = ([".cursorrules"] if root_rules.is_file() else []) + [f".cursor/rules/{p.name}" for p in mdc]
-    report.add("Editor", "Cursor rules", PASS if found else FAIL, ", ".join(found) or "no .cursorrules or .cursor/rules/*.mdc")
-
-
 # ---------------------------------------------------------------- tests
 def check_smoke_tests(report: Report) -> None:
     if importlib.util.find_spec("pytest") is None:
@@ -389,7 +381,6 @@ def main() -> int:
     check_docker(report)
     check_zetaris(report, java_ok, not args.skip_network)
     check_inference(report, not args.skip_network)
-    check_editor(report)
     check_smoke_tests(report)
     render(report)
     return 1 if any(r[2] == FAIL for r in report.results) else 0
