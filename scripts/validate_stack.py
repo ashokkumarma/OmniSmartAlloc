@@ -1,4 +1,4 @@
-"""Validate the Open Agent Hackathon 2026 stack: system, Zetaris, Nemotron/Meterless, tests.
+"""Validate the Open Agent Hackathon 2026 stack: system, Zetaris, Meterless Nightshift (Nemotron), H-MEM, tests.
 
 Usage: python scripts/validate_stack.py [--skip-network]
 Exit code 0 when there are no FAIL results, 1 otherwise. Secrets are never printed.
@@ -258,20 +258,30 @@ def check_zetaris_jdbc(report: Report, jar: str) -> None:
 
 # ---------------------------------------------------------------- inference
 def check_inference(report: Report, network: bool) -> None:
+    # Primary provider: Meterless Nightshift. NVIDIA NIM only when LLM_PROVIDER=nim is set explicitly.
+    provider = (env("LLM_PROVIDER") or "meterless").strip().lower()
     nim, met = is_set("NVIDIA_NIM_API_KEY"), is_set("METERLESS_API_KEY")
-    if not (nim or met):
-        report.add("Inference", "NVIDIA_NIM_API_KEY or METERLESS_API_KEY", FAIL, "neither is set")
-        report.need("NVIDIA_NIM_API_KEY", "https://build.nvidia.com -> any Nemotron model -> Get API Key (nvapi-...)")
-        report.need("METERLESS_API_KEY", "Meterless Runtime token from <stateDir>/proxy-token  [alternative to NIM]")
+    if provider not in ("meterless", "nim"):
+        report.add("Inference", "LLM_PROVIDER", FAIL, f"'{provider}' is not meterless or nim")
         return
-    report.add("Inference", "API key present", PASS, ", ".join(n for n, s in (("NIM", nim), ("Meterless", met)) if s))
+    report.add("Inference", "LLM_PROVIDER", PASS, provider + (" (primary: Meterless Nightshift)" if provider == "meterless"
+                                                              else " (NVIDIA NIM fallback, set explicitly)"))
+    if provider == "meterless" and not met:
+        report.add("Inference", "METERLESS_API_KEY", FAIL, "not set")
+        report.need("METERLESS_API_KEY", "Meterless Nightshift runtime token from <stateDir>/proxy-token")
+        return
+    if provider == "nim" and not nim:
+        report.add("Inference", "NVIDIA_NIM_API_KEY", FAIL, "LLM_PROVIDER=nim but the key is not set")
+        report.need("NVIDIA_NIM_API_KEY", "https://build.nvidia.com -> any Nemotron model -> Get API Key (nvapi-...)")
+        return
+    report.add("Inference", "API key present", PASS, ", ".join(n for n, s in (("Meterless", met), ("NIM", nim)) if s))
     if not network:
         report.add("Inference", "Endpoint ping", SKIP, "--skip-network")
         return
-    if nim:
+    if provider == "nim":
         ping_openai(report, "NVIDIA NIM", env("NVIDIA_NIM_BASE_URL") or "https://integrate.api.nvidia.com/v1",
                     env("NVIDIA_NIM_API_KEY"), {}, model_filter="nemotron")
-    if met:
+    else:
         app = env("METERLESS_APP_ID") or "open-agent-hackathon"
         ping_openai(report, "Meterless", env("METERLESS_BASE_URL") or "http://127.0.0.1:8088/v1",
                     env("METERLESS_API_KEY"), {"meterless-app": app}, model_filter="meterless/")
@@ -303,11 +313,12 @@ def ping_openai(report: Report, label: str, base_url: str, key: str, headers: di
     report.add("Inference", f"{label} models.list", PASS if matched else WARN,
                f"{len(ids)} models, {len(matched)} match '{model_filter}'")
 
-    model = env("NEMOTRON_MODEL") if label == "NVIDIA NIM" else ("meterless/auto" if "meterless/auto" in ids else None)
+    wanted = env("METERLESS_MODEL") or "meterless/deep"
+    model = env("NEMOTRON_MODEL") if label == "NVIDIA NIM" else (wanted if wanted in ids else None)
     if not model:
         report.add("Inference", f"{label} completion", SKIP,
                    "set NEMOTRON_MODEL to an id from models.list to test a completion" if label == "NVIDIA NIM"
-                   else "meterless/auto not advertised")
+                   else f"{wanted} not advertised by the Nightshift runtime")
         return
     try:
         extra = {"extra_headers": {"meterless-scope": "user"}} if label == "Meterless" else {}
@@ -318,6 +329,21 @@ def ping_openai(report: Report, label: str, base_url: str, key: str, headers: di
         report.add("Inference", f"{label} completion", FAIL, f"model '{model}' not found")
     except openai.APIError as e:
         report.add("Inference", f"{label} completion", FAIL, f"{type(e).__name__}: {str(e)[:120]}")
+
+
+# ---------------------------------------------------------------- Meterless H-MEM engine
+def check_hmem(report: Report) -> None:
+    """The H-MEM decision-memory engine runs on Node 22.18+ (built-in TypeScript type stripping)."""
+    node = shutil.which("node")
+    if not node:
+        report.add("Meterless H-MEM", "node", WARN, "not found: decision memory falls back to the approvals log")
+        return
+    res = run([node, str(ROOT / "engines" / "hmem" / "scripts" / "conformance.ts")], timeout=120)
+    passed = re.search(r"(\d+)/(\d+) checks passed", res.stdout or "")
+    if res.returncode == 0 and passed:
+        report.add("Meterless H-MEM", "official conformance", PASS, passed.group(0))
+    else:
+        report.add("Meterless H-MEM", "official conformance", FAIL, ((res.stdout or "") + (res.stderr or "")).strip()[-160:])
 
 
 # ---------------------------------------------------------------- tests
@@ -381,6 +407,7 @@ def main() -> int:
     check_docker(report)
     check_zetaris(report, java_ok, not args.skip_network)
     check_inference(report, not args.skip_network)
+    check_hmem(report)
     check_smoke_tests(report)
     render(report)
     return 1 if any(r[2] == FAIL for r in report.results) else 0
