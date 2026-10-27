@@ -128,11 +128,11 @@ First-time Zetaris source registration (writes to the instance — run once):
 
 ## Use it
 
-A landing page at `http://localhost:8902/` and the app at `/app`, with a sidebar and a search palette (Ctrl+K / ⌘K). **Auto / Light / Dark** in the top bar switches the theme; Auto follows the OS.
+A landing page at `http://localhost:8902/` and the app at `/app`, with a sidebar and a search palette (Ctrl+K / ⌘K). **Theme** in the top bar (under **Menu** on phones) switches Auto, Light and Dark; Auto follows the OS.
 
 | Section | URL | What it does |
 |---|---|---|
-| Landing page | `/` | What the product does, with a live 3D view of the current channel caps |
+| Landing page | `/` | What the product does, with a framed view of the current channel caps |
 | Overview | `/app` (also `/ops`) | KPIs, what needs attention, stock health per SKU, charts, recent orders, the live **Agent run** trace |
 | Orders | `/orders` | Every order in one queue: filter, search, fulfil, split (partial), cancel, bulk actions |
 | Inventory | `/inventory`, `/inventory/<SKU>` | Stock per SKU, channel allocations, inbound shipments with projected arrival, days of cover. A product page shows its cap rails, inbound POs, agent notes and open orders |
