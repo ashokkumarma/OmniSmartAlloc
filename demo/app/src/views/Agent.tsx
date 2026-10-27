@@ -142,6 +142,19 @@ function EventCard({ e }: { e: AgentEvent }) {
           <ul style={{ margin: 0, paddingInlineStart: 18 }}>{why.map((b) => <li key={b} style={{ margin: "3px 0" }}>{b}</li>)}</ul>
         </div>
 
+        {(e.recalled_memories?.length ?? 0) > 0 && (
+          <div>
+            <div className="tiny muted" style={{ fontWeight: 600, marginBottom: 4 }}>Recalled from memory</div>
+            <ul style={{ margin: 0, paddingInlineStart: 18 }} className="small">
+              {e.recalled_memories!.map((m) => (
+                <li key={m.memory_id} style={{ margin: "3px 0" }}>
+                  {m.content} <span className="muted">({m.memory_id}, confidence {m.confidence.toFixed(2)})</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {(e.moves.reduce.length > 0 || e.moves.add.length > 0) && (
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }} className="small">
             {e.moves.reduce.length > 0 && <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}><TrendingDown size={15} style={{ color: "var(--bad)" }} aria-hidden /><b>Reduce</b> {e.moves.reduce.map((m) => `${m.channel} −${m.units}`).join(", ")}</span>}

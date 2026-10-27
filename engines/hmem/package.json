@@ -1,0 +1,14 @@
+{
+  "name": "omnismartalloc-hmem",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Meterless H-MEM engine for OmniSmartAlloc: remembers human approvals and denials of allocation proposals and recalls them per SKU.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "conformance": "node scripts/conformance.ts",
+    "cli": "node src/cli.ts"
+  }
+}

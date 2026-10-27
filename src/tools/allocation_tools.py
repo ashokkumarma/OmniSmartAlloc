@@ -16,6 +16,7 @@ from pydantic import AfterValidator, BaseModel, Field
 from src.allocation import agent_log, allocate, step_toward
 from src.allocation.snapshot import build_snapshot, check_sku
 from src.data_connectors.base import SqlConnector
+from src.memory import hmem
 from src.tools.registry import Tool
 
 SkuId = Annotated[str, AfterValidator(check_sku)]
@@ -44,8 +45,10 @@ class LogArgs(BaseModel):
 
 
 class AllocationService:
-    def __init__(self, db: SqlConnector, store_dir: Path, used_fn: Callable[[str, str], dict[str, int]] | None = None):
+    def __init__(self, db: SqlConnector, store_dir: Path, used_fn: Callable[[str, str], dict[str, int]] | None = None,
+                 llm_info: dict[str, str] | None = None):
         self.db, self.dir, self.used_fn = db, store_dir, used_fn
+        self.llm_info = llm_info or {}
         self.computed: dict[str, dict[str, Any]] = {}
 
     def _append(self, name: str, entry: dict[str, Any]) -> None:
@@ -78,6 +81,7 @@ class AllocationService:
         return {"previous": last["allocation"] if last else None,
                 "previous_written": last.get("written_allocation", last["allocation"]) if last else None, "previous_state": last["state"] if last else None,
                 "days_of_cover": res["days_of_cover"], "reasoning": res["reasoning"],
+                "recalled_memories": res.get("recalled_memories") or [], "memory_engine": res.get("memory_engine"),
                 "uncredited_pos": [s["po"] for s in res["shipments"] if not s["credited"]],
                 "uncredited_shipments": [{"po": s["po"], "qty": s["qty"], "eta": s["adjusted_eta_days"]}
                                          for s in res["shipments"] if not s["credited"]],
@@ -127,6 +131,17 @@ class AllocationService:
     def compute(self, a: SkuArgs) -> dict[str, Any]:
         res = allocate(build_snapshot(self.db, a.sku))
         res["recent_denied_proposals"] = agent_log.denied(self.dir, a.sku)
+        # Past human approvals/denials for this SKU, recalled from the Meterless H-MEM engine.
+        recalled = hmem.recall(self.dir, a.sku, [c["name"] for c in res.get("channels", [])])
+        if recalled is None:
+            res["memory_engine"] = "fallback: approvals log (H-MEM unavailable)"
+            res["recalled_memories"] = []
+        else:
+            res["memory_engine"] = "meterless-hmem"
+            res["recalled_memories"] = recalled
+            for m in recalled:
+                res["reasoning"].append(f"Recalled from memory ({m['memory_id']}, approval {m['approval_id']}, "
+                                        f"relevance {m['relevance']:.2f}): {m['content']}")
         # Orders/inventory may have changed since any pending proposal was staged. If today's
         # recommendation no longer matches what was proposed, that card no longer reflects the
         # current state of records -- retire it now instead of leaving a stale "needs approval".
@@ -169,7 +184,7 @@ class AllocationService:
         self._append("allocations.jsonl", {"sku": a.sku, "state": res["state"], "allocation": applied, "target": target,
                                            "sellable_units": res["sellable_units"], "shared_pool": res["shared_pool"], "reason": a.reason,
                                            **self._context(res, last)})
-        self._append("decisions.jsonl", {"sku": a.sku, "record": {k: res[k] for k in res if k not in ("shipments", "channels")}})
+        self._append("decisions.jsonl", {"sku": a.sku, **self.llm_info, "record": {k: res[k] for k in res if k not in ("shipments", "channels")}})
         return {"written": True, "applied": applied, "target": target, "stepped_by_25pct_limit": stepped, "state": res["state"]}
 
     def alert(self, a: AlertArgs) -> dict[str, Any]:
@@ -177,12 +192,13 @@ class AllocationService:
         return {"alert_created": True, "sku": a.sku}
 
     def log(self, a: LogArgs) -> dict[str, Any]:
-        self._append("decisions.jsonl", {"sku": a.sku, "record": a.record})
+        self._append("decisions.jsonl", {"sku": a.sku, **self.llm_info, "record": a.record})
         return {"logged": True, "sku": a.sku}
 
 
-def build_allocation_tools(db: SqlConnector, store_dir: Path, used_fn: Callable[[str, str], dict[str, int]] | None = None) -> list[Tool]:
-    s = AllocationService(db, store_dir, used_fn)
+def build_allocation_tools(db: SqlConnector, store_dir: Path, used_fn: Callable[[str, str], dict[str, int]] | None = None,
+                           llm_info: dict[str, str] | None = None) -> list[Tool]:
+    s = AllocationService(db, store_dir, used_fn, llm_info)
     return [
         Tool("compute_allocation",
              "Pull fresh data for a SKU from Zetaris and run the full allocation logic (committed units, inbound credit, state, allocation, guardrails). Returns the per-SKU record. Do not do this math yourself.",
